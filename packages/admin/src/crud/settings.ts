@@ -1,0 +1,56 @@
+import { defineCRUD } from "@repo/crud";
+
+export const SettingsCRUD = defineCRUD({
+  model: "settings",
+  label: "Settings",
+  mode: "keyValue",
+  navGroup: "Administration",
+  fields: [
+    { name: "brandingAppName", type: "text",  label: "App Name", tab: "Branding", namespace: "branding" },
+    {
+      name: "brandingLogoLightUrl",
+      type: "image",
+      label: "Logo (Light Mode)",
+      tab: "Branding",
+      namespace: "branding",
+      uploadUrl: "/api/upload?path=uploads/admin/settings",
+      note: "Recommended size: 512x512px square PNG or SVG.",
+      width: "half",
+    },
+    {
+      name: "brandingLogoDarkUrl",
+      type: "image",
+      label: "Logo (Dark Mode)",
+      tab: "Branding",
+      namespace: "branding",
+      uploadUrl: "/api/upload?path=uploads/admin/settings",
+      note: "Recommended size: 512x512px square PNG or SVG.",
+      width: "half",
+    },
+    {
+      name: "brandingFaviconUrl",
+      type: "image",
+      label: "Favicon",
+      tab: "Branding",
+      namespace: "branding",
+      uploadUrl: "/api/upload?path=uploads/admin/settings",
+      note: "Recommended size: 512x512px square PNG or SVG.",
+    },
+    {
+      name: "brandingLoginTitle",
+      type: "textarea",
+      label: "Login Title",
+      tab: "Branding",
+      namespace: "branding",
+      note: "Shown on the login page hero. Line breaks are preserved.",
+    },
+    {
+      name: "brandingLoginSubtitle",
+      type: "textarea",
+      label: "Login Subtitle",
+      tab: "Branding",
+      namespace: "branding",
+      note: "Shown below the login page hero title.",
+    },
+  ],
+});

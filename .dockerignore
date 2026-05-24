@@ -1,0 +1,20 @@
+**/.git
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+.env
+.env.*
+
+# Test artifacts
+**/coverage
+**/__tests__
+**/*.test.ts
+**/*.test.tsx
+**/vitest.config.ts
+
+# Dev scripts
+scripts/
+
+# Misc
+**/*.log

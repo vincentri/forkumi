@@ -1,0 +1,40 @@
+{
+  "name": "@repo/admin",
+  "version": "0.1.0",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./server": {
+      "types": "./src/server/index.ts",
+      "default": "./src/server/index.ts"
+    },
+    "./ui": {
+      "types": "./src/ui/index.ts",
+      "default": "./src/ui/index.ts"
+    }
+  },
+  "dependencies": {
+    "@repo/crud": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "zod": "^3.24.3"
+  },
+  "peerDependencies": {
+    "@trpc/client": ">=11",
+    "@trpc/react-query": ">=11",
+    "@trpc/server": ">=11",
+    "next": ">=14",
+    "next-auth": "^4",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "react-hook-form": ">=7",
+    "@hookform/resolvers": ">=3"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@types/react": "^19.1.2",
+    "typescript": "^5.8.3"
+  }
+}

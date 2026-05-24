@@ -1,0 +1,25 @@
+# deps
+node_modules/
+.pnpm-store/
+
+# builds
+.next/
+dist/
+.turbo/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# generated
+packages/db/src/generated/
+
+# misc
+.DS_Store
+*.log
+apps/api/public/uploads/
+.gstack/
+*.tsbuildinfo
+skills-lock.json
+public/uploads/

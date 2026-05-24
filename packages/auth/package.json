@@ -1,0 +1,22 @@
+{
+  "name": "@repo/auth",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "next-auth": "^4.24.11"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "next": "^15.3.1",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "next": ">=14"
+  }
+}

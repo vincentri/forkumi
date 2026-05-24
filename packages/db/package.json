@@ -1,0 +1,31 @@
+{
+  "name": "@repo/db",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "db:push": "dotenv -e ../../.env -- sh -c 'DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma db push --schema ../../apps/api/prisma/schema.prisma'",
+    "db:migrate": "dotenv -e ../../.env -- sh -c 'DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma migrate dev --schema ../../apps/api/prisma/schema.prisma'",
+    "db:seed": "dotenv -e ../../.env -- sh -c 'DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" tsx src/seed.ts'",
+    "db:studio": "dotenv -e ../../.env -- sh -c 'DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma studio --schema ../../apps/api/prisma/schema.prisma'",
+    "db:generate": "PRISMA_GENERATE_SKIP_AUTOINSTALL=true prisma generate --schema ../../apps/api/prisma/schema.prisma",
+    "postinstall": "PRISMA_GENERATE_SKIP_AUTOINSTALL=true prisma generate --schema ../../apps/api/prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@types/bcryptjs": "^2.4.6",
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.19.3",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}

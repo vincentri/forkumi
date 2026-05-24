@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply antialiased;
+    font-family: var(--font-roboto), system-ui, sans-serif;
+    color: #1A1A1A;
+    line-height: 1.7;
+  }
+  h1, h2, h3, h4, h5, h6 { @apply font-serif; letter-spacing: -0.01em; }
+}
+
+@layer components {
+  .section-padding { @apply px-6 py-[120px] md:px-16 lg:px-24; }
+
+  .section-label {
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; color: #1A1A1A; opacity: 0.4;
+  }
+
+  .section-label-light {
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; color: rgba(255, 255, 255, 0.4);
+  }
+
+  .btn-primary {
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-size: 0.8125rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #ffffff; padding: 16px 32px;
+    @apply bg-dark transition-all duration-300 hover:bg-dark/80;
+  }
+
+  .btn-outline {
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-size: 0.8125rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1.5px; padding: 16px 32px;
+    @apply border border-dark bg-transparent text-dark transition-all duration-300 hover:bg-dark hover:text-white;
+  }
+
+  .form-label {
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-size: 0.6875rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 2px; color: #1A1A1A; display: block; margin-bottom: 8px;
+  }
+
+  .form-input {
+    font-family: var(--font-montserrat), system-ui, sans-serif;
+    font-size: 0.9375rem; height: 52px; width: 100%;
+    background: #ffffff; border: 1px solid #E5E5E5;
+    padding: 0 16px; outline: none; color: #737373; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: #1A1A1A; }
+  .form-input::placeholder { color: #737373; }
+  textarea::placeholder { font-family: var(--font-montserrat), system-ui, sans-serif; color: #737373; }
+
+  .blog-content p { margin-bottom: 1.5rem; }
+  .blog-content p:first-child::first-letter {
+    font-family: var(--font-playfair), Georgia, serif;
+    font-size: 72px;
+    line-height: 0.85;
+    float: left;
+    margin-right: 0.2em;
+    margin-top: 6px;
+    color: #1A1A1A;
+  }
+  .blog-content h1, .blog-content h2, .blog-content h3 { color: #1A1A1A; margin-bottom: 1rem; margin-top: 2rem; }
+  .blog-content ul, .blog-content ol { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+  .blog-content li { margin-bottom: 0.5rem; }
+  .blog-content strong { color: #1A1A1A; font-weight: 600; }
+  .blog-content a { color: #1A1A1A; text-decoration: underline; }
+  .form-input[type="date"]::-webkit-calendar-picker-indicator,
+  .form-input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(47%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+    cursor: pointer;
+  }
+}
