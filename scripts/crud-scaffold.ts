@@ -213,11 +213,7 @@ async function main() {
 
   console.log(`\nDone! Run pnpm db:push to apply the schema.`);
   console.log(`Nav link, tRPC routes (admin.${config.model}.*), and admin page are automatic.`);
-  if (config.model !== model) {
-    console.log(`Admin URL: /admin/${toKebabCase(config.model)}`);
-  } else {
-    console.log(`Admin URL: /admin/${model}`);
-  }
+  console.log(`Admin URL: /admin/${toKebabCase(config.model)}`);
 }
 
 main();

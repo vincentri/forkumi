@@ -43,7 +43,7 @@ console.log("✓  Created .env with a generated NEXTAUTH_SECRET");
 console.log("");
 console.log("Next steps:");
 console.log("  1. Edit .env — set POSTGRES_USER / POSTGRES_PASSWORD / POSTGRES_DB if needed");
-console.log("     Defaults: postgres / postgres / nextbackend @ localhost:5432");
+console.log("     Defaults: postgres / postgres / quantyx @ localhost:5432");
 console.log("");
 console.log("  2. Start Postgres (if using Docker):");
 console.log("     docker compose up -d");

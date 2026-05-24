@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getServerAuthSession } from "~/lib/auth";
 import { prisma } from "@repo/db";
 import * as CRUDConfigs from "~/crud";
-import { toClientCRUDConfig, type CRUDConfig, type CRUDFieldSelect, type CRUDField } from "@repo/crud";
+import { isCRUDResourceSlug, toClientCRUDConfig, type CRUDConfig, type CRUDFieldSelect, type CRUDField } from "@repo/crud";
 import { derivePermissionOptions } from "@repo/admin/server";
 import { customLinks } from "~/lib/customLinks";
 import CRUDResourceClient from "./CRUDResourceClient";
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: ResourcePageProps): Promise<M
     (v): v is CRUDConfig =>
       typeof v === "object" && v !== null && "model" in v && "label" in v,
   );
-  const config = configs.find((c) => c.model === resource);
+  const config = configs.find((c) => isCRUDResourceSlug(c.model, resource));
   return { title: config ? `${config.label} | Admin` : "Admin" };
 }
 
@@ -30,7 +30,7 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
       typeof v === "object" && v !== null && "model" in v && "label" in v,
   );
 
-  let config = configs.find((c) => c.model === resource);
+  let config = configs.find((c) => isCRUDResourceSlug(c.model, resource));
 
   if (!config) {
     notFound();

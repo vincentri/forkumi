@@ -2,7 +2,10 @@ import type { CRUDConfig, CRUDField, CRUDFieldSelect } from "./types";
 
 function sanitizeField(field: CRUDField): CRUDField {
   if (field.type !== "select") return field;
-  const { optionsQuery: _optionsQuery, ...clientField } = field as CRUDFieldSelect;
+  const { optionsQuery, ...clientField } = field as CRUDFieldSelect;
+  if (optionsQuery) {
+    return { ...clientField, hasDynamicOptions: true } as CRUDField;
+  }
   return clientField as CRUDField;
 }
 

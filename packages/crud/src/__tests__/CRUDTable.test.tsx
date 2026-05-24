@@ -39,34 +39,41 @@ describe("CRUDTable", () => {
   it("shows empty state when data is empty", () => {
     render(<CRUDTable config={config} data={[]} />);
     expect(screen.getByText(/no products found/i)).toBeInTheDocument();
+    expect(screen.getByText("Title")).toBeInTheDocument();
+    expect(screen.getByText("Published")).toBeInTheDocument();
   });
 
   it("shows skeleton rows when loading", () => {
     const { container } = render(<CRUDTable config={config} data={[]} isLoading />);
     const pulseElements = container.querySelectorAll(".animate-pulse");
     expect(pulseElements.length).toBeGreaterThan(0);
+    expect(screen.getByText("Title")).toBeInTheDocument();
+    expect(screen.getByText("Published")).toBeInTheDocument();
     expect(screen.queryByText("Widget A")).not.toBeInTheDocument();
   });
 
   it("renders Edit and Delete action buttons when handlers provided", () => {
     render(<CRUDTable config={config} data={rows} onEdit={vi.fn()} onDelete={vi.fn()} />);
-    expect(screen.getByText("Actions")).toBeInTheDocument();
-    // Two rows → two Edit buttons
-    expect(screen.getAllByText("Edit")).toHaveLength(2);
-    expect(screen.getAllByText("Delete")).toHaveLength(2);
+    const actionButtons = screen.getAllByRole("button");
+    expect(actionButtons).toHaveLength(2);
+    fireEvent.keyDown(actionButtons[0], { key: "Enter" });
+    expect(screen.getByText("Edit")).toBeInTheDocument();
+    expect(screen.getByText("Delete")).toBeInTheDocument();
   });
 
   it("calls onEdit with row data when Edit clicked", () => {
     const onEdit = vi.fn();
     render(<CRUDTable config={config} data={rows} onEdit={onEdit} />);
-    fireEvent.click(screen.getAllByText("Edit")[0]);
+    fireEvent.keyDown(screen.getAllByRole("button")[0], { key: "Enter" });
+    fireEvent.click(screen.getByText("Edit"));
     expect(onEdit).toHaveBeenCalledWith(rows[0]);
   });
 
   it("calls onDelete with row data when Delete clicked", () => {
     const onDelete = vi.fn();
     render(<CRUDTable config={config} data={rows} onDelete={onDelete} />);
-    fireEvent.click(screen.getAllByText("Delete")[0]);
+    fireEvent.keyDown(screen.getAllByRole("button")[0], { key: "Enter" });
+    fireEvent.click(screen.getByText("Delete"));
     expect(onDelete).toHaveBeenCalledWith(rows[0]);
   });
 
@@ -84,5 +91,41 @@ describe("CRUDTable", () => {
     );
     fireEvent.click(screen.getByText("Title"));
     expect(onSort).toHaveBeenCalledWith("title", "desc");
+  });
+
+  it("renders text filters by default and calls onFilterChange", () => {
+    const onFilterChange = vi.fn();
+    const filterConfig: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      fields: [
+        { name: "title", type: "text", label: "Title" },
+        { name: "notes", type: "text", label: "Notes", filterable: false },
+      ],
+    };
+
+    render(
+      <CRUDTable
+        config={filterConfig}
+        data={[{ id: "1", title: "Widget A", notes: "Hidden filter" }]}
+        onFilterChange={onFilterChange}
+      />,
+    );
+
+    const filterInput = screen.getByPlaceholderText(/filter/i);
+    expect(filterInput).toBeInTheDocument();
+
+    fireEvent.change(filterInput, { target: { value: "widget" } });
+    expect(onFilterChange).toHaveBeenCalledWith("title", "widget");
+  });
+
+  it("keeps filter inputs visible when filtered results are empty", () => {
+    const onFilterChange = vi.fn();
+    render(<CRUDTable config={config} data={[]} onFilterChange={onFilterChange} />);
+
+    expect(screen.getByText("Title")).toBeInTheDocument();
+    expect(screen.getByText("Published")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/filter/i)).toBeInTheDocument();
+    expect(screen.getByText(/no products found/i)).toBeInTheDocument();
   });
 });

@@ -1,34 +1,20 @@
 import Navbar from "~/components/layout/NavbarServer";
 import Footer from "~/components/layout/Footer";
-import HeroSection from "~/components/sections/HeroSection";
-import AboutSection from "~/components/sections/AboutSection";
-import PastaCoffeeSection from "~/components/sections/PastaCoffeeSection";
-import SubscribeSection from "~/components/sections/SubscribeSection";
-import BlogSection from "~/components/sections/BlogSection";
-import ContactSection from "~/components/sections/ContactSection";
-import { getContent, getBlogPosts } from "~/lib/trpc/server";
 
 export default async function Home() {
-  const [blog, posts] = await Promise.all([getContent("blog"), getBlogPosts()]);
-
-  const blogPosts = posts.map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    date: p.createdAt.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }),
-    image: p.image,
-    description: p.description,
-  }));
-
   return (
     <>
       <Navbar />
-      <main>
-        <HeroSection />
-        <AboutSection />
-        <PastaCoffeeSection />
-        <SubscribeSection />
-        <BlogSection legend={blog.blog_legend} title={blog.blog_title} posts={blogPosts} />
-        <ContactSection />
+      <main className="min-h-[70vh] bg-slate-50">
+        <section className="mx-auto flex min-h-[70vh] max-w-4xl flex-col items-center justify-center px-6 py-24 text-center">
+          <p className="text-sm font-medium uppercase tracking-[0.3em] text-slate-400">Default Template</p>
+          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-slate-950 md:text-6xl">
+            Your new site starts here.
+          </h1>
+          <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600">
+            This is a clean starter homepage. Add custom pages and blog posts from the admin panel to shape the public site.
+          </p>
+        </section>
       </main>
       <Footer />
     </>

@@ -25,7 +25,7 @@ function getErrorMessage(err: unknown): string {
 
 type CRUDRouter = {
   list: { useQuery: (input: QueryState) => { data: any; isLoading: boolean; isError: boolean; refetch: () => void } };
-  options?: { useQuery: () => { data?: Record<string, SelectOption[]>; isLoading: boolean; isError: boolean } };
+  options?: { useQuery: (input?: undefined, opts?: { enabled?: boolean }) => { data?: Record<string, SelectOption[]>; isLoading: boolean; isError: boolean } };
   create?: { useMutation: (opts: { onSuccess: () => void }) => { mutateAsync: (data: Record<string, unknown>) => Promise<unknown> } };
   update?: { useMutation: (opts: { onSuccess: () => void }) => { mutateAsync: (input: { id: string; data: Record<string, unknown> }) => Promise<unknown> } };
   delete?: { useMutation: (opts: { onSuccess: () => void }) => { mutateAsync: (input: { id: string }) => Promise<unknown> } };
@@ -165,7 +165,10 @@ function CRUDResourceInner({ config, m, permissions, isProtectedRole, currentUse
   const deleteMutation = m.delete?.useMutation({ onSuccess: () => refetch() });
   const bulkDeleteMutation = m.bulkDelete?.useMutation({ onSuccess: () => refetch() });
   const revokeInviteMutation = config.model === "user" ? (api.admin as any).user.revokeInvite.useMutation({ onSuccess: () => refetch() }) : null;
-  const optionsQuery = m.options?.useQuery();
+  const shouldLoadOptions = config.fields.some(
+    (field) => field.type === "select" && Boolean(field.optionsFrom || field.hasDynamicOptions),
+  );
+  const optionsQuery = m.options?.useQuery(undefined, { enabled: shouldLoadOptions });
 
   const runtimeConfig = useMemo<CRUDConfig>(() => {
     const dynamicOptions = optionsQuery?.data;

@@ -9,8 +9,7 @@
 export { UserCRUD } from "./user";
 export { RoleCRUD } from "./role";
 export { SettingsCRUD } from "./settings";
-export { StaticSectionCRUD } from "./staticSection";
 export { BlogCRUD } from "./blog";
-export { LocationCRUD } from "./location";
-export { SliderCRUD } from "./slider";
-export { GalleryCRUD } from "./gallery";
+export { BlogCategoryCRUD } from "./blogCategory";
+export { PageCRUD } from "./page";
+export { FrontPageSettingsCRUD } from "./frontPageSetting";

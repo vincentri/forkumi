@@ -47,18 +47,25 @@ export function createAuthOptions(adapter: AuthAdapter): NextAuthOptions {
       }),
     ],
     callbacks: {
-      jwt({ token, user }) {
+      jwt({ token, user, trigger, session }) {
         if (user) {
           token.id = user.id ?? "";
+          token.email = user.email ?? null;
+          token.name = user.name ?? null;
           token.role = user.role ?? null;
           token.permissions = user.permissions ?? [];
           token.isProtectedRole = user.isProtectedRole ?? false;
+        }
+        if (trigger === "update" && typeof session?.name === "string") {
+          token.name = session.name;
         }
         return token;
       },
       session({ session, token }) {
         if (session.user) {
           session.user.id = token.id as string;
+          session.user.email = token.email as string;
+          session.user.name = token.name as string | null;
           session.user.role = token.role ?? null;
           session.user.permissions = token.permissions ?? [];
           session.user.isProtectedRole = token.isProtectedRole ?? false;

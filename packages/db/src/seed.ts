@@ -3,13 +3,37 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+type FrontPageSettingSeed = {
+  key: string;
+  value: string;
+  namespace: string;
+};
+
+type FrontPageSettingsDelegate = {
+  upsert: (args: {
+    where: { key: string };
+    update: Record<string, never>;
+    create: FrontPageSettingSeed;
+  }) => Promise<unknown>;
+};
+
 const DEFAULT_BRANDING_SETTINGS = [
   { key: "brandingAppName", value: "Quantyx" },
   { key: "brandingLogoLightUrl", value: "/defaults/admin/default-logo-light.png" },
   { key: "brandingLogoDarkUrl", value: "/defaults/admin/default-logo-dark.png" },
   { key: "brandingFaviconUrl", value: "/defaults/admin/default-favicon.png" },
-  { key: "brandingLoginTitle", value: "Everything you need\nto run your app." },
-  { key: "brandingLoginSubtitle", value: "Users, roles, permissions—everything in one place." },
+  { key: "brandingLoginTitle", value: "Quantyx Framework" },
+  { key: "brandingLoginSubtitle", value: "One platform for all your projects" },
+];
+
+const DEFAULT_FRONT_PAGE_SETTINGS = [
+  { key: "logo", value: "/defaults/admin/default-logo-light.png", namespace: "general" },
+  { key: "favicon", value: "/defaults/admin/default-favicon.png", namespace: "general" },
+  { key: "meta_title", value: "Quantyx", namespace: "seo" },
+  { key: "meta_description", value: "Quantyx is a framework for fullstack development", namespace: "seo" },
+  { key: "meta_keywords", value: "Quantyx, framework, fullstack, development", namespace: "seo" },
+  { key: "headerScript", value: "", namespace: "scripts" },
+  { key: "footerScript", value: "", namespace: "scripts" },
 ];
 
 async function main() {
@@ -60,6 +84,16 @@ async function main() {
         ...setting,
         namespace: "branding",
       },
+    });
+  }
+
+  // Default public/front-page settings live separately from admin branding settings.
+  const frontPageSettings = (prisma as unknown as { frontPageSettings: FrontPageSettingsDelegate }).frontPageSettings;
+  for (const setting of DEFAULT_FRONT_PAGE_SETTINGS) {
+    await frontPageSettings.upsert({
+      where: { key: setting.key },
+      update: {},
+      create: setting,
     });
   }
 

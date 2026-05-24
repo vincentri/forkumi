@@ -1,14 +1,64 @@
 import { prisma } from "@repo/db";
 import { buildCRUDRouters, z } from "@repo/crud";
-import { router, publicProcedure, protectedProcedure, permissionProcedure } from "./trpc";
+import { router, publicProcedure, permissionProcedure } from "./trpc";
 import * as CRUDConfigs from "~/crud";
 import { userRouter } from "./routers/user";
 import { roleCreateProcedure, roleUpdateProcedure, roleDeleteProcedure } from "./routers/role";
 import { getInvitationProcedure, acceptInvitationProcedure } from "./routers/invitation";
-import { StaticSectionCRUD } from "~/crud/staticSection";
+import { accountRouter } from "./routers/account";
+import { FrontPageSettingsCRUD } from "~/crud/frontPageSetting";
+
+type ContentRow = { key: string; value: string | null };
+type PageRow = {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+type BlogRow = PageRow & {
+  description: string;
+  image: string | null;
+};
+type FrontPageSettingsDelegate = {
+  findMany: (args: {
+    where: {
+      OR: Array<
+        | { namespace: string }
+        | { namespace: null; key: { in: string[] } }
+      >;
+    };
+  }) => Promise<ContentRow[]>;
+};
+type PageDelegate = {
+  findMany: (args: {
+    where: { status: string };
+    orderBy: { createdAt: "asc" | "desc" };
+    select?: Record<string, boolean>;
+  }) => Promise<PageRow[]>;
+  findFirst: (args: { where: { slug: string; status: string } }) => Promise<PageRow | null>;
+};
+type BlogDelegate = {
+  findMany: (args: {
+    where: { status: string; slug?: { not: string } };
+    orderBy: { createdAt: "asc" | "desc" };
+    skip?: number;
+    take?: number;
+  }) => Promise<BlogRow[]>;
+  findFirst: (args: { where: { slug: string; status: string } }) => Promise<BlogRow | null>;
+  count: (args: { where: { status: string } }) => Promise<number>;
+};
+
+const db = prisma as unknown as {
+  frontPageSettings: FrontPageSettingsDelegate;
+  page: PageDelegate;
+  blog: BlogDelegate;
+};
 
 function keysForNamespace(namespace: string): string[] {
-  return StaticSectionCRUD.fields
+  return FrontPageSettingsCRUD.fields
     .filter((f) => f.namespace === namespace)
     .map((f) => f.name);
 }
@@ -42,7 +92,6 @@ crudRouters.role = router({
 
 export const appRouter = router({
   health: publicProcedure.query(() => ({ ok: true })),
-  me:     protectedProcedure.query(({ ctx }) => ctx.session.user),
   public: router({
     getInvitation:    getInvitationProcedure,
     acceptInvitation: acceptInvitationProcedure,
@@ -50,7 +99,7 @@ export const appRouter = router({
       .input(z.object({ namespace: z.string() }))
       .query(async ({ input }) => {
         const keys = keysForNamespace(input.namespace);
-        const rows = await prisma.staticSection.findMany({
+        const rows = await db.frontPageSettings.findMany({
           where: {
             OR: [
               { namespace: input.namespace },
@@ -60,47 +109,50 @@ export const appRouter = router({
         });
         return Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]));
       }),
-    getLocations: publicProcedure.query(() =>
-      prisma.location.findMany({ orderBy: { position: "asc" } }),
+    getPages: publicProcedure.query(() =>
+      db.page.findMany({
+        where: { status: "published" },
+        orderBy: { createdAt: "asc" },
+        select: { id: true, title: true, slug: true, content: true, status: true, createdAt: true, updatedAt: true },
+      }),
     ),
-    getSliders: publicProcedure.query(() =>
-      prisma.slider.findMany({ orderBy: { position: "asc" } }),
-    ),
-    getGalleries: publicProcedure.query(() =>
-      prisma.gallery.findMany({ orderBy: { position: "asc" } }),
-    ),
+    getPageBySlug: publicProcedure
+      .input(z.object({ slug: z.string().min(1) }))
+      .query(({ input }) => db.page.findFirst({ where: { slug: input.slug, status: "published" } })),
     getBlogPosts: publicProcedure.query(() =>
-      prisma.blog.findMany({ where: { status: "published" }, orderBy: { createdAt: "desc" } }),
+      db.blog.findMany({
+        where: { status: "published" },
+        orderBy: { createdAt: "desc" },
+      }),
     ),
     getBlogPostsPaginated: publicProcedure
-      .input(z.object({ page: z.number().int().min(1), perPage: z.number().int().min(1) }))
-      .query(async ({ input: { page, perPage } }) => {
+      .input(z.object({ page: z.number().min(1), perPage: z.number().min(1).max(24) }))
+      .query(async ({ input }) => {
         const [posts, total] = await Promise.all([
-          prisma.blog.findMany({
+          db.blog.findMany({
             where: { status: "published" },
             orderBy: { createdAt: "desc" },
-            skip: (page - 1) * perPage,
-            take: perPage,
+            skip: (input.page - 1) * input.perPage,
+            take: input.perPage,
           }),
-          prisma.blog.count({ where: { status: "published" } }),
+          db.blog.count({ where: { status: "published" } }),
         ]);
         return { posts, total };
       }),
     getBlogPostBySlug: publicProcedure
-      .input(z.object({ slug: z.string() }))
-      .query(({ input }) =>
-        prisma.blog.findFirst({ where: { slug: input.slug } }),
-      ),
+      .input(z.object({ slug: z.string().min(1) }))
+      .query(({ input }) => db.blog.findFirst({ where: { slug: input.slug, status: "published" } })),
     getRelatedBlogPosts: publicProcedure
-      .input(z.object({ slug: z.string() }))
+      .input(z.object({ slug: z.string().min(1) }))
       .query(({ input }) =>
-        prisma.blog.findMany({
-          where: { status: "published", NOT: { slug: input.slug } },
-          take: 4,
+        db.blog.findMany({
+          where: { status: "published", slug: { not: input.slug } },
           orderBy: { createdAt: "desc" },
+          take: 3,
         }),
       ),
   }),
+  account: accountRouter,
   admin:  router({ ...crudRouters }),
 });
 

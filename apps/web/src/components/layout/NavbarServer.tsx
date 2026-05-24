@@ -1,7 +1,7 @@
-import { getContent } from "~/lib/trpc/server";
+import { getContent, getPages } from "~/lib/trpc/server";
 import Navbar from "./Navbar";
 
-export default async function NavbarServer({ solid }: { solid?: boolean } = {}) {
-  const data = await getContent("general");
-  return <Navbar solid={solid} logo={data.logo || undefined} />;
+export default async function NavbarServer() {
+  const [data, pages] = await Promise.all([getContent("general"), getPages()]);
+  return <Navbar logo={data.logo || undefined} pages={pages} />;
 }

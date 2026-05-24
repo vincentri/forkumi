@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { buildUpdateZodSchema, buildZodSchema } from "./schema-builder";
-import type { CRUDConfig, CRUDField, CRUDFieldSelect, SelectOption } from "./types";
+import type { CRUDConfig, CRUDDeletePolicy, CRUDField, CRUDFieldSelect, SelectOption } from "./types";
 
 /** Prisma error codes we handle explicitly */
 const PRISMA_UNIQUE_VIOLATION = "P2002";
@@ -68,6 +68,52 @@ function prismaModelKey(model: string): string {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function applyDeletePolicies(db: any, config: CRUDConfig, ids: string[]) {
+  const policies = config.deletePolicy ?? [];
+  if (policies.length === 0) return;
+
+  for (const policy of policies) {
+    if (policy.onDelete !== "restrict") continue;
+    const referencingModel = prismaModelKey(policy.referencingModel);
+    for (const id of ids) {
+      const relatedCount = await db[referencingModel].count({
+        where: { [policy.referencingField]: id },
+      });
+      if (relatedCount > 0) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: policy.message ?? `Cannot delete this ${config.label.toLowerCase()} because it is still in use.`,
+        });
+      }
+    }
+  }
+
+  for (const policy of policies) {
+    await applyReferencingUpdate(db, config, policy, ids);
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function applyReferencingUpdate(db: any, config: CRUDConfig, policy: CRUDDeletePolicy, ids: string[]) {
+  if (policy.onDelete === "restrict" || policy.onDelete === "ignore") return;
+  if (policy.onDelete === "setValue" && policy.value === undefined) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: `deletePolicy for "${config.model}" requires value when onDelete is "setValue".`,
+    });
+  }
+
+  const referencingModel = prismaModelKey(policy.referencingModel);
+  const nextValue = policy.onDelete === "setNull" ? null : policy.value;
+  for (const id of ids) {
+    await db[referencingModel].updateMany({
+      where: { [policy.referencingField]: id },
+      data: { [policy.referencingField]: nextValue },
+    });
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function resolveSelectOptions(db: any, ctx: any, field: CRUDFieldSelect): Promise<SelectOption[]> {
   if (field.optionsQuery) {
     return field.optionsQuery({ db, ctx });
@@ -92,6 +138,10 @@ async function resolveSelectOptions(db: any, ctx: any, field: CRUDFieldSelect): 
   }
 
   return field.options ?? [];
+}
+
+function isFilterableField(field: CRUDField): boolean {
+  return field.filterable !== false && field.type !== "password" && field.type !== "multicheck";
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -266,23 +316,16 @@ export function createCRUDRouter(
         }),
       )
       .query(async ({ input, ctx }: { input: { page: number; pageSize: number; search?: string; sortField?: string; sortDir?: "asc" | "desc"; filters?: Record<string, string | boolean | null> }; ctx?: unknown }) => {
-        const { page, pageSize, search, sortField, sortDir, filters } = input;
+        const { page, pageSize, sortField, sortDir, filters } = input;
         const skip = (page - 1) * pageSize;
 
         const andClauses: Record<string, unknown>[] = [];
-
-        const searchableFields = config.fields.filter((f) =>
-          ["text", "textarea", "email", "url"].includes(f.type),
-        );
-        if (search && searchableFields.length > 0) {
-          andClauses.push({ OR: searchableFields.map((f) => ({ [f.name]: { contains: search, mode: "insensitive" } })) });
-        }
 
         if (filters) {
           for (const [fieldName, value] of Object.entries(filters)) {
             if (value === null || value === undefined) continue;
             const field = config.fields.find((f) => f.name === fieldName);
-            if (!field || !field.filterable) continue;
+            if (!field || !isFilterableField(field)) continue;
             if (field.type === "boolean") {
               andClauses.push({ [fieldName]: value });
             } else if (field.type === "select") {
@@ -293,6 +336,9 @@ export function createCRUDRouter(
               if (from) clause.gte = new Date(from);
               if (to) { const d = new Date(to); d.setHours(23, 59, 59, 999); clause.lte = d; }
               if (Object.keys(clause).length) andClauses.push({ [fieldName]: clause });
+            } else if (field.type === "number" || field.type === "range") {
+              const numberValue = Number(value);
+              if (!Number.isNaN(numberValue)) andClauses.push({ [fieldName]: numberValue });
             } else {
               andClauses.push({ [fieldName]: { contains: String(value), mode: "insensitive" } });
             }
@@ -395,6 +441,7 @@ export function createCRUDRouter(
       .input(z.object({ id: z.string() }))
       .mutation(async ({ input }: { input: { id: string } }) => {
         try {
+          await applyDeletePolicies(db, config, [input.id]);
           return await db[model].delete({ where: { id: input.id } });
         } catch (err) {
           handlePrismaError(err);
@@ -405,6 +452,7 @@ export function createCRUDRouter(
       .input(z.object({ ids: z.array(z.string()).min(1) }))
       .mutation(async ({ input }: { input: { ids: string[] } }) => {
         try {
+          await applyDeletePolicies(db, config, input.ids);
           return await db[model].deleteMany({ where: { id: { in: input.ids } } });
         } catch (err) {
           handlePrismaError(err);

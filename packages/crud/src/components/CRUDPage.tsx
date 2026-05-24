@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import {
   Button,
   Badge,
@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-  Input,
 } from "@repo/ui";
 import type { CRUDConfig, QueryState } from "../types";
 import { CRUDForm } from "./CRUDForm";
@@ -29,7 +28,7 @@ interface CRUDPageProps {
   isError?: boolean;
   onRefetch?: () => void;
   /**
-   * Called whenever page, search, sort, or filters change.
+   * Called whenever page, sort, or filters change.
    * Use this to re-run your tRPC list query with the new params.
    *
    * @example
@@ -64,8 +63,8 @@ type ModalState =
   | { type: "edit"; row: Record<string, unknown> };
 
 /**
- * Full admin CRUD page: search bar + column filters + sortable table + pagination + create/edit modal + delete confirm + bulk delete.
- * Manages page/search/sort/filter state internally and fires onQueryChange so the parent can re-run the query.
+ * Full admin CRUD page: column filters + sortable table + pagination + create/edit modal + delete confirm + bulk delete.
+ * Manages page/sort/filter state internally and fires onQueryChange so the parent can re-run the query.
  *
  * @example
  * // apps/api/src/app/(admin)/products/page.tsx
@@ -124,8 +123,6 @@ export function CRUDPage({
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [searchDraft, setSearchDraft] = useState("");
   const [sortField, setSortField] = useState<string | undefined>();
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [filters, setFilters] = useState<Record<string, string | boolean | null>>({});
@@ -135,31 +132,9 @@ export function CRUDPage({
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [bulkDeleteError, setBulkDeleteError] = useState<string | null>(null);
 
-  const isMounted = useRef(false);
-
-  // 300ms debounce: fire query when user stops typing.
-  // Skip the initial mount fire — parent already queried with {page:1}.
-  // Firing on mount produces a different cache key and causes a double fetch.
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
-    const timer = setTimeout(() => {
-      const newSearch = searchDraft || undefined;
-      setSearch(searchDraft);
-      setPage(1);
-      setSelectedIds(new Set());
-      onQueryChange?.({ page: 1, search: newSearch, sortField, sortDir, filters: Object.keys(filters).length ? filters : undefined });
-    }, 300);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchDraft]);
-
   function updateQuery(patch: Partial<QueryState>) {
     const next: QueryState = {
       page,
-      search: search || undefined,
       sortField,
       sortDir,
       filters: Object.keys(filters).length ? filters : undefined,
@@ -177,7 +152,7 @@ export function CRUDPage({
     setSortDir(dir);
     setPage(1);
     setSelectedIds(new Set());
-    onQueryChange?.({ page: 1, search: search || undefined, sortField: newField, sortDir: dir, filters: Object.keys(filters).length ? filters : undefined });
+    onQueryChange?.({ page: 1, sortField: newField, sortDir: dir, filters: Object.keys(filters).length ? filters : undefined });
   }
 
   function handleFilterChange(field: string, value: string | boolean | null) {
@@ -190,14 +165,14 @@ export function CRUDPage({
     setFilters(next);
     setPage(1);
     setSelectedIds(new Set());
-    onQueryChange?.({ page: 1, search: search || undefined, sortField, sortDir, filters: Object.keys(next).length ? next : undefined });
+    onQueryChange?.({ page: 1, sortField, sortDir, filters: Object.keys(next).length ? next : undefined });
   }
 
   function clearFilters() {
     setFilters({});
     setPage(1);
     setSelectedIds(new Set());
-    onQueryChange?.({ page: 1, search: search || undefined, sortField, sortDir });
+    onQueryChange?.({ page: 1, sortField, sortDir });
   }
 
   async function handleSubmit(data: Record<string, unknown>) {
@@ -272,20 +247,8 @@ export function CRUDPage({
         </div>
       </div>
 
-      {/* Search bar */}
+      {/* Active filters */}
       <div className="flex items-center gap-2">
-        <Input
-          type="search"
-          value={searchDraft}
-          onChange={(e) => setSearchDraft(e.target.value)}
-          placeholder={`Search ${config.label.toLowerCase()}...`}
-          className="max-w-sm"
-        />
-        {search && (
-          <Button type="button" variant="ghost" size="sm" onClick={() => setSearchDraft("")}>
-            Clear
-          </Button>
-        )}
         {activeFilterCount > 0 && (
           <>
             <Badge variant="secondary">{activeFilterCount} {activeFilterCount === 1 ? "filter" : "filters"}</Badge>

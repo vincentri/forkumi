@@ -38,6 +38,8 @@ import {
 } from "@repo/ui";
 import type { CRUDConfig, CRUDField, CRUDFieldSelect } from "../types";
 
+const ALL_FILTER_VALUE = "__all__";
+
 interface CRUDTableProps {
   config: CRUDConfig;
   data: Record<string, unknown>[];
@@ -84,6 +86,10 @@ function SortIcon({ field, sortField, sortDir }: { field: CRUDField; sortField?:
   return <ChevronsUpDown className="ml-1 h-[14px] w-[14px] text-muted-foreground" />;
 }
 
+function isFilterableField(field: CRUDField): boolean {
+  return field.filterable !== false && field.type !== "password" && field.type !== "multicheck";
+}
+
 function FilterCell({
   field,
   value,
@@ -96,12 +102,12 @@ function FilterCell({
   if (field.type === "boolean") {
     const strVal = value === true ? "true" : value === false ? "false" : "";
     return (
-      <Select value={strVal} onValueChange={(v) => onChange(v === "" ? null : v === "true")}>
+      <Select value={strVal || ALL_FILTER_VALUE} onValueChange={(v) => onChange(v === ALL_FILTER_VALUE ? null : v === "true")}>
         <SelectTrigger className="h-7 text-xs w-full">
           <SelectValue placeholder="All" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All</SelectItem>
+          <SelectItem value={ALL_FILTER_VALUE}>All</SelectItem>
           <SelectItem value="true">Yes</SelectItem>
           <SelectItem value="false">No</SelectItem>
         </SelectContent>
@@ -112,12 +118,12 @@ function FilterCell({
   if (field.type === "select" && (field as CRUDFieldSelect).display?.filter !== "text") {
     const options = (field as CRUDFieldSelect).options ?? [];
     return (
-      <Select value={typeof value === "string" ? value : ""} onValueChange={(v) => onChange(v === "" ? null : v)}>
+      <Select value={typeof value === "string" && value ? value : ALL_FILTER_VALUE} onValueChange={(v) => onChange(v === ALL_FILTER_VALUE ? null : v)}>
         <SelectTrigger className="h-7 text-xs w-full">
           <SelectValue placeholder="All" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All</SelectItem>
+          <SelectItem value={ALL_FILTER_VALUE}>All</SelectItem>
           {options.map((o) => (
             <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
           ))}
@@ -139,6 +145,18 @@ function FilterCell({
         <Input type="date" value={from} onChange={(e) => emit(e.target.value, to)} className="h-7 text-xs px-1 w-full" />
         <Input type="date" value={to} onChange={(e) => emit(from, e.target.value)} className="h-7 text-xs px-1 w-full" />
       </div>
+    );
+  }
+
+  if (field.type === "number" || field.type === "range") {
+    return (
+      <Input
+        type="number"
+        placeholder="Filter..."
+        value={typeof value === "string" ? value : ""}
+        onChange={(e) => onChange(e.target.value || null)}
+        className="h-7 text-xs w-full"
+      />
     );
   }
 
@@ -188,7 +206,8 @@ export function CRUDTable({
   onFilterChange,
 }: CRUDTableProps) {
   const tableFields = config.fields.filter((f) => f.showInTable !== false);
-  const hasFilterableFields = tableFields.some((f) => f.filterable);
+  const hasFilterableFields = tableFields.some(isFilterableField);
+  const hasActions = !!(onEdit || (onDelete && config.deletable !== false) || onRowAction || onDuplicate);
 
   function handleSort(field: CRUDField) {
     if (field.sortable === false || !onSort) return;
@@ -308,7 +327,7 @@ export function CRUDTable({
         return <span className="max-w-[240px] break-words inline-block">{String(value)}</span>;
       },
     })),
-    ...(onEdit || (onDelete && config.deletable !== false) || onRowAction || onDuplicate
+    ...(hasActions
       ? [
           {
             id: "actions",
@@ -370,49 +389,6 @@ export function CRUDTable({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  if (isLoading) {
-    return (
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {showCheckboxes && <TableHead className="w-10" />}
-              {tableFields.map((f) => (
-                <TableHead key={f.name}>{f.label}</TableHead>
-              ))}
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <TableRow key={i}>
-                {showCheckboxes && <TableCell><Skeleton className="h-4 w-4" /></TableCell>}
-                {tableFields.map((f) => (
-                  <TableCell key={f.name}>
-                    <Skeleton className="h-4" style={{ width: `${60 + (i * 17 + f.name.length * 5) % 30}%` }} />
-                  </TableCell>
-                ))}
-                <TableCell>
-                  <Skeleton className="h-4 w-16" />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    );
-  }
-
-  if (data.length === 0) {
-    return (
-      <div className="flex min-h-[300px] flex-col items-center justify-center gap-3 rounded-md border p-8">
-        {emptyState ?? (
-          <p className="text-sm text-muted-foreground">No {config.label.toLowerCase()} found.</p>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="rounded-md border">
       <Table>
@@ -448,7 +424,7 @@ export function CRUDTable({
               {showCheckboxes && <TableHead className="w-10 py-1" />}
               {tableFields.map((field) => (
                 <TableHead key={field.name + "-filter"} className="py-1">
-                  {field.filterable ? (
+                  {isFilterableField(field) ? (
                     <FilterCell
                       field={field}
                       value={filters?.[field.name]}
@@ -457,14 +433,38 @@ export function CRUDTable({
                   ) : null}
                 </TableHead>
               ))}
-              {(onEdit || (onDelete && config.deletable !== false) || onRowAction || onDuplicate) && (
+              {hasActions && (
                 <TableHead className="py-1" />
               )}
             </TableRow>
           )}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows.map((row) => {
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <TableRow key={i}>
+                {showCheckboxes && <TableCell><Skeleton className="h-4 w-4" /></TableCell>}
+                {tableFields.map((f) => (
+                  <TableCell key={f.name}>
+                    <Skeleton className="h-4" style={{ width: `${60 + (i * 17 + f.name.length * 5) % 30}%` }} />
+                  </TableCell>
+                ))}
+                {hasActions && (
+                  <TableCell>
+                    <Skeleton className="h-4 w-16" />
+                  </TableCell>
+                )}
+              </TableRow>
+            ))
+          ) : data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-[300px] text-center">
+                {emptyState ?? (
+                  <p className="text-sm text-muted-foreground">No {config.label.toLowerCase()} found.</p>
+                )}
+              </TableCell>
+            </TableRow>
+          ) : table.getRowModel().rows.map((row) => {
             const isCurrentUser = currentUserEmail
               ? row.original.email === currentUserEmail
               : false;

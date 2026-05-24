@@ -19,11 +19,63 @@
 //   pageSize: 20,                 // optional — rows per page (default: 20)
 //   defaultSortField: "createdAt",// optional — column to sort by on first load
 //   defaultSortDir: "desc",       // optional — "asc" | "desc"
+//   // --- Create/Edit form layout (optional) ---
+//   // Omit formLayout to keep the default single-column form.
+//   // Layout references field names from fields[] below. Missing field names are ignored.
+//   // Fields not referenced here are appended after the configured sections in their original order.
+//   formLayout: [
+//     {
+//       section: "Meta",
+//       columns: [
+//         {
+//           rows: [
+//             ["slug"],
+//             ["title", "tags"],
+//           ],
+//         },
+//         {
+//           rows: [["categoryId"]],
+//         },
+//       ],
+//     },
+//     {
+//       section: "Content",
+//       rows: [
+//         ["description"],
+//         ["body"],
+//       ],
+//     },
+//     {
+//       section: "Publishing",
+//       rows: [
+//         ["status", "published"],
+//         [{ field: "publishedAt", span: 2 }],
+//       ],
+//     },
+//   ],
+//   // --- Delete policies for related records (optional) ---
+//   // Use when another CRUD/table stores this record's id in a field.
+//   // onDelete: "restrict" blocks deletion while related rows exist.
+//   // onDelete: "setNull" clears the referencing field before deletion.
+//   // onDelete: "setValue" moves related rows to a fallback id/value before deletion.
+//   // onDelete: "ignore" leaves existing values untouched.
+//   deletePolicy: [
+//     {
+//       referencingModel: "post",
+//       referencingField: "categoryId",
+//       onDelete: "restrict",
+//       message: "Cannot delete this category while posts are using it.",
+//     },
+//     // { referencingModel: "post", referencingField: "categoryId", onDelete: "setNull" },
+//     // { referencingModel: "post", referencingField: "categoryId", onDelete: "setValue", value: "fallback_category_id" },
+//     // { referencingModel: "post", referencingField: "categoryId", onDelete: "ignore" },
+//   ],
 //   fields: [
 //     // --- Text fields ---
+//     // Fields are filterable by default. Set filterable: false to hide the table filter and block server filtering.
 //     { name: "title",       type: "text",      label: "Title",       required: true, note: "Used as the page title." },
 //     { name: "description", type: "textarea",  label: "Description", note: "Short summary shown in listings." },
-//     { name: "body",        type: "richtext",  label: "Body" },
+//     { name: "body",        type: "richtext",  label: "Body",        filterable: false },
 //     { name: "email",       type: "email",     label: "Email",       required: true, unique: true },
 //     { name: "website",     type: "url",       label: "Website",     note: "Include https://" },
 //     { name: "password",    type: "password",  label: "Password",    required: true },
@@ -37,13 +89,12 @@
 //     { name: "attachment",  type: "file",      label: "Attachment",  uploadUrl: "/api/upload?path=uploads/files",   accept: ".pdf,.docx", showInTable: false },
 //
 //     // --- Select (options required) ---
-//     // Add filterable: true to show a column filter dropdown in the table.
+//     // Select fields show a per-field dropdown filter by default.
 //     {
 //       name: "status",
 //       type: "select",
 //       label: "Status",
 //       required: true,
-//       filterable: true,
 //       options: [
 //         { label: "Draft",     value: "draft" },
 //         { label: "Published", value: "published" },
@@ -58,7 +109,6 @@
 //       type: "select",
 //       label: "Category",
 //       required: true,
-//       filterable: true,
 //       optionsFrom: {
 //         model: "category",
 //         valueField: "id",
@@ -78,7 +128,6 @@
 //       name: "authorId",
 //       type: "select",
 //       label: "Author",
-//       filterable: true,
 //       optionsQuery: async ({ db, ctx }) => {
 //         const authors = await db.user.findMany({
 //           where: {
@@ -120,12 +169,12 @@
 //     // --- Range slider (Int in Prisma) ---
 //     { name: "rating", type: "range", label: "Rating", min: 1, max: 5, step: 1 },
 //
-//     // --- Boolean (add filterable: true for a Yes/No column filter) ---
-//     { name: "published", type: "boolean", label: "Published", default: false, filterable: true },
+//     // --- Boolean (shows a per-field Yes/No filter by default) ---
+//     { name: "published", type: "boolean", label: "Published", default: false },
 //     { name: "featured",  type: "boolean", label: "Featured" },
 //
-//     // --- Date (add filterable: true for a from/to date range filter) ---
-//     { name: "publishedAt", type: "date", label: "Publish Date", filterable: true },
+//     // --- Date (shows a per-field from/to date range filter by default) ---
+//     { name: "publishedAt", type: "date", label: "Publish Date" },
 //   ],
 //   // --- Custom list query escape hatch (optional) ---
 //   // Only use when field-level optionsFrom/optionsQuery are not enough,

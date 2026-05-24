@@ -6,7 +6,13 @@ export const SettingsCRUD = defineCRUD({
   mode: "keyValue",
   navGroup: "Administration",
   fields: [
-    { name: "brandingAppName", type: "text",  label: "App Name", tab: "Branding", namespace: "branding" },
+    {
+      name: "brandingAppName",
+      type: "text",
+      label: "App Name",
+      tab: "Branding",
+      namespace: "branding",
+    },
     {
       name: "brandingLogoLightUrl",
       type: "image",

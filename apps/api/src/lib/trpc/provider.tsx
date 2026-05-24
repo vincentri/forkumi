@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from "@ta
 import { httpBatchLink } from "@trpc/client";
 import { TRPCClientError } from "@trpc/client";
 import superjson from "superjson";
-import { signOut } from "next-auth/react";
+import { SessionProvider, signOut } from "next-auth/react";
 import { api } from "./client";
 import { AdminProvider } from "@repo/admin/ui";
 
@@ -47,10 +47,12 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <api.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <AdminProvider api={api}>{children}</AdminProvider>
-      </QueryClientProvider>
-    </api.Provider>
+    <SessionProvider>
+      <api.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <AdminProvider api={api}>{children}</AdminProvider>
+        </QueryClientProvider>
+      </api.Provider>
+    </SessionProvider>
   );
 }

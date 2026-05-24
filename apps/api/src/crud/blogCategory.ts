@@ -1,11 +1,11 @@
 import { defineCRUD } from "@repo/crud";
 
-export const BlogCRUD = defineCRUD({
-  model: "blog",
-  label: "Blogs",
-  icon: "Book",
+export const BlogCategoryCRUD = defineCRUD({
+  model: "blogCategory",
+  label: "Category",
+  icon: "Tag",
   navGroup: "Blog",
-  navGroupIcon: "Book",
+  navGroupIcon: "Tag",
   fields: [
     {
       name: "slug",
@@ -16,9 +16,6 @@ export const BlogCRUD = defineCRUD({
       slugFrom: "title",
     },
     { name: "title", type: "text", label: "Title", required: true },
-    { name: "description", type: "text", label: "Description", required: true },
-    { name: "content", type: "richtext", label: "Content", required: true },
-    { name: "image", type: "image", label: "Image", showInTable: false },
     {
       name: "status",
       type: "select",

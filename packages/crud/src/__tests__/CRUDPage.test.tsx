@@ -50,6 +50,11 @@ describe("CRUDPage", () => {
     expect(screen.getByText("Widget A")).toBeInTheDocument();
   });
 
+  it("does not render a global search input", () => {
+    render(<CRUDPage config={config} listData={listData} />);
+    expect(screen.queryByPlaceholderText(/search products/i)).not.toBeInTheDocument();
+  });
+
   it("renders extraHeaderActions when provided", () => {
     render(<CRUDPage config={config} extraHeaderActions={<button>Invite User</button>} />);
     expect(screen.getByText("Invite User")).toBeInTheDocument();

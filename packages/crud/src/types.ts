@@ -69,6 +69,44 @@ export interface CRUDQueryHooks {
   }>;
 }
 
+export type CRUDDeletePolicyAction = "restrict" | "setNull" | "setValue" | "ignore";
+
+export interface CRUDDeletePolicy {
+  /** Prisma model/client key containing records that point at this CRUD resource. */
+  referencingModel: string;
+  /** Field on the referencing model that stores the deleted record's id/value. */
+  referencingField: string;
+  /**
+   * Behavior before deleting this record:
+   * - "restrict": block deletion when related rows exist
+   * - "setNull": set referencingField to null
+   * - "setValue": set referencingField to value
+   * - "ignore": leave referencing rows untouched
+   */
+  onDelete: CRUDDeletePolicyAction;
+  /** Fallback value used by setValue. */
+  value?: string | null;
+  /** Optional error message for restrict failures. */
+  message?: string;
+}
+
+export type CRUDFormLayoutItem =
+  | string
+  | {
+      field: string;
+      span?: 1 | 2 | 3 | 4;
+    };
+
+export interface CRUDFormLayoutColumn {
+  rows: CRUDFormLayoutItem[][];
+}
+
+export interface CRUDFormLayoutSection {
+  section?: string;
+  columns?: CRUDFormLayoutColumn[];
+  rows?: CRUDFormLayoutItem[][];
+}
+
 interface CRUDFieldBase {
   name: string;
   label: string;
@@ -89,7 +127,7 @@ interface CRUDFieldBase {
   note?: string;
   /** Form width in keyValue forms. Defaults to full width. */
   width?: "full" | "half";
-  /** Show a filter control beneath this column header in the table */
+  /** Enable server-side filtering and show a table column filter. Defaults to true except password and multicheck fields. */
   filterable?: boolean;
   /** Enforce uniqueness — pre-flight check on create/update before hitting the DB */
   unique?: boolean;
@@ -115,6 +153,8 @@ export interface CRUDFieldSelect extends CRUDFieldBase {
   optionsFrom?: SelectOptionsFrom;
   /** Load options with a custom server-side query. Stripped before config is sent to the client. */
   optionsQuery?: (args: CRUDQueryContext) => Promise<SelectOption[]>;
+  /** Internal client-safe marker used when optionsQuery was stripped before serialization. */
+  hasDynamicOptions?: boolean;
   /** Controls how select values render in lists and filters. */
   display?: SelectDisplayOptions;
   /** When true, allows selecting multiple values (stored as string[]) */
@@ -203,6 +243,10 @@ export interface CRUDConfig {
    * the "New" button is hidden and creation is blocked.
    */
   maxRecords?: number;
+  /** Optional app-level delete policies for simple relation/select references. */
+  deletePolicy?: CRUDDeletePolicy[];
+  /** Optional create/edit form layout. Omit to keep default single-column field order. */
+  formLayout?: CRUDFormLayoutSection[];
   /** Optional server-side query hooks for complex cases. Stripped before config is sent to the client. */
   query?: CRUDQueryHooks;
 }

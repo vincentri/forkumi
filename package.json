@@ -15,6 +15,7 @@
     "setup": "node scripts/setup.mjs",
     "crud:new": "node scripts/crud-new.mjs",
     "crud:scaffold": "tsx scripts/crud-scaffold.ts",
+    "crud:delete": "tsx scripts/crud-delete.ts",
     "dev:reset": "node scripts/dev-reset.mjs"
   },
   "devDependencies": {

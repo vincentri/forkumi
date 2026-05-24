@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { crudModelToSlug } from "@repo/crud";
 import type { CRUDConfig } from "@repo/crud";
 import {
   Sheet,
@@ -19,7 +20,6 @@ import {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  Separator,
   cn,
   LayoutDashboard,
   Users,
@@ -31,6 +31,7 @@ import {
   Folder,
   ChevronDown,
   LogOut,
+  User,
   NAV_ICONS,
 } from "@repo/ui";
 import type { LucideIcon } from "@repo/ui";
@@ -65,7 +66,7 @@ function getItemIcon(item: CRUDConfig | AdminNavLink): LucideIcon | null {
 }
 
 function getItemHref(item: CRUDConfig | AdminNavLink): string {
-  return isCRUDConfig(item) ? `/admin/${item.model}` : item.href;
+  return isCRUDConfig(item) ? `/admin/${crudModelToSlug(item.model)}` : item.href;
 }
 
 function getItemGroup(item: CRUDConfig | AdminNavLink): string | undefined {
@@ -167,6 +168,7 @@ function NavContent({
 }) {
   const pathname = usePathname();
   const { theme, toggle, mounted } = useTheme();
+  const accountLabel = userEmail || "Account";
   const logoUrl = mounted && theme === "dark"
     ? logoDarkUrl ?? logoLightUrl
     : logoLightUrl ?? logoDarkUrl;
@@ -237,7 +239,10 @@ function NavContent({
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 overflow-y-auto py-4 space-y-1">
+        <nav className={cn(
+          "flex-1 py-4 space-y-1",
+          collapsed ? "overflow-visible" : "overflow-y-auto",
+        )}>
           <div className="px-2">
             <NavLink
               href="/admin"
@@ -249,7 +254,7 @@ function NavContent({
             />
           </div>
 
-          {orderedSections.map((section, i) => {
+          {orderedSections.map((section) => {
             if (section.type === "ungrouped") {
               const item = section.item;
               const href = getItemHref(item);
@@ -272,40 +277,77 @@ function NavContent({
             const GroupIcon = groupIcon && NAV_ICONS[groupIcon]
               ? NAV_ICONS[groupIcon]
               : isOpen ? FolderOpen : Folder;
+            const groupActive = items.some((item) => pathname === getItemHref(item));
             return (
               <div key={groupLabel} className="px-2 pt-2">
                 {collapsed ? (
-                  <div className="px-1 py-1"><Separator /></div>
+                  <div className="group relative">
+                    <button
+                      type="button"
+                      aria-label={groupLabel}
+                      className={cn(
+                        "flex w-full items-center justify-center rounded-md px-[10px] py-2 transition-colors",
+                        groupActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                      )}
+                    >
+                      <GroupIcon className="h-4 w-4 shrink-0" />
+                    </button>
+                    <div className="absolute left-full top-0 z-50 hidden pl-2 group-hover:block group-focus-within:block">
+                      <div className="min-w-48 rounded-lg border border-border bg-popover p-2 text-popover-foreground shadow-lg">
+                        <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          {groupLabel}
+                        </p>
+                        <div className="space-y-1">
+                          {items.map((item) => {
+                            const href = getItemHref(item);
+                            return (
+                              <NavLink
+                                key={href}
+                                href={href}
+                                label={item.label}
+                                active={pathname === href}
+                                onClick={onNavigate}
+                                icon={getItemIcon(item)}
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => setGroupOpen((o) => ({ ...o, [groupLabel]: !o[groupLabel] }))}
-                    aria-expanded={isOpen}
-                    className="w-full flex items-center gap-2 px-3 py-1.5 rounded text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:bg-muted transition-colors"
-                  >
-                    <GroupIcon className="h-3.5 w-3.5 shrink-0" />
-                    <span className="flex-1 text-left">{groupLabel}</span>
-                    <ChevronDown className={cn(
-                      "h-3.5 w-3.5 transition-transform duration-200",
-                      !isOpen && "-rotate-90",
-                    )} />
-                  </button>
+                  <>
+                      <button
+                        type="button"
+                        onClick={() => setGroupOpen((o) => ({ ...o, [groupLabel]: !o[groupLabel] }))}
+                        aria-expanded={isOpen}
+                        className="w-full flex items-center gap-2 px-3 py-1.5 rounded text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:bg-muted transition-colors"
+                      >
+                        <GroupIcon className="h-3.5 w-3.5 shrink-0" />
+                        <span className="flex-1 text-left">{groupLabel}</span>
+                        <ChevronDown className={cn(
+                          "h-3.5 w-3.5 transition-transform duration-200",
+                          !isOpen && "-rotate-90",
+                        )} />
+                      </button>
+                    {isOpen && items.map((item) => {
+                      const href = getItemHref(item);
+                      return (
+                        <NavLink
+                          key={href}
+                          href={href}
+                          label={item.label}
+                          active={pathname === href}
+                          onClick={onNavigate}
+                          icon={getItemIcon(item)}
+                          indent
+                        />
+                      );
+                    })}
+                  </>
                 )}
-                {(collapsed || isOpen) && items.map((item) => {
-                  const href = getItemHref(item);
-                  return (
-                    <NavLink
-                      key={href}
-                      href={href}
-                      label={item.label}
-                      active={pathname === href}
-                      onClick={onNavigate}
-                      icon={getItemIcon(item)}
-                      collapsed={collapsed}
-                      indent
-                    />
-                  );
-                })}
               </div>
             );
           })}
@@ -340,7 +382,13 @@ function NavContent({
         )}>
           {!collapsed ? (
             <>
-              <p className="text-xs text-muted-foreground truncate mb-2">{userEmail}</p>
+              <Link
+                href="/admin/account"
+                onClick={onNavigate}
+                className="mb-2 block truncate text-xs text-muted-foreground hover:text-foreground"
+              >
+                {accountLabel}
+              </Link>
               <Button
                 variant="link"
                 onClick={() => signOut({ callbackUrl: "/auth/signin" })}
@@ -350,20 +398,35 @@ function NavContent({
               </Button>
             </>
           ) : (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => signOut({ callbackUrl: "/auth/signin" })}
-                  aria-label="Sign out"
-                  className="h-8 w-8"
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">Sign out ({userEmail})</TooltipContent>
-            </Tooltip>
+            <div className="flex flex-col items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/admin/account"
+                    onClick={onNavigate}
+                    aria-label="Account"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <User className="h-4 w-4" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">{accountLabel}</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+                    aria-label="Sign out"
+                    className="h-8 w-8"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">Sign out</TooltipContent>
+              </Tooltip>
+            </div>
           )}
         </div>
       </div>
@@ -379,8 +442,9 @@ export function AdminNav({ navItems, userEmail, appName, logoLightUrl, logoDarkU
     <>
       <aside className={cn(
         "hidden md:flex flex-col h-screen sticky top-0",
-        "bg-background border-r border-border overflow-hidden",
+        "bg-background border-r border-border",
         "transition-[width] duration-200 ease-in-out",
+        collapsed ? "overflow-visible" : "overflow-hidden",
         collapsed ? "w-14" : "w-56",
       )}>
         <NavContent

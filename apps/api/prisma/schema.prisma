@@ -15,7 +15,6 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime? @map("email_verified")
-  image         String?
   password      String?
   roleId        String?   @map("role_id")
   role          Role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
@@ -44,7 +43,6 @@ model Role {
   @@map("roles")
 }
 
-
 model UserInvitation {
   id          String    @id @default(cuid())
   email       String    @unique  // one invitation row per email at a time
@@ -71,7 +69,6 @@ model Settings {
 
   @@map("settings")
 }
-
 
 // Example:
 // model Post {
@@ -101,35 +98,30 @@ model Blog {
   @@map("blogs")
 }
 
-model Location {
+model BlogCategory {
   id        String   @id @default(cuid())
-  name      String
-  location  String
-  location_url String
-  phone_number String?
-  position  Float?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("locations")
-}
-
-model Slider {
-  id        String   @id @default(cuid())
-  legend    String?
+  slug      String
   title     String
-  description String
-  image     String
-  action    String?
-  actionurl String?
-  position  Float?
+  status    String @default("draft")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt     @map("updated_at")
 
-  @@map("sliders")
+  @@map("blog_categories")
 }
 
-model StaticSection {
+model Page {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String
+  content   String
+  status    String @default("draft")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt     @map("updated_at")
+
+  @@map("pages")
+}
+
+model FrontPageSettings {
   id        String   @id @default(cuid())
   key       String   @unique
   namespace String?
@@ -137,15 +129,5 @@ model StaticSection {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt     @map("updated_at")
 
-  @@map("static_sections")
-}
-
-model Gallery {
-  id        String   @id @default(cuid())
-  image     String
-  position  Float?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("galleries")
+  @@map("front_page_settings")
 }

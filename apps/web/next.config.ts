@@ -25,13 +25,21 @@ const apiHost = (() => {
   }
 })();
 
+const apiProtocol = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").protocol.replace(":", "") as "http" | "https";
+  } catch {
+    return "http";
+  }
+})();
+
 const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@repo/auth"],
   trailingSlash: true,
   images: {
     unoptimized: true,
-    remotePatterns: [{ protocol: "https", hostname: apiHost, pathname: "/**" }],
+    remotePatterns: [{ protocol: apiProtocol, hostname: apiHost, pathname: "/**" }],
   },
 };
 
