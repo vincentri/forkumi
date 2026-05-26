@@ -219,6 +219,8 @@
 // Run: pnpm crud:scaffold aboutSection && pnpm db:push
 // Use tab: "..." to group fields into tabs.
 // namespace: must be set on every field — used to filter rows by section.
+// visibleWhen: conditionally shows a field based on another field's current value.
+// Hidden fields are not validated or saved, so provider-specific settings are preserved.
 // -----------------------------------------------------------------------
 
 // export const AboutSectionCRUD = defineCRUD({
@@ -233,6 +235,8 @@
 //     { name: "body",     type: "richtext", label: "Body",      tab: "Content", namespace: "about" },
 //     { name: "ctaLabel", type: "text",     label: "CTA Label", tab: "CTA",     namespace: "about" },
 //     { name: "ctaUrl",   type: "url",      label: "CTA URL",   tab: "CTA",     namespace: "about", note: "Include https://" },
+//     { name: "showBadge", type: "boolean", label: "Show Badge", tab: "CTA", namespace: "about", default: false },
+//     { name: "badgeText", type: "text", label: "Badge Text", tab: "CTA", namespace: "about", visibleWhen: { field: "showBadge", equals: true } },
 //     { name: "photo",    type: "image",    label: "Photo",     tab: "Media",   namespace: "about", uploadUrl: "/api/upload?path=uploads/about" },
 //   ],
 // });
