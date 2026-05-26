@@ -5,12 +5,14 @@ Turborepo monorepo. Two apps, six packages:
 ```
 apps/
   api/        Next.js full-stack app (port 3001) — auth, tRPC, admin UI
+  web/        Next.js public frontend (port 3000)
 packages/
   admin/      Built-in admin features (users, roles, settings, invitations, auth pages, nav)
   crud/       CRUD builder: JSON config → Zod + tRPC router + React components
   db/         Prisma schema + generated client + seed
   auth/       NextAuth config factory, session types, Prisma adapter (no @repo/db dependency)
   ui/         shadcn/ui component library (re-exported from packages/ui)
+  email/      Transactional email service/providers
   tsconfig/   Shared tsconfig bases
 ```
 
@@ -18,7 +20,7 @@ packages/
 
 - `@repo/admin` — Types, built-in CRUD configs (`UserCRUD`, `createRoleCRUD`)
 - `@repo/admin/server` — `createAdminRouter`, `createPrismaAdapter`, router factories, `derivePermissionOptions`, layout helpers
-- `@repo/admin/ui` — `AdminProvider`, `AdminNav`, `SettingsClient`, `CRUDResourceClient`, `InviteUserModal`, `CreateUserModal`, `ThemeProvider`, auth forms
+- `@repo/admin/ui` — `AdminProvider`, `AdminNav`, `CRUDResourceClient`, `InviteUserModal`, `CreateUserModal`, `ThemeProvider`, auth forms
 - `@repo/admin/settings` — `buildSettingsRegistry`, `DEFAULT_SETTINGS`
 
 ### @repo/auth — adapter pattern
@@ -33,6 +35,8 @@ Key files:
 - `packages/admin/src/ui/CRUDResourceClient.tsx` — tRPC hooks → CRUDPage bridge
 - `packages/admin/src/server/routers/*.ts` — built-in admin router factories
 - `apps/api/prisma/schema.prisma` — database schema
+- `apps/api/src/proxy.ts` — Next proxy for auth route matching and login rate limiting
+- `apps/web/src/app/*` — public frontend routes
 
 ## Testing
 
@@ -52,7 +56,7 @@ No tests for tRPC routers or Next.js pages — those are verified by the build c
 - **Password fields**: Never add password-type fields to `searchableFields` in CRUD configs. `router-factory.ts` exposes searchable fields to queries — passwords must never be searchable.
 - **Password hashing**: The `createUserRouter` in `@repo/admin/server` handles hashing via the injected `passwordHasher`. When overriding, hash on BOTH create and update.
 - **Role assignment guard**: Before writing `roleId`, always check `targetRole.protected`. Block unless caller `isProtectedRole`. Prevents privilege escalation via assign-role.
-- **CORS Vary header**: Dynamic `Access-Control-Allow-Origin` (per-origin allowlist) requires `Vary: Origin` on every response. Without it, CDNs serve one origin's cached headers to others. See `apps/api/src/middleware.ts`.
+- **CORS Vary header**: Dynamic `Access-Control-Allow-Origin` (per-origin allowlist) requires `Vary: Origin` on every response. Without it, CDNs serve one origin's cached headers to others. Check the active request interception layer before editing CORS behavior; this repo currently uses `apps/api/src/proxy.ts` for Next proxy logic.
 - **Web validation messages**: Public web UI must render human-readable validation errors. Do not show raw Zod/tRPC issue arrays, JSON, stack traces, or machine codes to users.
 
 ## Conventions
@@ -83,22 +87,17 @@ lsof -ti :3000 :3001 | xargs kill -9 2>/dev/null || true
 
 Ports: `3000` = `apps/web` (frontend), `3001` = `apps/api` (backend/admin).
 
-## Skill routing
+## Agent guidance
 
-When the user's request matches an available skill, ALWAYS invoke it using the Skill
-tool as your FIRST action. Do NOT answer directly, do NOT use other tools first.
-The skill has specialized workflows that produce better results than ad-hoc answers.
-
-Key routing rules:
-- Product ideas, "is this worth building", brainstorming → invoke office-hours
-- Bugs, errors, "why is this broken", 500 errors → invoke investigate
-- Ship, deploy, push, create PR → invoke ship
-- QA, test the site, find bugs → invoke qa
-- Code review, check my diff → invoke review
-- Update docs after shipping → invoke document-release
-- Weekly retro → invoke retro
-- Design system, brand → invoke design-consultation
-- Visual audit, design polish → invoke design-review
-- Architecture review → invoke plan-eng-review
-- Save progress, checkpoint, resume → invoke checkpoint
-- Code quality, health check → invoke health
+- Prefer `AGENTS.md` as the cross-agent entrypoint; keep this file and `AGENTS.md` aligned when repo workflows change.
+- Local skills are installed under `.agents/skills/` and tracked in `skills-lock.json`. Use only skills that exist locally or are exposed by the active agent runtime.
+- Relevant local skills in this repo include:
+  - `frontend-design` for new or redesigned web UI
+  - `web-design-guidelines` for UI/UX/accessibility audits
+  - `vercel-react-best-practices` for React/Next.js performance review
+  - `vercel-composition-patterns` for reusable React component APIs
+  - `vercel-react-view-transitions` for view transition work
+  - `vercel-optimize` for Vercel cost/performance investigations
+  - `cavecrew` for compressed subagent delegation when available
+  - `caveman-review` and `caveman-commit` for terse reviews/commit messages when requested
+- If an instruction references a missing skill or unavailable tool, fall back to the documented commands and explain the gap briefly.

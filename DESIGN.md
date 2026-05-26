@@ -6,11 +6,11 @@ Admin panel design reference. Start here when customizing for a new project.
 
 ## Required customizations per project
 
-Three things to change before going live:
+Three things to check before going live:
 
-1. **Brand name** — `apps/api/src/app/admin/AdminNav.tsx:53` — change `"Admin"` to your product name
-2. **Primary color** — `apps/api/src/app/globals.css:13` — change `--primary: 221.2 83.2% 53.3%` (currently blue) to your brand color in HSL
-3. **App title** — `apps/api/src/app/layout.tsx` — update the `<title>` / metadata
+1. **Brand name** — Admin → Settings → Branding → App Name. The value is read in `apps/api/src/app/admin/layout.tsx` and rendered by `packages/admin/src/ui/AdminNav.tsx`.
+2. **Primary color** — `apps/api/src/app/globals.css:13` — change `--primary: 221.2 83.2% 53.3%` (currently blue) to your brand color in HSL. Also update the dark-mode `--primary` if needed.
+3. **App title** — `apps/api/src/app/layout.tsx` — update the root metadata/title defaults.
 
 That's it. Everything else inherits from these three.
 
@@ -154,4 +154,4 @@ pnpm db:push                           # apply schema to DB
 # Nav link, tRPC procedures, and admin page appear automatically.
 ```
 
-Field types: `text`, `email`, `url`, `number`, `boolean`, `textarea`, `select`, `select-remote`, `date`, `multicheck`.
+Field types: `text`, `email`, `url`, `password`, `number`, `range`, `boolean`, `textarea`, `select`, `multicheck`, `date`, `color`, `image`, `file`, `richtext`.
