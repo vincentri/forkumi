@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button, Label, cn } from "@repo/ui";
 import { buildZodSchema } from "../schema-builder";
 import type { CRUDConfig, CRUDField, CRUDFormLayoutItem } from "../types";
 import { FieldRenderer } from "./fields/FieldRenderer";
+import { isFieldVisible, visibleFieldsForValues } from "../field-visibility";
 
 function toSlug(value: string): string {
   return value
@@ -65,7 +66,6 @@ export function CRUDForm({
   submitLabel = "Save",
   readOnly,
 }: CRUDFormProps) {
-  const schema = useMemo(() => buildZodSchema(config), [config]);
   const {
     register,
     handleSubmit,
@@ -74,7 +74,13 @@ export function CRUDForm({
     setValue,
     control,
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: async (values, context, options) => {
+      const schema = buildZodSchema({
+        ...config,
+        fields: visibleFieldsForValues(config.fields, values as Record<string, unknown>),
+      });
+      return zodResolver(schema)(values, context, options);
+    },
     defaultValues: defaultValues as Record<string, unknown>,
   });
 
@@ -121,8 +127,34 @@ export function CRUDForm({
     }
   }
 
+  const watchedValues = watch();
+  const visibleFormFields = visibleFieldsForValues(formFields, watchedValues);
+
   function renderField(field: CRUDField) {
+    if (!isFieldVisible(field, watchedValues)) return null;
     const errorMessage = errors[field.name]?.message as string | undefined;
+    if (field.type === "boolean") {
+      return (
+        <div key={field.name} className="space-y-1.5">
+          <div className="flex items-center gap-3">
+            <FieldRenderer
+              field={field}
+              register={register}
+              watch={watch}
+              control={control}
+              readOnly={readOnly}
+            />
+            <Label htmlFor={field.name} className="cursor-pointer">
+              {field.label}
+              {field.required && <span className="ml-1 text-destructive">*</span>}
+            </Label>
+          </div>
+          {field.note && <p className="text-xs text-muted-foreground">{field.note}</p>}
+          {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}
+        </div>
+      );
+    }
+
     return (
       <div key={field.name} className="space-y-1.5">
         <Label htmlFor={field.name}>
@@ -171,7 +203,7 @@ export function CRUDForm({
 
   return (
     <form onSubmit={handleSubmit((data) => onSubmit(data))} className="space-y-4" noValidate>
-      {!hasLayout && formFields.map(renderField)}
+      {!hasLayout && visibleFormFields.map(renderField)}
 
       {hasLayout && config.formLayout!.map((section, sectionIndex) => (
         <section key={`${section.section ?? "section"}-${sectionIndex}`} data-layout-section className="space-y-4">

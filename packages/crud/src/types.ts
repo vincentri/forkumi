@@ -119,6 +119,14 @@ export interface CRUDFormLayoutSection {
   rows?: CRUDFormLayoutItem[][];
 }
 
+export interface CRUDFieldVisibilityCondition {
+  field: string;
+  equals?: unknown;
+  notEquals?: unknown;
+  in?: unknown[];
+  truthy?: boolean;
+}
+
 interface CRUDFieldBase {
   name: string;
   label: string;
@@ -139,6 +147,8 @@ interface CRUDFieldBase {
   note?: string;
   /** Form width in keyValue forms. Defaults to full width. */
   width?: "full" | "half";
+  /** Conditionally show this field based on another field's current form value. */
+  visibleWhen?: CRUDFieldVisibilityCondition;
   /** Enable server-side filtering and show a table column filter. Defaults to true except password and multicheck fields. */
   filterable?: boolean;
   /** Enforce uniqueness — pre-flight check on create/update before hitting the DB */

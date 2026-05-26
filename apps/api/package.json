@@ -20,6 +20,7 @@
     "@repo/auth": "workspace:*",
     "@repo/crud": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/email": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-query": "^5.74.4",
     "@trpc/client": "^11.1.2",

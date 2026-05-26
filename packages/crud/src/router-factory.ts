@@ -285,9 +285,13 @@ export function createKeyValueRouter(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const db = prismaClient as any;
 
+  const fieldKeys = config.fields.map((field) => field.name);
+
   return routerFn({
     get: procedure.query(async () => {
-      const rows = await db[model].findMany();
+      const rows = await db[model].findMany({
+        where: { key: { in: fieldKeys } },
+      });
       return Object.fromEntries(rows.map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
     }),
     update: procedure

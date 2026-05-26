@@ -1,0 +1,26 @@
+{
+  "name": "@repo/email",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./providers/resend": {
+      "types": "./src/providers/resend.ts",
+      "default": "./src/providers/resend.ts"
+    },
+    "./providers/ses": {
+      "types": "./src/providers/ses.ts",
+      "default": "./src/providers/ses.ts"
+    }
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sesv2": "^3.1053.0"
+  }
+}

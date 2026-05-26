@@ -14,6 +14,20 @@ export function createUserRouter(
 ) {
   const getAppUrl = () => appUrl ?? "http://localhost:3001";
 
+  async function getInviteSenderId(sessionUser: { id?: string | null; email?: string | null }): Promise<string | null> {
+    if (sessionUser.id) {
+      const user = await db.user.findUnique({ where: { id: sessionUser.id } });
+      if (user) return user.id;
+    }
+
+    if (sessionUser.email) {
+      const user = await db.user.findUnique({ where: { email: sessionUser.email } });
+      if (user) return user.id;
+    }
+
+    return null;
+  }
+
   const userListProcedure = trpc.permissionProcedure("view", "user")
     .input(z.object({
       page: z.number().min(1).default(1),
@@ -182,12 +196,13 @@ export function createUserRouter(
       const rawToken = crypto.randomBytes(32).toString("hex");
       const hashedToken = sha256(rawToken);
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      const invitedById = await getInviteSenderId(ctx.session.user);
 
       await db.userInvitation.create({
         data: {
           email: input.email,
           token: hashedToken,
-          invitedById: ctx.session.user.id,
+          invitedById,
           roleId: input.roleId ?? null,
           expiresAt,
         },
@@ -213,12 +228,13 @@ export function createUserRouter(
       const rawToken = crypto.randomBytes(32).toString("hex");
       const hashedToken = sha256(rawToken);
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      const invitedById = await getInviteSenderId(ctx.session.user);
 
       await db.userInvitation.create({
         data: {
           email: input.email,
           token: hashedToken,
-          invitedById: ctx.session.user.id,
+          invitedById,
           expiresAt,
         },
       });

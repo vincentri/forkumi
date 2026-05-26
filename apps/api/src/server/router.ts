@@ -6,6 +6,7 @@ import { userRouter } from "./routers/user";
 import { roleCreateProcedure, roleUpdateProcedure, roleDeleteProcedure } from "./routers/role";
 import { getInvitationProcedure, acceptInvitationProcedure } from "./routers/invitation";
 import { accountRouter } from "./routers/account";
+import { emailSettingsRouter } from "./routers/emailSettings";
 import { FrontPageSettingsCRUD } from "~/crud/frontPageSetting";
 import { deleteManagedAsset } from "~/lib/delete-managed-asset";
 
@@ -157,7 +158,7 @@ export const appRouter = router({
       ),
   }),
   account: accountRouter,
-  admin:  router({ ...crudRouters }),
+  admin:  router({ ...crudRouters, emailSettings: emailSettingsRouter }),
 });
 
 export type AppRouter = typeof appRouter;
