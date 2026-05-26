@@ -4,6 +4,7 @@ import type { UseFormRegister, UseFormWatch, Control } from "react-hook-form";
 import type { CRUDField, CRUDFieldMulticheck, CRUDFieldRange, CRUDFieldSelect, CRUDFieldImage, CRUDFieldFile } from "../../types";
 import { BooleanField } from "./BooleanField";
 import { ColorField } from "./ColorField";
+import { DateTimeField } from "./DateTimeField";
 import { FileUploadField } from "./FileUploadField";
 import { ImageUploadField } from "./ImageUploadField";
 import { MulticheckField } from "./MulticheckField";
@@ -37,6 +38,8 @@ export function FieldRenderer({ field, register, watch, control, readOnly }: Fie
       return <SelectField field={field as CRUDFieldSelect} control={control} />;
     case "color":
       return <ColorField field={field} register={register} watch={watch} />;
+    case "datetime":
+      return <DateTimeField field={field} control={control} readOnly={readOnly} />;
     case "range":
       return <RangeField field={field as CRUDFieldRange} register={register} watch={watch} />;
     case "multicheck":

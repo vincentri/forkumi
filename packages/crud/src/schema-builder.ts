@@ -30,6 +30,7 @@ function fieldToZod(field: CRUDField): z.ZodTypeAny {
       schema = z.boolean();
       break;
     case "date":
+    case "datetime":
       schema = z.coerce.date();
       break;
     case "email":
@@ -81,7 +82,7 @@ function fieldToZod(field: CRUDField): z.ZodTypeAny {
       return schema.optional();
     }
     // Allow empty string → undefined for non-required string fields
-    if (["text", "textarea", "richtext", "email", "url", "select", "password", "color", "image", "file"].includes(field.type)) {
+    if (["text", "textarea", "richtext", "email", "url", "select", "password", "color", "image", "file", "date", "datetime"].includes(field.type)) {
       return z
         .union([z.literal(""), z.null(), schema])
         .optional()

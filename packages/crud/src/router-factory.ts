@@ -184,11 +184,92 @@ function isFilterableField(field: CRUDField): boolean {
   return field.filterable !== false && field.type !== "password" && field.type !== "multicheck";
 }
 
+function buildWhere(config: CRUDConfig, filters?: Record<string, string | boolean | null>): Record<string, unknown> {
+  const andClauses: Record<string, unknown>[] = [];
+
+  if (filters) {
+    for (const [fieldName, value] of Object.entries(filters)) {
+      if (value === null || value === undefined) continue;
+      const field = config.fields.find((f) => f.name === fieldName);
+      if (!field || !isFilterableField(field)) continue;
+      if (field.type === "boolean") {
+        andClauses.push({ [fieldName]: value });
+      } else if (field.type === "select") {
+        andClauses.push({ [fieldName]: value });
+      } else if (field.type === "date" || field.type === "datetime") {
+        const [from, to] = String(value).split("|");
+        const clause: Record<string, unknown> = {};
+        if (from) clause.gte = new Date(from);
+        if (to) { const d = new Date(to); d.setHours(23, 59, 59, 999); clause.lte = d; }
+        if (Object.keys(clause).length) andClauses.push({ [fieldName]: clause });
+      } else if (field.type === "number" || field.type === "range") {
+        const numberValue = Number(value);
+        if (!Number.isNaN(numberValue)) andClauses.push({ [fieldName]: numberValue });
+      } else {
+        andClauses.push({ [fieldName]: { contains: String(value), mode: "insensitive" } });
+      }
+    }
+  }
+
+  return andClauses.length > 0 ? { AND: andClauses } : {};
+}
+
+function buildOrderBy(config: CRUDConfig, sortField?: string, sortDir?: "asc" | "desc"): Record<string, "asc" | "desc"> {
+  const validFieldNames = config.fields.map((f) => f.name);
+  const defaultField = config.defaultSortField ?? "createdAt";
+  const defaultDir = config.defaultSortDir ?? "desc";
+  return sortField && validFieldNames.includes(sortField)
+    ? { [sortField]: sortDir ?? "asc" }
+    : { [defaultField]: defaultDir };
+}
+
+function csvEscape(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  const text = value instanceof Date
+    ? value.toISOString()
+    : typeof value === "object"
+    ? JSON.stringify(value)
+    : String(value);
+  return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
+async function buildCsv(db: any, ctx: unknown, config: CRUDConfig, rows: Record<string, unknown>[]): Promise<string> {
+  const exportFields = config.fields.filter((field) => field.showInTable !== false && field.type !== "password");
+  const selectOptionMaps = Object.fromEntries(
+    await Promise.all(
+      exportFields
+        .filter((field): field is CRUDFieldSelect => field.type === "select")
+        .map(async (field) => {
+          const options = await resolveSelectOptions(db, ctx, field);
+          return [field.name, new Map(options.map((option) => [option.value, option.label]))] as const;
+        }),
+    ),
+  ) as Record<string, Map<string, string>>;
+
+  const header = exportFields.map((field) => csvEscape(field.label));
+  const body = rows.map((row) =>
+    exportFields.map((field) => {
+      const value = row[field.name];
+      if (field.type === "select") {
+        const raw = value == null ? "" : String(value);
+        return csvEscape(selectOptionMaps[field.name]?.get(raw) ?? raw);
+      }
+      if ((field.type === "date" || field.type === "datetime") && value) {
+        return csvEscape(new Date(value as string | Date).toISOString());
+      }
+      return csvEscape(value);
+    }).join(","),
+  );
+
+  return [header.join(","), ...body].join("\n");
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyProcedureBuilder = any;
 
 type ProcedureMap = {
   list?: AnyProcedureBuilder;
+  exportCsv?: AnyProcedureBuilder;
   getById?: AnyProcedureBuilder;
   create?: AnyProcedureBuilder;
   update?: AnyProcedureBuilder;
@@ -210,6 +291,7 @@ function normalizeProcedures(
     const map = p as ProcedureMap;
     return {
       list: map.list ?? fallback,
+      exportCsv: map.exportCsv ?? map.list ?? fallback,
       getById: map.getById ?? fallback,
       create: map.create ?? fallback,
       update: map.update ?? fallback,
@@ -217,7 +299,7 @@ function normalizeProcedures(
       bulkDelete: map.bulkDelete ?? fallback,
     };
   }
-  return { list: p, getById: p, create: p, update: p, delete: p, bulkDelete: p };
+  return { list: p, exportCsv: p, getById: p, create: p, update: p, delete: p, bulkDelete: p };
 }
 
 type AnyRouterBuilder = {
@@ -374,41 +456,8 @@ export function createCRUDRouter(
         const { page, pageSize, sortField, sortDir, filters } = input;
         const skip = (page - 1) * pageSize;
 
-        const andClauses: Record<string, unknown>[] = [];
-
-        if (filters) {
-          for (const [fieldName, value] of Object.entries(filters)) {
-            if (value === null || value === undefined) continue;
-            const field = config.fields.find((f) => f.name === fieldName);
-            if (!field || !isFilterableField(field)) continue;
-            if (field.type === "boolean") {
-              andClauses.push({ [fieldName]: value });
-            } else if (field.type === "select") {
-              andClauses.push({ [fieldName]: value });
-            } else if (field.type === "date") {
-              const [from, to] = String(value).split("|");
-              const clause: Record<string, unknown> = {};
-              if (from) clause.gte = new Date(from);
-              if (to) { const d = new Date(to); d.setHours(23, 59, 59, 999); clause.lte = d; }
-              if (Object.keys(clause).length) andClauses.push({ [fieldName]: clause });
-            } else if (field.type === "number" || field.type === "range") {
-              const numberValue = Number(value);
-              if (!Number.isNaN(numberValue)) andClauses.push({ [fieldName]: numberValue });
-            } else {
-              andClauses.push({ [fieldName]: { contains: String(value), mode: "insensitive" } });
-            }
-          }
-        }
-
-        const where = andClauses.length > 0 ? { AND: andClauses } : {};
-
-        const validFieldNames = config.fields.map((f) => f.name);
-        const defaultField = config.defaultSortField ?? "createdAt";
-        const defaultDir = config.defaultSortDir ?? "desc";
-        const orderBy =
-          sortField && validFieldNames.includes(sortField)
-            ? { [sortField]: sortDir ?? "asc" }
-            : { [defaultField]: defaultDir };
+        const where = buildWhere(config, filters);
+        const orderBy = buildOrderBy(config, sortField, sortDir);
 
         if (config.query?.list) {
           const result = await config.query.list({
@@ -432,6 +481,36 @@ export function createCRUDRouter(
         ]);
 
         return { items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
+      }),
+
+    exportCsv: procs.exportCsv
+      .input(
+        z.object({
+          sortField: z.string().optional(),
+          sortDir: z.enum(["asc", "desc"]).optional(),
+          filters: z.record(z.union([z.string(), z.boolean(), z.null()])).optional(),
+        }),
+      )
+      .mutation(async ({ input, ctx }: { input: { sortField?: string; sortDir?: "asc" | "desc"; filters?: Record<string, string | boolean | null> }; ctx?: unknown }) => {
+        const where = buildWhere(config, input.filters);
+        const orderBy = buildOrderBy(config, input.sortField, input.sortDir);
+        const rows = config.query?.list
+          ? (await config.query.list({
+              db,
+              ctx,
+              input: { page: 1, pageSize: Number.MAX_SAFE_INTEGER, sortField: input.sortField, sortDir: input.sortDir, filters: input.filters },
+              baseWhere: where,
+              orderBy,
+              skip: 0,
+              take: Number.MAX_SAFE_INTEGER,
+            })).items
+          : await db[model].findMany({ where, orderBy });
+        const csv = await buildCsv(db, ctx, config, rows);
+        const timestamp = new Date().toISOString().slice(0, 10);
+        return {
+          filename: `${config.model}-${timestamp}.csv`,
+          csv,
+        };
       }),
 
     options: procs.list.query(async ({ ctx }: { ctx?: unknown }) => {
@@ -459,7 +538,7 @@ export function createCRUDRouter(
   return routerFn({
     ...readOnlyRouter,
 
-    create: procs.create
+    ...(config.creatable === false ? {} : { create: procs.create
       .input(createSchema)
       .mutation(async ({ input }: { input: Record<string, unknown> }) => {
         if (config.maxRecords !== undefined) {
@@ -478,9 +557,9 @@ export function createCRUDRouter(
         } catch (err) {
           handlePrismaError(err);
         }
-      }),
+      }) }),
 
-    update: procs.update
+    ...(config.editable === false ? {} : { update: procs.update
       .input(z.object({ id: z.string(), data: updateSchema }))
       .mutation(async ({ input }: { input: { id: string; data: Record<string, unknown> } }) => {
         const updateData = applySlugFields(config.fields, input.data);
@@ -501,9 +580,9 @@ export function createCRUDRouter(
         } catch (err) {
           handlePrismaError(err);
         }
-      }),
+      }) }),
 
-    delete: procs.delete
+    ...(config.deletable === false ? {} : { delete: procs.delete
       .input(z.object({ id: z.string() }))
       .mutation(async ({ input }: { input: { id: string } }) => {
         try {
@@ -523,6 +602,6 @@ export function createCRUDRouter(
         } catch (err) {
           handlePrismaError(err);
         }
-      }),
+      }) }),
   });
 }

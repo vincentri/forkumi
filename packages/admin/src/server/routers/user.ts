@@ -6,11 +6,16 @@ import type { AdminDbAdapter } from "../adapters";
 import type { PasswordHasher } from "../../types";
 import { sha256 } from "../utils";
 
+interface UserRouterOptions {
+  sendInvitationEmail?: (args: { email: string; inviteUrl: string }) => Promise<void>;
+}
+
 export function createUserRouter(
   db: AdminDbAdapter,
   trpc: { router: any; permissionProcedure: (action: string, model?: string) => any },
   passwordHasher: PasswordHasher,
   appUrl?: string,
+  options?: UserRouterOptions,
 ) {
   const getAppUrl = () => appUrl ?? "http://localhost:3001";
 
@@ -242,6 +247,34 @@ export function createUserRouter(
       return { ok: true, inviteUrl: `${getAppUrl()}/auth/accept-invite?token=${rawToken}` };
     });
 
+  const sendInviteEmailProcedure = trpc.permissionProcedure("create", "user")
+    .input(z.object({
+      email: z.string().email(),
+      inviteUrl: z.string().url(),
+    }))
+    .mutation(async ({ input }: { input: any }) => {
+      if (!options?.sendInvitationEmail) {
+        throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Email delivery is not configured." });
+      }
+
+      const token = new URL(input.inviteUrl).searchParams.get("token");
+      if (!token) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Invitation URL is missing a token." });
+      }
+
+      const invitation = await db.userInvitation.findUnique({ where: { email: input.email } });
+      if (!invitation || invitation.acceptedAt || invitation.expiresAt < new Date()) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No active invitation exists for this email." });
+      }
+
+      if (invitation.token !== sha256(token)) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Invitation URL does not match the active invitation." });
+      }
+
+      await options.sendInvitationEmail({ email: input.email, inviteUrl: input.inviteUrl });
+      return { ok: true };
+    });
+
   const revokeInviteProcedure = trpc.permissionProcedure("delete", "user")
     .input(z.object({ email: z.string().email() }))
     .mutation(async ({ input }: { input: any }) => {
@@ -259,6 +292,7 @@ export function createUserRouter(
     delete: userDeleteProcedure,
     invite: inviteProcedure,
     resendInvite: resendInviteProcedure,
+    sendInviteEmail: sendInviteEmailProcedure,
     revokeInvite: revokeInviteProcedure,
   });
 }

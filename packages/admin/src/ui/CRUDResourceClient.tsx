@@ -23,8 +23,9 @@ function getErrorMessage(err: unknown): string {
 }
 
 type CRUDRouter = {
-  list: { useQuery: (input: QueryState) => { data: any; isLoading: boolean; isError: boolean; refetch: () => void } };
-  options?: { useQuery: (input?: undefined, opts?: { enabled?: boolean }) => { data?: Record<string, SelectOption[]>; isLoading: boolean; isError: boolean } };
+  list: { useQuery: (input: QueryState, opts?: { refetchOnMount?: "always" | boolean; gcTime?: number }) => { data: any; isLoading: boolean; isError: boolean; refetch: () => void } };
+  options?: { useQuery: (input?: undefined, opts?: { enabled?: boolean; refetchOnMount?: "always" | boolean; gcTime?: number }) => { data?: Record<string, SelectOption[]>; isLoading: boolean; isError: boolean; refetch: () => void } };
+  exportCsv?: { useMutation: () => { mutateAsync: (input: Pick<QueryState, "sortField" | "sortDir" | "filters">) => Promise<{ filename: string; csv: string }> } };
   create?: { useMutation: (opts: { onSuccess: () => void }) => { mutateAsync: (data: Record<string, unknown>) => Promise<unknown> } };
   update?: { useMutation: (opts: { onSuccess: () => void }) => { mutateAsync: (input: { id: string; data: Record<string, unknown> }) => Promise<unknown> } };
   delete?: { useMutation: (opts: { onSuccess: () => void }) => { mutateAsync: (input: { id: string }) => Promise<unknown> } };
@@ -166,6 +167,9 @@ function InviteLinkModal({ email, open, onClose }: { email: string; open: boolea
   const [error, setError] = useState("");
 
   const mutation = (api.admin as any).user.resendInvite.useMutation();
+  const sendInviteEmailMutation = (api.admin as any).user.sendInviteEmail.useMutation();
+  const emailSettingsQuery = (api.admin as any).emailSettings.get.useQuery(undefined, { enabled: open });
+  const emailDeliveryEnabled = emailSettingsQuery?.data?.enabled === true;
 
   async function handleGenerate() {
     setError("");
@@ -182,6 +186,16 @@ function InviteLinkModal({ email, open, onClose }: { email: string; open: boolea
     await navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleSendInviteEmail() {
+    if (!inviteUrl) return;
+    try {
+      await sendInviteEmailMutation.mutateAsync({ email, inviteUrl });
+      toast.success(`Invitation email sent to ${email}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
   }
 
   function handleClose() {
@@ -228,7 +242,16 @@ function InviteLinkModal({ email, open, onClose }: { email: string; open: boolea
               <p className="text-xs text-muted-foreground">
                 Expires in 7 days.
               </p>
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
+                {emailDeliveryEnabled && (
+                  <Button
+                    type="button"
+                    onClick={handleSendInviteEmail}
+                    disabled={sendInviteEmailMutation.isPending}
+                  >
+                    {sendInviteEmailMutation.isPending ? "Sending..." : "Send email invitation"}
+                  </Button>
+                )}
                 <Button type="button" variant="outline" onClick={handleClose}>Done</Button>
               </div>
             </>
@@ -244,6 +267,18 @@ function InviteLinkModal({ email, open, onClose }: { email: string; open: boolea
       </DialogContent>
     </Dialog>
   );
+}
+
+function downloadCsv(filename: string, csv: string) {
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 function KeyValueResourceInner({ config, m, permissions, isProtectedRole }: { config: CRUDConfig; m: any; permissions: string[]; isProtectedRole: boolean }) {
@@ -294,17 +329,25 @@ function CRUDResourceInner({ config, m, permissions, isProtectedRole, currentUse
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [inviteLinkRow, setInviteLinkRow] = useState<Record<string, unknown> | null>(null);
 
-  const { data, isLoading, isError, refetch } = m.list.useQuery(query);
+  const { data, isLoading, isError, refetch } = m.list.useQuery(query, {
+    refetchOnMount: "always",
+    gcTime: 0,
+  });
 
   const createMutation = m.create?.useMutation({ onSuccess: () => refetch() });
   const updateMutation = m.update?.useMutation({ onSuccess: () => refetch() });
   const deleteMutation = m.delete?.useMutation({ onSuccess: () => refetch() });
   const bulkDeleteMutation = m.bulkDelete?.useMutation({ onSuccess: () => refetch() });
+  const exportCsvMutation = m.exportCsv?.useMutation();
   const revokeInviteMutation = config.model === "user" ? (api.admin as any).user.revokeInvite.useMutation({ onSuccess: () => refetch() }) : null;
   const shouldLoadOptions = config.fields.some(
     (field) => field.type === "select" && Boolean(field.optionsFrom || field.hasDynamicOptions),
   );
-  const optionsQuery = m.options?.useQuery(undefined, { enabled: shouldLoadOptions });
+  const optionsQuery = m.options?.useQuery(undefined, {
+    enabled: shouldLoadOptions,
+    refetchOnMount: "always",
+    gcTime: 0,
+  });
 
   const runtimeConfig = useMemo<CRUDConfig>(() => {
     const dynamicOptions = optionsQuery?.data;
@@ -321,6 +364,8 @@ function CRUDResourceInner({ config, m, permissions, isProtectedRole, currentUse
   }, [config, optionsQuery?.data]);
 
   const isReadOnly = config.readOnly === true;
+  const isCreatable = config.creatable !== false;
+  const isEditable = config.editable !== false;
   const isDeletable = config.deletable !== false;
 
   const hasPermission = (action: string) =>
@@ -413,7 +458,19 @@ function CRUDResourceInner({ config, m, permissions, isProtectedRole, currentUse
       rowActionLabel="Invite link"
       rowActionVisible={rowActionVisible}
       onDuplicate={duplicateHandler}
-      onCreate={!isReadOnly && canCreate && createMutation && config.model !== "user"
+      onExportCsv={exportCsvMutation
+        ? async (state) => {
+            try {
+              const result = await exportCsvMutation.mutateAsync(state);
+              downloadCsv(result.filename, result.csv);
+              toast.success("CSV exported");
+            } catch (err) {
+              toast.error(getErrorMessage(err));
+              throw err;
+            }
+          }
+        : undefined}
+      onCreate={!isReadOnly && isCreatable && canCreate && createMutation && config.model !== "user"
         ? async (data) => {
             try {
               const result = await createMutation.mutateAsync(data);
@@ -425,7 +482,7 @@ function CRUDResourceInner({ config, m, permissions, isProtectedRole, currentUse
             }
           }
         : undefined}
-      onUpdate={!isReadOnly && canUpdate && updateMutation
+      onUpdate={!isReadOnly && isEditable && canUpdate && updateMutation
         ? async (id, data) => {
             try {
               await updateMutation.mutateAsync({ id, data });

@@ -19,37 +19,46 @@
 //   pageSize: 20,                 // optional — rows per page (default: 20)
 //   defaultSortField: "createdAt",// optional — column to sort by on first load
 //   defaultSortDir: "desc",       // optional — "asc" | "desc"
-//   // --- Create/Edit form layout (optional) ---
+//   // --- Create/Edit form layout and tabs (optional) ---
 //   // Omit formLayout to keep the default single-column form.
+//   // Add `tab: "Tab name"` to fields below to split normal CRUD create/edit forms into tabs.
+//   // CRUD tabs share one form state and validate the full record before saving.
+//   // If an error is in another tab, the form switches to that tab and marks the tab with an error count.
 //   // Layout references field names from fields[] below. Missing field names are ignored.
 //   // Fields not referenced here are appended after the configured sections in their original order.
 //   formLayout: [
 //     {
-//       section: "Meta",
+//       // Fields without `tab` belong to the "General" tab.
+//       section: "General",
 //       columns: [
 //         {
+//           // Optional: relative column width. Here left:right is 3:2 on md+ screens.
+//           weight: 3,
 //           rows: [
 //             ["slug"],
 //             ["title", "tags"],
 //           ],
 //         },
 //         {
+//           weight: 2,
 //           rows: [["categoryId"]],
 //         },
 //       ],
 //     },
 //     {
 //       section: "Content",
+//       // This section only appears in the "Content" tab because `body` has tab: "Content".
 //       rows: [
-//         ["description"],
 //         ["body"],
 //       ],
 //     },
 //     {
-//       section: "Publishing",
+//       section: "SEO",
+//       // This section only appears in the "SEO" tab because these fields have tab: "SEO".
 //       rows: [
-//         ["status", "published"],
-//         [{ field: "publishedAt", span: 2 }],
+//         ["description"],
+//         ["metaTitle"],
+//         ["metaKeywords"],
 //       ],
 //     },
 //   ],
@@ -59,6 +68,11 @@
 //   // onDelete: "setNull" clears the referencing field before deletion.
 //   // onDelete: "setValue" moves related rows to a fallback id/value before deletion.
 //   // onDelete: "ignore" leaves existing values untouched.
+//   // Important: align this with Prisma relation behavior.
+//   // - To block category deletion while posts use it, use deletePolicy restrict
+//   //   and avoid `onDelete: SetNull` on the Prisma relation.
+//   // - To allow deletion and clear references, use Prisma `onDelete: SetNull`
+//   //   or deletePolicy setNull.
 //   deletePolicy: [
 //     {
 //       referencingModel: "post",
@@ -74,8 +88,10 @@
 //     // --- Text fields ---
 //     // Fields are filterable by default. Set filterable: false to hide the table filter and block server filtering.
 //     { name: "title",       type: "text",      label: "Title",       required: true, note: "Used as the page title." },
-//     { name: "description", type: "textarea",  label: "Description", note: "Short summary shown in listings." },
-//     { name: "body",        type: "richtext",  label: "Body",        filterable: false },
+//     { name: "description", type: "textarea",  label: "Meta Description", tab: "SEO", showInTable: false, note: "Short summary shown in listings." },
+//     { name: "metaTitle",   type: "text",      label: "Meta Title", tab: "SEO", showInTable: false },
+//     { name: "metaKeywords", type: "text",     label: "Meta Keywords", tab: "SEO", showInTable: false },
+//     { name: "body",        type: "richtext",  label: "Body",        tab: "Content", filterable: false },
 //     { name: "email",       type: "email",     label: "Email",       required: true, unique: true },
 //     { name: "website",     type: "url",       label: "Website",     note: "Include https://" },
 //     { name: "password",    type: "password",  label: "Password",    required: true },
@@ -102,13 +118,13 @@
 //       ],
 //     },
 //
-//     // --- Dynamic select from another table ---
-//     // Stores categoryId, but create/update forms, table cells, and filters can show the category name.
+//     // --- Dynamic select from another table / relation field ---
+//     // Stores categoryId, while create/update forms, table cells, and filters show the category label.
+//     // For optional relations, leave `required` off. The form will include a "None" option.
 //     {
 //       name: "categoryId",
 //       type: "select",
 //       label: "Category",
-//       required: true,
 //       optionsFrom: {
 //         model: "category",
 //         valueField: "id",
@@ -173,8 +189,12 @@
 //     { name: "published", type: "boolean", label: "Published", default: false },
 //     { name: "featured",  type: "boolean", label: "Featured" },
 //
-//     // --- Date (shows a per-field from/to date range filter by default) ---
+//     // --- Date / datetime (show a per-field from/to date range filter by default) ---
 //     { name: "publishedAt", type: "date", label: "Publish Date" },
+//     // `datetime` renders a date-time picker. The browser submits local time,
+//     // which is converted to a JS Date and stored by Prisma as UTC.
+//     // `default: "now"` pre-fills create forms with the current date/time.
+//     { name: "scheduledAt", type: "datetime", label: "Scheduled At", default: "now" },
 //   ],
 //   // --- Custom list query escape hatch (optional) ---
 //   // Only use when field-level optionsFrom/optionsQuery are not enough,

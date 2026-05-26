@@ -53,6 +53,7 @@ No tests for tRPC routers or Next.js pages — those are verified by the build c
 - **Password hashing**: The `createUserRouter` in `@repo/admin/server` handles hashing via the injected `passwordHasher`. When overriding, hash on BOTH create and update.
 - **Role assignment guard**: Before writing `roleId`, always check `targetRole.protected`. Block unless caller `isProtectedRole`. Prevents privilege escalation via assign-role.
 - **CORS Vary header**: Dynamic `Access-Control-Allow-Origin` (per-origin allowlist) requires `Vary: Origin` on every response. Without it, CDNs serve one origin's cached headers to others. See `apps/api/src/middleware.ts`.
+- **Web validation messages**: Public web UI must render human-readable validation errors. Do not show raw Zod/tRPC issue arrays, JSON, stack traces, or machine codes to users.
 
 ## Conventions
 

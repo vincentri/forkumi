@@ -1,5 +1,6 @@
 import Navbar from "~/components/layout/NavbarServer";
 import Footer from "~/components/layout/Footer";
+import { NewsletterSubscribeForm } from "~/components/newsletter/NewsletterSubscribeForm";
 
 export default async function Home() {
   return (
@@ -14,6 +15,7 @@ export default async function Home() {
           <p className="mt-6 max-w-2xl text-base leading-8 text-slate-600">
             This is a clean starter homepage. Add custom pages and blog posts from the admin panel to shape the public site.
           </p>
+          <NewsletterSubscribeForm />
         </section>
       </main>
       <Footer />

@@ -85,28 +85,47 @@ model Settings {
 // }
 
 model Blog {
-  id        String   @id @default(cuid())
-  slug      String
-  title     String
-  description String
-  content   String
-  image     String?
-  status    String @default("draft")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
+  id              String    @id @default(cuid())
+  slug            String
+  title           String
+  description     String
+  content         String
+  image           String?
+  blogCategoryId  String?   @map("blog_category_id")
+  blogCategory    BlogCategory? @relation(fields: [blogCategoryId], references: [id], onDelete: SetNull)
+  metaTitle       String?   @map("meta_title")
+  metaDescription String?   @map("meta_description")
+  metaKeywords    String?   @map("meta_keywords")
+  publishedAt     DateTime? @map("published_at")
+  status          String    @default("draft")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt     @map("updated_at")
 
   @@map("blogs")
 }
 
 model BlogCategory {
+  id              String   @id @default(cuid())
+  slug            String
+  title           String
+  metaTitle       String?  @map("meta_title")
+  metaDescription String?  @map("meta_description")
+  metaKeywords    String?  @map("meta_keywords")
+  status          String   @default("draft")
+  blogs           Blog[]
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt     @map("updated_at")
+
+  @@map("blog_categories")
+}
+
+model NewsletterSubscriber {
   id        String   @id @default(cuid())
-  slug      String
-  title     String
-  status    String @default("draft")
+  email     String   @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt     @map("updated_at")
 
-  @@map("blog_categories")
+  @@map("newsletter_subscribers")
 }
 
 model Page {

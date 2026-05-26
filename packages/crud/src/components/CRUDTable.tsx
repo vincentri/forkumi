@@ -133,7 +133,7 @@ function FilterCell({
     );
   }
 
-  if (field.type === "date") {
+  if (field.type === "date" || field.type === "datetime") {
     const parts = typeof value === "string" ? value.split("|") : ["", ""];
     const from = parts[0] ?? "";
     const to = parts[1] ?? "";
@@ -317,7 +317,7 @@ export function CRUDTable({
           );
         }
 
-        if (field.type === "date" && value != null) {
+        if ((field.type === "date" || field.type === "datetime") && value != null) {
           return new Date(value as string).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
         }
 

@@ -55,10 +55,11 @@ export function proxy(request: NextRequest) {
     const response = new NextResponse(null, { status: 204 });
     response.headers.set("Vary", "Origin");
     if (isAllowed) {
+      const requestedHeaders = request.headers.get("access-control-request-headers");
       response.headers.set("Access-Control-Allow-Origin", origin);
       response.headers.set("Access-Control-Allow-Credentials", "true");
       response.headers.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-      response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      response.headers.set("Access-Control-Allow-Headers", requestedHeaders ?? "Content-Type, Authorization");
     }
     return response;
   }

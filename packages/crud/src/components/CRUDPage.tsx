@@ -41,6 +41,7 @@ interface CRUDPageProps {
   onUpdate?: (id: string, data: Record<string, unknown>) => Promise<void>;
   onDelete?: (id: string, row: Record<string, unknown>) => Promise<void>;
   onBulkDelete?: (ids: string[]) => Promise<void>;
+  onExportCsv?: (state: Pick<QueryState, "sortField" | "sortDir" | "filters">) => Promise<void>;
   /** Custom row-level action (e.g., "Assign Role"). Rendered as an additional button in the Actions column. */
   onRowAction?: (row: Record<string, unknown>) => void;
   /** Label for the custom row action button. Defaults to "Action". */
@@ -108,6 +109,7 @@ export function CRUDPage({
   onUpdate,
   onDelete,
   onBulkDelete,
+  onExportCsv,
   onRowAction,
   rowActionLabel,
   rowActionVisible,
@@ -131,6 +133,7 @@ export function CRUDPage({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [bulkDeleteError, setBulkDeleteError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   function updateQuery(patch: Partial<QueryState>) {
     const next: QueryState = {
@@ -227,10 +230,30 @@ export function CRUDPage({
     }
   }
 
+  async function handleExportCsv() {
+    if (!onExportCsv) return;
+    setIsExporting(true);
+    try {
+      await onExportCsv({
+        sortField,
+        sortDir,
+        filters: Object.keys(filters).length ? filters : undefined,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   const singularLabel = config.label.replace(/s$/, "");
   const activeFilterCount = Object.keys(filters).length;
   const showCheckboxes = !!(onDelete && config.deletable !== false && onBulkDelete);
   const atMaxRecords = config.maxRecords !== undefined && (listData?.total ?? 0) >= config.maxRecords;
+  const hasColumnLayout = config.formLayout?.some((section) => (section.columns?.length ?? 0) > 1) ?? false;
+  const dialogWidthClass = hasColumnLayout
+    ? "max-w-[calc(100vw-2rem)] sm:max-w-2xl md:max-w-5xl"
+    : config.fields.some((f) => f.type === "multicheck")
+    ? "max-w-3xl"
+    : "max-w-2xl";
 
   return (
     <div className="space-y-4">
@@ -239,6 +262,11 @@ export function CRUDPage({
         <h1 className="text-xl font-semibold">{config.label}</h1>
         <div className="flex items-center gap-2">
           {extraHeaderActions}
+          {onExportCsv && (
+            <Button type="button" variant="outline" onClick={handleExportCsv} disabled={isExporting}>
+              {isExporting ? "Exporting..." : "Export CSV"}
+            </Button>
+          )}
           {onCreate && !atMaxRecords && (
             <Button onClick={() => { setModal({ type: "create" }); setMutationError(null); }}>
               + New {singularLabel}
@@ -374,7 +402,7 @@ export function CRUDPage({
           if (!open) { setModal({ type: "closed" }); setMutationError(null); }
         }}
       >
-        <DialogContent className={`flex flex-col max-h-[90vh] ${config.fields.some((f) => f.type === "multicheck") ? "max-w-3xl" : "max-w-2xl"}`}>
+        <DialogContent className={`flex flex-col max-h-[90vh] ${dialogWidthClass}`}>
           {(() => {
             const isProtectedRow = modal.type === "edit" && Boolean(modal.row.protected);
             return (

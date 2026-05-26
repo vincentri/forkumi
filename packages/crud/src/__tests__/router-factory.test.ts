@@ -173,6 +173,56 @@ describe("createCRUDRouter field filters", () => {
   });
 });
 
+describe("createCRUDRouter exportCsv", () => {
+  it("exports filtered rows without pagination and omits password fields", async () => {
+    const capturedArgs: unknown[] = [];
+    const mockPrisma = {
+      user: {
+        findMany: (args: unknown) => {
+          capturedArgs.push(args);
+          return [
+            { email: "a@example.com", role: "admin", password: "secret" },
+            { email: "b@example.com", role: "user", password: "secret" },
+          ];
+        },
+      },
+    };
+
+    const config: CRUDConfig = {
+      model: "user",
+      label: "Users",
+      fields: [
+        { name: "email", type: "email", label: "Email", required: true },
+        {
+          name: "role",
+          type: "select",
+          label: "Role",
+          options: [
+            { label: "Admin", value: "admin" },
+            { label: "User", value: "user" },
+          ],
+        },
+        { name: "password", type: "password", label: "Password", required: true },
+      ],
+    };
+
+    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const result = await (routerResult as any).exportCsv._mutationFn({
+      input: {
+        sortField: "email",
+        sortDir: "asc",
+        filters: { email: "example" },
+      },
+    });
+
+    expect(capturedArgs[0]).toEqual({
+      where: { AND: [{ email: { contains: "example", mode: "insensitive" } }] },
+      orderBy: { email: "asc" },
+    });
+    expect(result.csv).toBe("Email,Role\na@example.com,Admin\nb@example.com,User");
+  });
+});
+
 describe("createCRUDRouter deletePolicy", () => {
   function makeDeletePolicyConfig(deletePolicy: CRUDConfig["deletePolicy"]): CRUDConfig {
     return {

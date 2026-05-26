@@ -1,6 +1,7 @@
 import { prisma } from "@repo/db";
 import { buildCRUDRouters, z } from "@repo/crud";
 import { router, publicProcedure, permissionProcedure } from "./trpc";
+import { TRPCError } from "@trpc/server";
 import * as CRUDConfigs from "~/crud";
 import { userRouter } from "./routers/user";
 import { roleCreateProcedure, roleUpdateProcedure, roleDeleteProcedure } from "./routers/role";
@@ -113,6 +114,23 @@ export const appRouter = router({
           },
         });
         return Object.fromEntries(rows.map((r) => [r.key, r.value ?? ""]));
+      }),
+    subscribeNewsletter: publicProcedure
+      .input(z.object({ email: z.string().trim().email("Enter a valid email address.") }))
+      .mutation(async ({ input }) => {
+        const email = input.email.toLowerCase();
+        try {
+          await prisma.newsletterSubscriber.create({ data: { email } });
+          return { ok: true };
+        } catch (err) {
+          if (err && typeof err === "object" && "code" in err && (err as { code: string }).code === "P2002") {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "This email is already subscribed.",
+            });
+          }
+          throw err;
+        }
       }),
     getPages: publicProcedure.query(() =>
       db.page.findMany({

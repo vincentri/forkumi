@@ -132,6 +132,7 @@ export function AccountClient({ initialEmail, initialName }: AccountClientProps)
                   required: "Current password is required",
                 })}
                 autoComplete="current-password"
+                placeholder="Your current password"
                 disabled={isPasswordSaving}
                 aria-invalid={!!passwordErrors.currentPassword}
               />
@@ -152,6 +153,7 @@ export function AccountClient({ initialEmail, initialName }: AccountClientProps)
                     "New password must be different from current password",
                 })}
                 autoComplete="new-password"
+                placeholder="Your new password"
                 disabled={isPasswordSaving}
                 aria-invalid={!!passwordErrors.newPassword}
               />
@@ -169,6 +171,7 @@ export function AccountClient({ initialEmail, initialName }: AccountClientProps)
                   validate: (value) => value === newPassword || "New passwords do not match",
                 })}
                 autoComplete="new-password"
+                placeholder="Confirm your new password"
                 disabled={isPasswordSaving}
                 aria-invalid={!!passwordErrors.confirmPassword}
               />

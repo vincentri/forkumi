@@ -52,6 +52,7 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
   const [serverError, setServerError] = useState("");
   const [roleId, setRoleId] = useState<string>("");
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [inviteEmail, setInviteEmail] = useState<string>("");
   const [copied, setCopied] = useState(false);
 
   const {
@@ -63,23 +64,28 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
 
   const rolesQuery = (api.admin as any).role.list.useQuery({ page: 1, pageSize: 100 }, { enabled: open });
   const roles: Array<{ id: string; name: string }> = rolesQuery.data?.items ?? [];
+  const emailSettingsQuery = (api.admin as any).emailSettings.get.useQuery(undefined, { enabled: open });
+  const emailDeliveryEnabled = emailSettingsQuery?.data?.enabled === true;
 
   const mutation = (api.admin as any).user.invite.useMutation();
+  const sendInviteEmailMutation = (api.admin as any).user.sendInviteEmail.useMutation();
 
   function handleClose() {
     reset();
     setServerError("");
     setRoleId("");
     setInviteUrl(null);
+    setInviteEmail("");
     setCopied(false);
     onClose();
   }
 
-  async function onSubmit(data: FormData) {
+  async function createInvite(data: FormData) {
     setServerError("");
     try {
       const result = await mutation.mutateAsync({ email: data.email, roleId: roleId || undefined });
       setInviteUrl(result.inviteUrl);
+      setInviteEmail(data.email);
       toast.success(`Invite created for ${data.email}`);
       onSuccess?.();
     } catch (err) {
@@ -87,11 +93,25 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
     }
   }
 
+  async function onSubmit(data: FormData) {
+    await createInvite(data);
+  }
+
   async function handleCopy() {
     if (!inviteUrl) return;
     await navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleSendInviteEmail() {
+    if (!inviteUrl || !inviteEmail) return;
+    try {
+      await sendInviteEmailMutation.mutateAsync({ email: inviteEmail, inviteUrl });
+      toast.success(`Invitation email sent to ${inviteEmail}`);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    }
   }
 
   return (
@@ -131,7 +151,16 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
             <p className="text-xs text-muted-foreground">
               This link expires in 7 days. Share it with the user — they will set their own password on sign-up.
             </p>
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+              {emailDeliveryEnabled && (
+                <Button
+                  type="button"
+                  onClick={handleSendInviteEmail}
+                  disabled={sendInviteEmailMutation.isPending}
+                >
+                  {sendInviteEmailMutation.isPending ? "Sending..." : "Send email invitation"}
+                </Button>
+              )}
               <Button type="button" variant="outline" onClick={handleClose}>
                 Done
               </Button>

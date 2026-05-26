@@ -5,6 +5,7 @@ export type FieldType =
   | "number"
   | "boolean"
   | "date"
+  | "datetime"
   | "email"
   | "url"
   | "select"
@@ -110,6 +111,8 @@ export type CRUDFormLayoutItem =
     };
 
 export interface CRUDFormLayoutColumn {
+  /** Relative width for this column in a multi-column layout. Defaults to 1. */
+  weight?: 1 | 2 | 3 | 4;
   rows: CRUDFormLayoutItem[][];
 }
 
@@ -139,7 +142,7 @@ interface CRUDFieldBase {
   showInForm?: boolean;
   /** Allow clicking column header to sort? Default: true */
   sortable?: boolean;
-  /** Tab group label for keyValue mode */
+  /** Tab group label for keyValue settings and CRUD create/edit forms */
   tab?: string;
   /** Namespace stored as a DB column on keyValue rows — enables filtered queries */
   namespace?: string;
@@ -246,6 +249,14 @@ export interface CRUDConfig {
   defaultSortField?: string;
   /** Default sort direction. Defaults to "desc". */
   defaultSortDir?: "asc" | "desc";
+  /**
+   * Whether rows can be created from the admin UI/API. Default: true.
+   */
+  creatable?: boolean;
+  /**
+   * Whether rows can be edited from the admin UI/API. Default: true.
+   */
+  editable?: boolean;
   /**
    * Whether rows can be deleted. Default: true.
    * When false, the Delete button is hidden in CRUDTable and onDelete is not passed to CRUDPage.

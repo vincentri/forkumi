@@ -11,5 +11,6 @@ export { RoleCRUD } from "./role";
 export { SettingsCRUD } from "./settings";
 export { BlogCRUD } from "./blog";
 export { BlogCategoryCRUD } from "./blogCategory";
+export { NewsletterSubscriberCRUD } from "./newsletterSubscriber";
 export { PageCRUD } from "./page";
 export { FrontPageSettingsCRUD } from "./frontPageSetting";
