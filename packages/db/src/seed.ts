@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { DEFAULT_BRANDING_SETTINGS, DEFAULT_FRONT_PAGE_SETTINGS } from "./default-assets";
 
 const prisma = new PrismaClient();
 
@@ -16,25 +17,6 @@ type FrontPageSettingsDelegate = {
     create: FrontPageSettingSeed;
   }) => Promise<unknown>;
 };
-
-const DEFAULT_BRANDING_SETTINGS = [
-  { key: "brandingAppName", value: "Quantyx" },
-  { key: "brandingLogoLightUrl", value: "/defaults/admin/default-logo-light.png" },
-  { key: "brandingLogoDarkUrl", value: "/defaults/admin/default-logo-dark.png" },
-  { key: "brandingFaviconUrl", value: "/defaults/admin/default-favicon.png" },
-  { key: "brandingLoginTitle", value: "Quantyx Framework" },
-  { key: "brandingLoginSubtitle", value: "One platform for all your projects" },
-];
-
-const DEFAULT_FRONT_PAGE_SETTINGS = [
-  { key: "logo", value: "/defaults/admin/default-logo-light.png", namespace: "general" },
-  { key: "favicon", value: "/defaults/admin/default-favicon.png", namespace: "general" },
-  { key: "meta_title", value: "Quantyx", namespace: "seo" },
-  { key: "meta_description", value: "Quantyx is a framework for fullstack development", namespace: "seo" },
-  { key: "meta_keywords", value: "Quantyx, framework, fullstack, development", namespace: "seo" },
-  { key: "headerScript", value: "", namespace: "scripts" },
-  { key: "footerScript", value: "", namespace: "scripts" },
-];
 
 async function main() {
   console.log("Quantyx — seeding database...");

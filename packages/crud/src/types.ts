@@ -69,6 +69,18 @@ export interface CRUDQueryHooks {
   }>;
 }
 
+export interface CRUDAssetReplacementContext {
+  model: string;
+  id?: string;
+  field: CRUDFieldImage | CRUDFieldFile;
+  oldValue: string;
+  newValue: string | null;
+}
+
+export interface CRUDRouterOptions {
+  onAssetReplaced?: (args: CRUDAssetReplacementContext) => Promise<void> | void;
+}
+
 export type CRUDDeletePolicyAction = "restrict" | "setNull" | "setValue" | "ignore";
 
 export interface CRUDDeletePolicy {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { defineCRUD } from "../define";
+import type { CRUDFieldRange } from "../types";
 
 describe("defineCRUD", () => {
   it("applies default showInTable: true for non-password fields", () => {
@@ -44,9 +45,10 @@ describe("defineCRUD", () => {
       label: "Posts",
       fields: [{ name: "score", type: "range", label: "Score" }],
     });
-    expect(config.fields[0]!.min).toBe(0);
-    expect(config.fields[0]!.max).toBe(100);
-    expect(config.fields[0]!.step).toBe(1);
+    const field = config.fields[0]! as CRUDFieldRange;
+    expect(field.min).toBe(0);
+    expect(field.max).toBe(100);
+    expect(field.step).toBe(1);
   });
 
   it("respects explicit range overrides", () => {
@@ -55,9 +57,10 @@ describe("defineCRUD", () => {
       label: "Posts",
       fields: [{ name: "score", type: "range", label: "Score", min: 1, max: 10, step: 0.5 }],
     });
-    expect(config.fields[0]!.min).toBe(1);
-    expect(config.fields[0]!.max).toBe(10);
-    expect(config.fields[0]!.step).toBe(0.5);
+    const field = config.fields[0]! as CRUDFieldRange;
+    expect(field.min).toBe(1);
+    expect(field.max).toBe(10);
+    expect(field.step).toBe(0.5);
   });
 
   it("defaults required: false", () => {

@@ -14,7 +14,15 @@ export default function Navbar({ logo, pages = [] }: { logo?: string; pages?: Pi
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" className="inline-flex items-center">
-          <Image src={logoSrc} alt="Site logo" width={140} height={44} className="h-9 w-auto object-contain" priority />
+          <Image
+            src={logoSrc}
+            alt="Site logo"
+            width={140}
+            height={44}
+            className="h-9 w-auto object-contain"
+            loading="eager"
+            fetchPriority="high"
+          />
         </Link>
         <nav className="flex items-center gap-5 text-sm text-slate-600">
           <Link href="/blog" className="transition hover:text-slate-950">Blog</Link>

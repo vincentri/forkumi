@@ -35,6 +35,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  resolveAssetUrl,
 } from "@repo/ui";
 import type { CRUDConfig, CRUDField, CRUDFieldSelect } from "../types";
 
@@ -298,10 +299,11 @@ export function CRUDTable({
         }
 
         if (field.type === "image" && typeof value === "string") {
+          const src = resolveAssetUrl(value);
           return (
             <span className="inline-block h-8 w-8 rounded border border-border overflow-hidden bg-muted">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={value} alt="" className="h-full w-full object-contain" />
+              {src ? <img src={src} alt="" className="h-full w-full object-contain" /> : null}
             </span>
           );
         }

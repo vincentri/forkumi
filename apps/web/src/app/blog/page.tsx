@@ -2,6 +2,7 @@ import Link from "next/link";
 import Navbar from "~/components/layout/NavbarServer";
 import Footer from "~/components/layout/Footer";
 import { getBlogPostsPaginated } from "~/lib/trpc/server";
+import { resolveApiPublicUrl } from "~/lib/public-url";
 
 const PER_PAGE = 9;
 
@@ -27,12 +28,13 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {posts.map((post) => {
                 const date = post.createdAt.toLocaleDateString("en", { day: "numeric", month: "long", year: "numeric" });
+                const imageSrc = resolveApiPublicUrl(post.image);
                 return (
                   <Link key={post.id} href={`/blog/${post.slug}`} className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white">
                     <div className="aspect-[4/3] bg-slate-100">
-                      {post.image && (
+                      {imageSrc && (
                         <img
-                          src={post.image}
+                          src={imageSrc}
                           alt={post.title}
                           className="h-full w-full object-cover"
                         />

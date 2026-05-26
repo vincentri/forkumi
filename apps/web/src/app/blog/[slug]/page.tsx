@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getBlogPostBySlug, getRelatedBlogPosts } from "~/lib/trpc/server";
 import Navbar from "~/components/layout/NavbarServer";
 import Footer from "~/components/layout/Footer";
+import { resolveApiPublicUrl } from "~/lib/public-url";
 
 export const dynamicParams = true;
 
@@ -17,6 +18,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   const related = await getRelatedBlogPosts(slug);
   const date = post.createdAt.toLocaleDateString("en", { day: "numeric", month: "long", year: "numeric" });
+  const imageSrc = resolveApiPublicUrl(post.image);
 
   return (
     <>
@@ -28,8 +30,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </Link>
           <p className="mt-10 text-sm text-slate-400">{date}</p>
           <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 md:text-5xl">{post.title}</h1>
-          {post.image && (
-            <img src={post.image} alt={post.title} className="mt-10 aspect-[16/9] w-full rounded-2xl object-cover" />
+          {imageSrc && (
+            <img src={imageSrc} alt={post.title} className="mt-10 aspect-[16/9] w-full rounded-2xl object-cover" />
           )}
           <div
             className="prose prose-slate mt-10 max-w-none"

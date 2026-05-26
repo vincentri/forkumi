@@ -36,6 +36,18 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
     notFound();
   }
 
+  const session = await getServerAuthSession();
+  const permissions: string[] = session?.user?.permissions ?? [];
+  const isProtectedRole: boolean = session?.user?.isProtectedRole ?? false;
+  const canViewResource =
+    isProtectedRole ||
+    permissions.includes(`${config.model}:view`) ||
+    permissions.includes("*:view");
+
+  if (!canViewResource) {
+    notFound();
+  }
+
   // Inject role options into UserCRUD.roleId field so it has up-to-date options at render time.
   if (config.model === "user") {
     const roles = await prisma.role.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } });
@@ -65,9 +77,6 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
     };
   }
 
-  const session = await getServerAuthSession();
-  const permissions: string[] = session?.user?.permissions ?? [];
-  const isProtectedRole: boolean = session?.user?.isProtectedRole ?? false;
   const currentUserEmail: string = session?.user?.email ?? "";
 
   return <CRUDResourceClient config={toClientCRUDConfig(config)} permissions={permissions} isProtectedRole={isProtectedRole} currentUserEmail={currentUserEmail} />;

@@ -42,6 +42,7 @@ rl.question(
     try {
       execSync("pnpm --filter @repo/db db:reset", { stdio: "inherit" });
       execSync("pnpm --filter @repo/db db:seed", { stdio: "inherit" });
+      execSync("pnpm --filter api assets:upload-defaults", { stdio: "inherit" });
     } catch (err) {
       console.error("\nReset failed.");
       console.error(databaseHint());

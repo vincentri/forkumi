@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { isManagedAssetPath, resolveAssetUrl } from "../lib/asset-url";
 import { cn } from "../lib/utils";
 
 export interface ImageUploadProps {
@@ -14,12 +15,29 @@ export interface ImageUploadProps {
   className?: string;
 }
 
-const ACCEPT_IMAGES = "image/jpeg,image/png,image/gif,image/webp,image/svg+xml";
+const ACCEPT_IMAGES = "image/jpeg,image/png,image/gif,image/webp";
 type ImageMode = "upload" | "url";
+
+function isExternalImageUrl(value: string | null | undefined): boolean {
+  if (!value) return false;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedImageReference(value: string): boolean {
+  if (isManagedAssetPath(value)) return true;
+
+  return isExternalImageUrl(value);
+}
 
 const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
   ({ value, uploadUrl = "/api/upload", fieldName = "file", maxSizeMB = 5, disabled, onChange, onRemove, className }, ref) => {
-    const [mode, setMode] = React.useState<ImageMode>("upload");
+    const [mode, setMode] = React.useState<ImageMode>(() => isExternalImageUrl(value) ? "url" : "upload");
     const [uploading, setUploading] = React.useState(false);
     const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
     const [brokenUrl, setBrokenUrl] = React.useState<string | null>(null);
@@ -30,10 +48,11 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
     React.useEffect(() => {
       setBrokenUrl(null);
       setUrlDraft(value ?? "");
+      if (isExternalImageUrl(value)) setMode("url");
     }, [value]);
 
     const resolvedValue = value === brokenUrl ? null : value;
-    const displayUrl = previewUrl ?? resolvedValue;
+    const displayUrl = previewUrl ?? resolveAssetUrl(resolvedValue);
 
     async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
       const file = e.target.files?.[0];
@@ -79,6 +98,10 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
       const nextUrl = urlDraft.trim();
       if (!nextUrl) {
         setError("Enter an image URL or path.");
+        return;
+      }
+      if (!isAllowedImageReference(nextUrl)) {
+        setError("Use an http(s) image URL, /uploads/... path, or /defaults/... path.");
         return;
       }
       setError(null);
@@ -180,7 +203,7 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
                 type="text"
                 value={urlDraft}
                 onChange={(e) => setUrlDraft(e.target.value)}
-                placeholder="https://example.com/image.png or /uploads/image.png"
+                placeholder="https://example.com/image.png, /uploads/image.png, or /defaults/admin/default-logo-light.png"
                 disabled={uploading}
                 className="flex h-9 min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
               />

@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { buildUpdateZodSchema, buildZodSchema } from "./schema-builder";
-import type { CRUDConfig, CRUDDeletePolicy, CRUDField, CRUDFieldSelect, SelectOption } from "./types";
+import type { CRUDConfig, CRUDDeletePolicy, CRUDField, CRUDFieldFile, CRUDFieldImage, CRUDFieldSelect, CRUDRouterOptions, SelectOption } from "./types";
 
 /** Prisma error codes we handle explicitly */
 const PRISMA_UNIQUE_VIOLATION = "P2002";
@@ -45,6 +45,46 @@ function applySlugFields(fields: CRUDField[], data: Record<string, unknown>): Re
     }
   }
   return result;
+}
+
+function assetFields(fields: CRUDField[]): Array<CRUDFieldImage | CRUDFieldFile> {
+  return fields.filter((field): field is CRUDFieldImage | CRUDFieldFile =>
+    field.type === "image" || field.type === "file",
+  );
+}
+
+function isStringOrNull(value: unknown): value is string | null {
+  return typeof value === "string" || value === null;
+}
+
+async function cleanupReplacedAssets(
+  options: CRUDRouterOptions | undefined,
+  config: CRUDConfig,
+  id: string | undefined,
+  previousValues: Record<string, unknown> | null,
+  nextData: Record<string, unknown>,
+) {
+  if (!options?.onAssetReplaced || !previousValues) return;
+
+  for (const field of assetFields(config.fields)) {
+    if (!Object.prototype.hasOwnProperty.call(nextData, field.name)) continue;
+
+    const oldValue = previousValues[field.name];
+    const newValue = nextData[field.name];
+    if (typeof oldValue !== "string" || !isStringOrNull(newValue) || oldValue === newValue) continue;
+
+    try {
+      await options.onAssetReplaced({
+        model: config.model,
+        id,
+        field,
+        oldValue,
+        newValue,
+      });
+    } catch (error) {
+      console.warn(`[crud] failed to clean up replaced asset "${oldValue}"`, error);
+    }
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -202,6 +242,7 @@ export function buildCRUDRouters(
   procedure: AnyProcedureBuilder | ProcedureMap | ((config: CRUDConfig) => ProcedureMap),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prismaClient: any,
+  options?: CRUDRouterOptions,
 ): Record<string, ReturnType<typeof createCRUDRouter>> {
   return Object.fromEntries(
     Object.values(configs).map((config) => [
@@ -212,12 +253,14 @@ export function buildCRUDRouters(
             routerFn,
             typeof procedure === "function" ? (procedure(config).list ?? procedure) : procedure,
             prismaClient,
+            options,
           )
         : createCRUDRouter(
             config,
             routerFn,
             typeof procedure === "function" ? procedure(config) : procedure,
             prismaClient,
+            options,
           ),
     ]),
   );
@@ -229,6 +272,7 @@ export function createKeyValueRouter(
   procedure: AnyProcedureBuilder,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prismaClient: any,
+  options?: CRUDRouterOptions,
 ) {
   const missingNamespace = config.fields.filter((f) => !f.namespace);
   if (missingNamespace.length > 0) {
@@ -249,6 +293,11 @@ export function createKeyValueRouter(
     update: procedure
       .input(z.object({ data: z.record(z.string(), z.string()) }))
       .mutation(async ({ input }: { input: { data: Record<string, string> } }) => {
+        const previousRows = await db[model].findMany({
+          where: { key: { in: Object.keys(input.data) } },
+        });
+        const previousValues = Object.fromEntries(previousRows.map((row: { key: string; value: unknown }) => [row.key, row.value]));
+
         await Promise.all(
           Object.entries(input.data).map(([key, value]) => {
             const fieldMeta = config.fields.find((f) => f.name === key);
@@ -259,6 +308,7 @@ export function createKeyValueRouter(
             });
           }),
         );
+        await cleanupReplacedAssets(options, config, undefined, previousValues, input.data);
         return { ok: true };
       }),
   });
@@ -289,6 +339,7 @@ export function createCRUDRouter(
   procedure: AnyProcedureBuilder | ProcedureMap,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   prismaClient: any,
+  options?: CRUDRouterOptions,
 ) {
   const model = prismaModelKey(config.model);
   const createSchema = buildZodSchema(config);
@@ -431,7 +482,18 @@ export function createCRUDRouter(
         const updateData = applySlugFields(config.fields, input.data);
         await checkUnique(db, model, config.fields, updateData, input.id);
         try {
-          return await db[model].update({ where: { id: input.id }, data: updateData });
+          const fieldsToTrack = assetFields(config.fields).filter((field) =>
+            Object.prototype.hasOwnProperty.call(updateData, field.name),
+          );
+          const previousValues = fieldsToTrack.length > 0
+            ? await db[model].findUnique({
+                where: { id: input.id },
+                select: Object.fromEntries(fieldsToTrack.map((field) => [field.name, true])),
+              })
+            : null;
+          const result = await db[model].update({ where: { id: input.id }, data: updateData });
+          await cleanupReplacedAssets(options, config, input.id, previousValues, updateData);
+          return result;
         } catch (err) {
           handlePrismaError(err);
         }

@@ -42,6 +42,7 @@ export {
 } from "./components/select";
 export { Switch } from "./components/switch";
 export { cn } from "./lib/utils";
+export { isManagedAssetPath, resolveAssetUrl } from "./lib/asset-url";
 export { Toaster, toast } from "./components/toaster";
 export {
   AlertTriangle, ChevronUp, ChevronDown, ChevronsUpDown, Menu, X, Moon, Sun, Copy, MoreVertical, Pencil, Trash2,

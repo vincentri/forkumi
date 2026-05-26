@@ -7,6 +7,7 @@ import { roleCreateProcedure, roleUpdateProcedure, roleDeleteProcedure } from ".
 import { getInvitationProcedure, acceptInvitationProcedure } from "./routers/invitation";
 import { accountRouter } from "./routers/account";
 import { FrontPageSettingsCRUD } from "~/crud/frontPageSetting";
+import { deleteManagedAsset } from "~/lib/delete-managed-asset";
 
 type ContentRow = { key: string; value: string | null };
 type PageRow = {
@@ -76,6 +77,9 @@ const crudRouters = buildCRUDRouters(
   router,
   procedureMapFactory,
   prisma,
+  {
+    onAssetReplaced: ({ oldValue }) => deleteManagedAsset(oldValue),
+  },
 );
 
 crudRouters.user = userRouter;

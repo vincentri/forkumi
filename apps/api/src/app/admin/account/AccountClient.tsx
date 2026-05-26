@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import { api } from "~/lib/trpc/client";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, toast } from "@repo/ui";
@@ -72,7 +72,7 @@ export function AccountClient({ initialEmail, initialName }: AccountClientProps)
   const email = profileQuery.data?.email ?? initialEmail;
   const profileErrors = profileForm.formState.errors;
   const passwordErrors = passwordForm.formState.errors;
-  const newPassword = passwordForm.watch("newPassword");
+  const newPassword = useWatch({ control: passwordForm.control, name: "newPassword" });
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">

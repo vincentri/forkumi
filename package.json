@@ -19,6 +19,8 @@
     "dev:reset": "node scripts/dev-reset.mjs"
   },
   "devDependencies": {
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.6",
     "tsx": "^4.19.3",
     "turbo": "^2.5.4",
     "typescript": "^5.8.3"

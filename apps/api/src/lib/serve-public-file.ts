@@ -1,5 +1,4 @@
 import { readFile } from "fs/promises";
-import { existsSync } from "fs";
 import { NextResponse } from "next/server";
 import { contentTypeForPath, resolvePublicFile } from "~/lib/public-files";
 
@@ -15,15 +14,24 @@ export async function servePublicFile(
     return new NextResponse("Forbidden", { status: 403 });
   }
 
-  if (!existsSync(filePath)) {
-    return new NextResponse("Not found", { status: 404 });
+  try {
+    const buffer = await readFile(filePath);
+    return new NextResponse(buffer, {
+      headers: {
+        "Content-Type": contentTypeForPath(filePath),
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
+  } catch (error) {
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      (error as { code?: string }).code === "ENOENT"
+    ) {
+      return new NextResponse("Not found", { status: 404 });
+    }
+    throw error;
   }
-
-  const buffer = await readFile(filePath);
-  return new NextResponse(buffer, {
-    headers: {
-      "Content-Type": contentTypeForPath(filePath),
-      "Cache-Control": "public, max-age=31536000, immutable",
-    },
-  });
 }

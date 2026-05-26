@@ -11,6 +11,7 @@ const api = _api as any;
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createTRPCClient<any>({
       links: [
         httpBatchLink({

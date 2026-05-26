@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { resolveAssetUrl } from "@repo/ui";
 
 export interface AuthBrandPanelProps {
   tagline: string;
@@ -12,11 +13,12 @@ export interface AuthBrandPanelProps {
 
 export function AuthBrandPanel({ tagline, subtext, logoUrl, appName }: AuthBrandPanelProps) {
   const name = appName || "Admin";
-  const [localLogoUrl, setLocalLogoUrl] = useState(logoUrl);
+  const resolvedLogoUrl = resolveAssetUrl(logoUrl);
+  const [localLogoUrl, setLocalLogoUrl] = useState(resolvedLogoUrl);
 
   useEffect(() => {
-    setLocalLogoUrl(logoUrl);
-  }, [logoUrl]);
+    setLocalLogoUrl(resolvedLogoUrl);
+  }, [resolvedLogoUrl]);
 
   return (
     <div className="hidden lg:flex lg:w-[45%] flex-col justify-between p-14 bg-zinc-950 relative overflow-hidden">
@@ -34,7 +36,16 @@ export function AuthBrandPanel({ tagline, subtext, logoUrl, appName }: AuthBrand
       <div className="relative flex items-center gap-3">
         {localLogoUrl ? (
           <div className="relative h-8 w-8 rounded-lg overflow-hidden flex-shrink-0">
-            <Image src={localLogoUrl} alt={name} fill className="object-contain" unoptimized onError={() => setLocalLogoUrl(null)} />
+            <Image
+              src={localLogoUrl}
+              alt={name}
+              fill
+              className="object-contain"
+              loading="eager"
+              fetchPriority="high"
+              unoptimized
+              onError={() => setLocalLogoUrl(null)}
+            />
           </div>
         ) : (
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">

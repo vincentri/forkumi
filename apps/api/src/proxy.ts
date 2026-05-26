@@ -32,7 +32,7 @@ function getClientIp(request: NextRequest): string {
   );
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Rate-limit credential login attempts (brute-force protection)
   if (
     request.method === "POST" &&

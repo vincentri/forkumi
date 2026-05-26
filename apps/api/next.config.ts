@@ -1,12 +1,14 @@
 import { readFileSync } from "fs";
-import { resolve } from "path";
+import { join } from "path";
 import type { NextConfig } from "next";
+
+const monorepoRoot = join(__dirname, "../..");
 
 // Next.js only reads .env from its own app directory.
 // In this monorepo, .env lives at the root — load it manually here.
 // Does not override vars already set (so production platform vars win).
 try {
-  const lines = readFileSync(resolve(process.cwd(), "../../.env"), "utf-8").split("\n");
+  const lines = readFileSync(join(monorepoRoot, ".env"), "utf-8").split("\n");
   for (const line of lines) {
     const match = line.match(/^([^#\s][^=]*)=(.*)$/);
     if (match) {
@@ -23,7 +25,7 @@ try {
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  outputFileTracingRoot: require("path").join(__dirname, "../../"),
+  outputFileTracingRoot: monorepoRoot,
   transpilePackages: ["@repo/ui", "@repo/crud", "@repo/auth", "@repo/db", "@repo/admin"],
 };
 

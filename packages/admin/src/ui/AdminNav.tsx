@@ -33,6 +33,7 @@ import {
   LogOut,
   User,
   NAV_ICONS,
+  resolveAssetUrl,
 } from "@repo/ui";
 import type { LucideIcon } from "@repo/ui";
 import type { AdminNavLink } from "../types";
@@ -75,11 +76,12 @@ function getItemGroup(item: CRUDConfig | AdminNavLink): string | undefined {
 
 function BrandMark({ logoUrl, appName }: { logoUrl?: string | null; appName?: string | null }) {
   const name = appName || "Admin";
-  const [localLogoUrl, setLocalLogoUrl] = useState(logoUrl);
+  const resolvedLogoUrl = resolveAssetUrl(logoUrl);
+  const [localLogoUrl, setLocalLogoUrl] = useState(resolvedLogoUrl);
 
   useEffect(() => {
-    setLocalLogoUrl(logoUrl);
-  }, [logoUrl]);
+    setLocalLogoUrl(resolvedLogoUrl);
+  }, [resolvedLogoUrl]);
 
   return (
     <div className="flex min-w-0 items-center gap-2.5">
@@ -90,6 +92,8 @@ function BrandMark({ logoUrl, appName }: { logoUrl?: string | null; appName?: st
             alt={name}
             fill
             className="object-contain"
+            loading="eager"
+            fetchPriority="high"
             unoptimized
             onError={() => setLocalLogoUrl(null)}
           />
