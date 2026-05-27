@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes meteor {
+  from { transform: translate3d(0, 0, 0) rotate(18deg); opacity: 0; }
+  15% { opacity: 0.5; }
+  to { transform: translate3d(420px, 240px, 0) rotate(18deg); opacity: 0; }
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(96, 165, 250, 0); }
+  50% { box-shadow: 0 0 40px rgba(96, 165, 250, 0.2); }
+}
+
+@keyframes beamFlow {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(260%); }
+}
+
 @layer base {
   html { scroll-behavior: smooth; }
   body {

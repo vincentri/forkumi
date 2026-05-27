@@ -24,6 +24,27 @@ export const FrontPageSettingsCRUD = defineCRUD({
       uploadUrl: "/api/upload?path=uploads/favicon",
     },
     {
+      namespace: "general",
+      name: "site_name",
+      type: "text",
+      label: "Site Name",
+      tab: "General",
+    },
+    {
+      namespace: "contact",
+      name: "whatsapp",
+      type: "text",
+      label: "WhatsApp",
+      tab: "Contact",
+    },
+    {
+      namespace: "contact",
+      name: "whatsapp_message",
+      type: "textarea",
+      label: "WhatsApp Default Message",
+      tab: "Contact",
+    },
+    {
       namespace: "seo",
       name: "meta_title",
       type: "text",

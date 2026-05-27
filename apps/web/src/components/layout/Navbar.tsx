@@ -7,7 +7,15 @@ import { resolveApiPublicUrl } from "~/lib/public-url";
 
 const DEFAULT_SITE_LOGO = "/defaults/admin/default-logo-light.png";
 
-export default function Navbar({ logo, pages = [] }: { logo?: string; pages?: Pick<Page, "slug" | "title">[] } = {}) {
+export default function Navbar({
+  logo,
+  siteName = "Quantyx",
+  pages = [],
+}: {
+  logo?: string;
+  siteName?: string;
+  pages?: Pick<Page, "slug" | "title">[];
+} = {}) {
   const logoSrc = resolveApiPublicUrl(logo || DEFAULT_SITE_LOGO);
 
   return (
@@ -23,9 +31,9 @@ export default function Navbar({ logo, pages = [] }: { logo?: string; pages?: Pi
             loading="eager"
             fetchPriority="high"
           />
+          <span className="hidden text-xs uppercase tracking-[0.2em] text-slate-400 lg:inline ml-4">{siteName}</span>
         </Link>
         <nav className="flex items-center gap-5 text-sm text-slate-600">
-          <Link href="/blog" className="transition hover:text-slate-950">Blog</Link>
           {pages.map((page) => (
             <Link key={page.slug} href={`/${page.slug}`} className="transition hover:text-slate-950">
               {page.title}
