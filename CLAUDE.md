@@ -101,3 +101,44 @@ Ports: `3000` = `apps/web` (frontend), `3001` = `apps/api` (backend/admin).
   - `cavecrew` for compressed subagent delegation when available
   - `caveman-review` and `caveman-commit` for terse reviews/commit messages when requested
 - If an instruction references a missing skill or unavailable tool, fall back to the documented commands and explain the gap briefly.
+
+## gstack
+
+Use `/browse` skill from gstack for all web browsing. Never use `mcp__claude-in-chrome__*` tools.
+
+Available skills:
+- /office-hours
+- /plan-ceo-review
+- /plan-eng-review
+- /plan-design-review
+- /design-consultation
+- /design-shotgun
+- /design-html
+- /review
+- /ship
+- /land-and-deploy
+- /canary
+- /benchmark
+- /browse
+- /connect-chrome
+- /qa
+- /qa-only
+- /design-review
+- /setup-browser-cookies
+- /setup-deploy
+- /setup-gbrain
+- /retro
+- /investigate
+- /document-release
+- /document-generate
+- /codex
+- /cso
+- /autoplan
+- /plan-devex-review
+- /devex-review
+- /careful
+- /freeze
+- /guard
+- /unfreeze
+- /gstack-upgrade
+- /learn

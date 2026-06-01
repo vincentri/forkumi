@@ -39,4 +39,25 @@ Interpret creatively and make unexpected choices that feel genuinely designed fo
 
 **IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
 
+## Component File Organization
+
+Keep each component file under ~150 lines. A monolithic component file (400+ LOC) is hard to navigate and maintain.
+
+**Split by section**: For page-level components, extract each logical section into its own file under `components/home/`:
+```
+components/home/
+  animations.tsx      # shared fadeUp, stagger, AnimatedDiv
+  HeroSection.tsx
+  ServicesSection.tsx
+  HowWeWorkSection.tsx
+  CapabilityProofSection.tsx
+  TechStackSection.tsx
+  WhatTeamsValueSection.tsx
+  FaqSection.tsx
+  ContactCTASection.tsx
+  BrandWordmark.tsx
+```
+
+**Shared utilities**: Extract reusable animation variants, motion configs, and styled constants into a shared `animations.tsx` or `lib/` file rather than duplicating across section files.
+
 Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
