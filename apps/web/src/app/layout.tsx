@@ -5,7 +5,6 @@ import Script from "next/script";
 import { TRPCProvider } from "~/lib/trpc/provider";
 import { resolveApiPublicUrl } from "~/lib/public-url";
 import { getContent } from "~/lib/trpc/server";
-import { CursorProvider } from "~/components/CursorProvider";
 import { LenisProvider } from "~/components/LenisProvider";
 import { ThemeProvider } from "~/components/ThemeProvider";
 import "~/styles/globals.css";
@@ -96,7 +95,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           idPrefix="cms-header-script"
           strategy="beforeInteractive"
         />
-        <TRPCProvider><ThemeProvider><LenisProvider /><CursorProvider />{children}</ThemeProvider></TRPCProvider>
+        <TRPCProvider><ThemeProvider><LenisProvider />{children}</ThemeProvider></TRPCProvider>
         <ManagedScripts
           rawScript={scripts.footerScript}
           idPrefix="cms-footer-script"

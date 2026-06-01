@@ -4,11 +4,30 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
 export const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 40 },
   visible: (i: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.12, duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+    transition: { delay: i * 0.12, duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+  }),
+};
+
+export const fadeLeft = {
+  hidden: { opacity: 0, x: -40 },
+  visible: (i: number = 0) => ({
+    opacity: 1,
+    x: 0,
+    transition: { delay: i * 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+  }),
+};
+
+export const blurReveal = {
+  hidden: { opacity: 0, filter: "blur(16px)", y: 20 },
+  visible: (i: number = 0) => ({
+    opacity: 1,
+    filter: "blur(0)",
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.9, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
   }),
 };
 

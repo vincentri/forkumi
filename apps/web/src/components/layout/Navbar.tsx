@@ -14,7 +14,7 @@ interface NavbarProps {
   pages?: { slug: string; title: string }[];
 }
 
-export default function Navbar({ logo, siteName = "Quantyx", pages = [] }: NavbarProps) {
+export default function Navbar({ logo, siteName = "Swepee", pages = [] }: NavbarProps) {
   const logoSrc = logo || DEFAULT_SITE_LOGO;
   const [isScrolled, setIsScrolled] = useState(false);
   const { theme, setTheme } = useTheme();

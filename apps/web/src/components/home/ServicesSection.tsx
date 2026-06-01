@@ -1,74 +1,85 @@
 "use client";
 
-import { BentoGrid, BentoCard } from "~/components/magicui/BentoGrid";
-import { SparklesText } from "~/components/magicui/SparklesText";
-import { AnimatedDiv, fadeUp } from "~/components/home/animations";
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { BentoGrid, BentoCard } from "~/components/ui/bento-grid";
+import { AnimatedDiv } from "~/components/home/animations";
+import { motion, useScroll, useTransform } from "framer-motion";
+
+const work = [
+  {
+    name: "Hoz Pasta",
+    description: "Authentic Italian restaurant brand site — Jakarta. Chef Joko's 40-year craft, online. From Sea to Table.",
+    tags: ["UX", "Dev"],
+    href: "https://hozpasta.com",
+    Icon: () => (
+      <svg className="size-6 text-slate-500 dark:text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0L3 16.5m15-3.379a48.474 48.474 0 00-6-.371c-2.032 0-4.034.126-6 .37" />
+      </svg>
+    ),
+  },
+];
 
 export function ServicesSection() {
-  return (
-    <section id="services" className="mx-auto max-w-6xl px-6 py-20 md:px-10">
-      <AnimatedDiv>
-        <div className="mb-8">
-          <motion.div variants={fadeUp} custom={0}>
-            <SparklesText className="text-3xl font-semibold text-slate-950 dark:text-white md:text-4xl">
-              Services
-            </SparklesText>
-          </motion.div>
-          <motion.p variants={fadeUp} custom={1} className="mt-2 max-w-md text-sm text-slate-500 dark:text-slate-400">
-            Built for speed, clarity, and engineering depth.
-          </motion.p>
-        </div>
-      </AnimatedDiv>
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
 
-      <AnimatedDiv>
-        <BentoGrid>
-          {[
-            {
-              title: "Product Engineering",
-              description: "Web platforms from concept to production with scalable foundations and clean DX.",
-              span: "md:col-span-2",
-              accent: "sky" as const,
-              icon: (
-                <svg className="size-6 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
-                </svg>
-              ),
-            },
-            {
-              title: "Platform Modernization",
-              description: "Refactor legacy systems into maintainable, high-performing delivery machines.",
-              span: "md:col-span-1",
-              accent: "violet" as const,
-              icon: (
-                <svg className="size-6 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-                </svg>
-              ),
-            },
-            {
-              title: "Team Augmentation",
-              description: "Drop-in senior contributors for roadmap-critical execution and technical leadership.",
-              span: "md:col-span-3",
-              accent: "emerald" as const,
-              icon: (
-                <svg className="size-6 text-slate-600 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                </svg>
-              ),
-            },
-          ].map((card) => (
-            <BentoCard
-              key={card.title}
-              title={card.title}
-              description={card.description}
-              icon={card.icon}
-              span={card.span}
-              accent={card.accent}
-            />
-          ))}
-        </BentoGrid>
-      </AnimatedDiv>
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  const cardsY = useTransform(scrollYProgress, [0, 1], ["0%", "-8%"]);
+
+  return (
+    <section ref={ref} id="work" className="relative overflow-hidden py-20 md:py-32 bg-white dark:bg-slate-950">
+      {/* Parallax background glow */}
+      <motion.div
+        style={{ y: bgY }}
+        className="absolute inset-0 pointer-events-none"
+      >
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 size-[600px] rounded-full bg-[#ff6b35]/5 dark:bg-[#ff6b35]/10 blur-[120px]" />
+        <div className="absolute top-1/2 left-0 size-[400px] rounded-full bg-[#a855f7]/5 dark:bg-[#a855f7]/10 blur-[100px]" />
+      </motion.div>
+
+      <div className="relative z-10 mx-auto max-w-6xl px-6 md:px-10">
+        <AnimatedDiv>
+          <div className="mb-4">
+            <div className="section-overline">
+              <div className="section-overline-dot" />
+              <span className="section-overline-text dark:text-white/40 text-slate-500">Selected Work</span>
+            </div>
+            <h2 className="text-headline text-slate-900 dark:text-white">
+              Where craft meets the table.
+            </h2>
+            <p className="mt-3 max-w-lg text-base text-slate-500 dark:text-slate-400">
+              Real work. No placeholder filler.
+            </p>
+          </div>
+        </AnimatedDiv>
+
+        <motion.div style={{ y: cardsY }}>
+          <AnimatedDiv>
+            <BentoGrid className="mt-12">
+              {work.map((item, i) => (
+                <motion.div
+                  key={item.name}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  viewport={{ once: true, margin: "-80px" }}
+                >
+                  <BentoCard
+                    name={item.name}
+                    description={item.description}
+                    Icon={item.Icon}
+                    tags={item.tags}
+                    href={item.href}
+                  />
+                </motion.div>
+              ))}
+            </BentoGrid>
+          </AnimatedDiv>
+        </motion.div>
+      </div>
     </section>
   );
 }

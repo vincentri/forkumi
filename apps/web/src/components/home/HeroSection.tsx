@@ -1,110 +1,271 @@
 "use client";
 
-import { Particles } from "~/components/magicui/Particles";
-import { PulsatingButton } from "~/components/magicui/PulsatingButton";
-import { AuroraText } from "~/components/magicui/AuroraText";
-import { WordRotate } from "~/components/magicui/WordRotate";
-import { AnimatedDiv, fadeUp } from "~/components/home/animations";
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { cn } from "~/lib/utils";
+import { GridPattern } from "~/components/ui/grid-pattern";
 
 interface HeroSectionProps {
   whatsAppHref: string;
   hasWhatsApp: boolean;
 }
 
-export function HeroSection({ whatsAppHref, hasWhatsApp }: HeroSectionProps) {
-  return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(59,130,246,0.16),transparent_46%),radial-gradient(circle_at_82%_22%,rgba(14,165,233,0.12),transparent_44%),linear-gradient(180deg,#ffffff_0%,#f8fbff_60%,#ffffff_100)] dark:hidden" />
-      <div className="hidden dark:block absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,rgba(59,130,246,0.1),transparent_46%),radial-gradient(circle_at_82%_22%,rgba(14,165,233,0.08),transparent_44%),linear-gradient(180deg,#0f172a_0%,#0f172a_60%,#0f172a_100)]" />
-      <Particles
-        className="absolute inset-0 z-10"
-        quantity={50}
-        staticity={90}
-        ease={60}
-        size={0.4}
-        color="#38bdf8"
-        vx={0}
-        vy={0}
-      />
+const headlineWords = ["We", "craft", "brands", "that", "tell", "stories."];
+const services = ["UI/UX Design", "Digital Products", "Social Media Management"];
 
-      <div className="pointer-events-none absolute right-0 top-1/2 z-10 mr-[-120px] hidden lg:block">
-        <div className="animate-float-bob relative" style={{ animationDelay: "0s" }}>
-          <div className="size-72 rounded-full bg-gradient-to-br from-sky-400/30 to-violet-500/20 blur-3xl" />
-        </div>
-        <div className="absolute -top-16 -left-24 animate-float-bob" style={{ animationDelay: "2s" }}>
-          <div className="size-40 rounded-full bg-gradient-to-tr from-pink-400/25 to-fuchsia-500/15 blur-3xl" />
-        </div>
-        <div className="absolute -bottom-8 -left-12 animate-float-bob" style={{ animationDelay: "4s" }}>
-          <div className="size-32 rounded-full bg-gradient-to-bl from-indigo-400/20 to-cyan-400/15 blur-2xl" />
-        </div>
+const capabilities = [
+  { label: "UI/UX Design", desc: "Interfaces that convert" },
+  { label: "Digital Products", desc: "Web apps & stores" },
+  { label: "Social Media", desc: "Content that grows your audience" },
+  { label: "Brand Identity", desc: "Logos, guidelines & collateral" },
+];
+
+// Stagger container variants
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } },
+} as const;
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] as const } },
+} as const;
+
+const fadeItem = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } },
+} as const;
+
+// Deterministic seeded random (LCG — no floating point instability)
+function seededRandom(seed: number) {
+  // LCG parameters: minimal equidistributed generator, no Math.sin needed
+  const a = 1664525;
+  const c = 1013904223;
+  const m = 2 ** 32;
+  const x = (a * seed + c) % m;
+  return x / m;
+}
+
+// Generate horizontal curved SVG paths — deterministic, no hydration mismatch
+function generatePaths(count: number, direction: "left" | "right") {
+  const paths = [];
+  for (let i = 0; i < count; i++) {
+    const seed = i + (direction === "left" ? 0 : 100);
+    const r1 = seededRandom(seed);
+    const r2 = seededRandom(seed + 1);
+    const r3 = seededRandom(seed + 2);
+    const r4 = seededRandom(seed + 3);
+    const r5 = seededRandom(seed + 4);
+    const r6 = seededRandom(seed + 5);
+    const r7 = seededRandom(seed + 6);
+    const r8 = seededRandom(seed + 7);
+
+    const startX = direction === "left" ? 100 + r1 * 20 : -20 - r1 * 20;
+    const startY = r2 * 100;
+    const endX = direction === "left" ? -20 - r3 * 20 : 100 + r3 * 20;
+    const endY = startY + (r4 - 0.5) * 20;
+    const cp1x = startX + (direction === "left" ? -1 : 1) * (20 + r5 * 30);
+    const cp1y = startY + (r6 - 0.5) * 30;
+    const cp2x = endX + (direction === "left" ? 1 : -1) * (20 + r7 * 30);
+    const cp2y = endY + (r8 - 0.5) * 30;
+    const d = `M${startX},${startY} C${cp1x},${cp1y} ${cp2x},${cp2y} ${endX},${endY}`;
+    paths.push({ d, index: i });
+  }
+  return paths;
+}
+
+const pathsLeft = generatePaths(18, "left");
+const pathsRight = generatePaths(18, "right");
+
+// Animated SVG path
+function AnimatedPath({
+  d,
+  index,
+  className,
+}: {
+  d: string;
+  index: number;
+  className?: string;
+}) {
+  const duration = 20 + (index % 10) * 2;
+  const delay = -(index * 0.8) % 20;
+
+  return (
+    <motion.path
+      d={d}
+      strokeWidth="0.5"
+      fill="none"
+      initial={{ pathLength: 0, opacity: 0 }}
+      animate={{
+        pathLength: [0, 1, 1],
+        opacity: [0, 0.6, 0.3],
+        pathOffset: [0, 0, 1],
+      }}
+      transition={{
+        pathLength: { duration, repeat: Infinity, delay, ease: "linear" },
+        opacity: { duration, repeat: Infinity, delay },
+        pathOffset: { duration, repeat: Infinity, delay, ease: "linear" },
+      }}
+      className={className}
+    />
+  );
+}
+
+// Shimmer button
+function ShimmerButton({
+  children,
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button className={cn("relative overflow-hidden rounded-lg px-8 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]", className)} {...props}>
+      <span className="relative z-10">{children}</span>
+      <span className="absolute inset-0" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)", backgroundSize: "200% 100%", animation: "shimmer-slide 2.5s ease-in-out infinite" }} />
+    </button>
+  );
+}
+
+export function HeroSection({ whatsAppHref, hasWhatsApp }: HeroSectionProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+
+  return (
+    <section ref={ref} className="relative min-h-[100vh] overflow-hidden bg-slate-50 dark:bg-[#0a0a0a]">
+
+      {/* Light mode: gradient mesh */}
+      <div className="absolute inset-0 dark:hidden" style={{
+        background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 30%, #e2e8f0 60%, #f8fafc 100%)",
+      }} />
+
+      {/* SVG animated paths — light mode */}
+      <div className="absolute inset-0 dark:hidden overflow-hidden z-0">
+        <svg className="size-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          {pathsLeft.map(({ d, index }) => (
+            <AnimatedPath key={`left-${index}`} d={d} index={index} className="stroke-slate-300" />
+          ))}
+          {pathsRight.map(({ d, index }) => (
+            <AnimatedPath key={`right-${index}`} d={d} index={index} className="stroke-slate-200" />
+          ))}
+        </svg>
       </div>
 
-      <div className="relative z-20 mx-auto max-w-6xl px-6 py-24 md:px-10">
-        <div className="max-w-3xl">
-          <AnimatedDiv custom={0}>
-            <h1 className="text-5xl font-bold leading-[1.05] md:text-7xl lg:text-8xl">
-              <AuroraText colors={["#FF0080", "#7928CA", "#0070F3", "#38bdf8"]} speed={0.8}>
-                Product engineering, sharpened for scale.
-              </AuroraText>
-            </h1>
-          </AnimatedDiv>
+      {/* Light mode: grid */}
+      <GridPattern className="absolute inset-0 z-[1] opacity-[0.05] dark:hidden" width={64} height={64} strokeDasharray="0" />
 
-          <AnimatedDiv custom={2}>
-            <p className="mt-6 max-w-xl text-lg text-slate-600 dark:text-slate-400 md:text-xl">
-              We partner with ambitious teams to{" "}
-              <WordRotate
-                words={["design", "build", "scale"]}
-                className="inline font-semibold text-slate-800 dark:text-slate-200"
-                motionProps={{
-                  initial: { opacity: 0, y: 20 },
-                  animate: { opacity: 1, y: 0 },
-                  exit: { opacity: 0, y: -20 },
-                  transition: { duration: 0.3, ease: "easeOut" },
-                }}
-              />{" "}
-              products — from first line of code to stable production.
-            </p>
-          </AnimatedDiv>
+      {/* Dark mode: gradient mesh */}
+      <div className="absolute inset-0 hidden dark:block" style={{
+        background: "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255,107,53,0.1), transparent), radial-gradient(ellipse 60% 40% at 90% 60%, rgba(168,85,247,0.06), transparent), radial-gradient(ellipse 50% 30% at 10% 80%, rgba(0,212,255,0.05), transparent)",
+      }} />
 
-          <AnimatedDiv custom={3}>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <PulsatingButton href={whatsAppHref} pulseColor="rgba(251,191,36,0.5)">{hasWhatsApp ? "Chat on WhatsApp" : "Contact Us"}</PulsatingButton>
-              <a
-                href="#services"
-                className="group inline-flex items-center gap-2 rounded-md border border-slate-300 dark:border-slate-700 bg-white/80 dark:bg-slate-900/80 px-6 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 backdrop-blur-sm transition hover:border-slate-400 dark:hover:border-slate-600 hover:bg-white dark:hover:bg-slate-800"
-              >
-                Explore Services
-                <svg className="size-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </a>
+      {/* Dark mode: SVG animated paths */}
+      <div className="absolute inset-0 hidden dark:block overflow-hidden z-0">
+        <svg className="size-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          {pathsLeft.map(({ d, index }) => (
+            <AnimatedPath key={`left-${index}`} d={d} index={index} className="stroke-white/20" />
+          ))}
+          {pathsRight.map(({ d, index }) => (
+            <AnimatedPath key={`right-${index}`} d={d} index={index} className="stroke-white/10" />
+          ))}
+        </svg>
+      </div>
+
+      {/* Dark mode: grid */}
+      <motion.div style={{ y: bgY }} className="absolute inset-0 z-[1] hidden dark:block">
+        <GridPattern className="opacity-15" width={64} height={64} strokeDasharray="0" />
+      </motion.div>
+
+      {/* Main content */}
+      <motion.div style={{ y: contentY, opacity }} className="relative z-20 mx-auto max-w-7xl px-6 py-32 md:px-10">
+        <motion.div variants={containerVariants} initial="hidden" animate="visible" className="flex flex-col gap-0">
+
+          {/* Overline */}
+          <motion.div variants={itemVariants} className="mb-6">
+            <div className="section-overline">
+              <div className="section-overline-dot" />
+              <span className="section-overline-text dark:text-white/40 text-slate-500">Swepee — Digital Craft Studio</span>
             </div>
-          </AnimatedDiv>
+          </motion.div>
 
-          <AnimatedDiv custom={4}>
-            <div className="mt-12 grid grid-cols-3 gap-4">
-              {[
-                ["100%", "Transparent delivery"],
-                ["Senior", "Engineering leads"],
-                ["Modern", "Design & arch"],
-              ].map(([k, v], i) => (
+          {/* Headline */}
+          <motion.h1 variants={itemVariants} className="text-display leading-[1.02] tracking-tight text-slate-900 dark:text-white" style={{ maxWidth: "16ch" }}>
+            {headlineWords.map((word, i) => (
+              <span key={i} className={cn("mr-[0.18em] inline-block", i === 2 || i === 4 ? "text-[#ff6b35]" : "")}>
+                {word}
+              </span>
+            ))}
+          </motion.h1>
+
+          {/* Description + pills row */}
+          <motion.div variants={itemVariants} className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-start">
+            <div>
+              <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400 md:text-xl">
+                Brand studio building digital presence for businesses that care about craft.
+              </p>
+              {/* Services pills */}
+              <div className="mt-6 flex flex-wrap gap-3">
+                {services.map((s) => (
+                  <span key={s} className="rounded-full border border-[#ff6b35]/30 bg-[#ff6b35]/10 px-4 py-2 text-sm text-[#ff6b35]">
+                    {s}
+                  </span>
+                ))}
+              </div>
+              {/* CTAs */}
+              <div className="mt-8 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4">
+                <ShimmerButton onClick={() => window.location.href = whatsAppHref} className="bg-[#ff6b35] hover:bg-[#ff6b35]/90">
+                  Start a Project
+                </ShimmerButton>
+                <a href="#work" className="group inline-flex items-center gap-2 rounded-md border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-6 py-3 text-sm font-medium text-slate-700 dark:text-white backdrop-blur-sm transition hover:border-[#ff6b35]/30 hover:bg-slate-100 dark:hover:bg-white/10">
+                  See Our Work
+                  <svg className="size-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </a>
+                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
+                  <div className="size-1.5 rounded-full bg-[#ff6b35]" />
+                  Reply within 1 business day
+                </div>
+              </div>
+            </div>
+
+            {/* Capabilities grid */}
+            <div className="grid grid-cols-2 gap-4">
+              {capabilities.map((cap) => (
                 <motion.div
-                  key={k}
-                  variants={fadeUp}
-                  custom={i}
-                  className="rounded-xl border border-slate-200/80 hover:border-sky-400/40 dark:border-slate-800/80 dark:hover:border-sky-400/40 bg-white/60 dark:bg-slate-900/60 p-4 backdrop-blur-sm shadow-sm dark:shadow-none"
-                  whileHover={{ y: -4 }}
+                  key={cap.label}
+                  variants={fadeItem}
+                  className="group relative overflow-hidden rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] p-5 backdrop-blur-sm"
+                  whileHover={{ scale: 1.03, borderColor: "rgba(255,107,53,0.3)" }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{k}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">{v}</p>
+                  <div className="absolute -bottom-6 -right-6 size-20 rounded-full bg-[#ff6b35]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <p className="relative z-10 text-sm font-semibold text-slate-900 dark:text-white">{cap.label}</p>
+                  <p className="relative z-10 mt-1 text-xs text-slate-500 dark:text-slate-400">{cap.desc}</p>
                 </motion.div>
               ))}
             </div>
-          </AnimatedDiv>
-        </div>
-      </div>
+          </motion.div>
+
+          {/* Scroll indicator */}
+          <motion.div variants={itemVariants} className="mt-20 flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-3">
+              <span className="text-[10px] uppercase tracking-[4px] text-slate-400 dark:text-slate-600">Scroll</span>
+              <div className="size-3 rounded-full" style={{ background: "#ff6b35", animation: "count-pulse 2s ease-in-out infinite" }} />
+            </div>
+          </motion.div>
+
+        </motion.div>
+      </motion.div>
+
+      <style>{`
+        @keyframes shimmer-slide {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+      `}</style>
     </section>
   );
 }
