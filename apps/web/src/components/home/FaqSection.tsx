@@ -108,7 +108,7 @@ export function FaqSection({ whatsAppHref, hasWhatsApp }: FaqSectionProps) {
                   shimmerDuration="3s"
                   borderRadius="8px"
                   background="rgba(255, 107, 53, 0.95)"
-                  onClick={() => window.location.href = whatsAppHref}
+                  onClick={() => window.open(whatsAppHref, "_blank", "noopener,noreferrer")}
                   className="text-white"
                 >
                   {hasWhatsApp ? "Chat on WhatsApp" : "Start a Conversation"}

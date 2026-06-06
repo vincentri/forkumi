@@ -215,7 +215,7 @@ export function HeroSection({ whatsAppHref, hasWhatsApp }: HeroSectionProps) {
               </div>
               {/* CTAs */}
               <div className="mt-8 flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4">
-                <ShimmerButton onClick={() => window.location.href = whatsAppHref} className="bg-[#ff6b35] hover:bg-[#ff6b35]/90">
+                <ShimmerButton onClick={() => window.open(whatsAppHref, "_blank", "noopener,noreferrer")} className="bg-[#ff6b35] hover:bg-[#ff6b35]/90">
                   Start a Project
                 </ShimmerButton>
                 <a href="#work" className="group inline-flex items-center gap-2 rounded-md border border-slate-300 dark:border-white/10 bg-white dark:bg-white/5 px-6 py-3 text-sm font-medium text-slate-700 dark:text-white backdrop-blur-sm transition hover:border-[#ff6b35]/30 hover:bg-slate-100 dark:hover:bg-white/10">
