@@ -26,6 +26,7 @@ export const DEFAULT_BRANDING_SETTINGS = [
 
 export const DEFAULT_FRONT_PAGE_SETTINGS = [
   { key: "logo", value: DEFAULT_ADMIN_ASSETS[0].path, namespace: "general" },
+  { key: "logo_dark", value: DEFAULT_ADMIN_ASSETS[1].path, namespace: "general" },
   { key: "favicon", value: DEFAULT_ADMIN_ASSETS[2].path, namespace: "general" },
   { key: "site_name", value: "Quantyx", namespace: "general" },
   { key: "whatsapp", value: "", namespace: "contact" },

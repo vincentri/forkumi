@@ -10,12 +10,14 @@ const DEFAULT_SITE_LOGO = "/defaults/admin/default-logo-light.png";
 
 interface NavbarProps {
   logo?: string;
+  logoDark?: string;
   siteName?: string;
   pages?: { slug: string; title: string }[];
 }
 
-export default function Navbar({ logo, siteName = "Swepee", pages = [] }: NavbarProps) {
+export default function Navbar({ logo, logoDark, siteName = "Swepee", pages = [] }: NavbarProps) {
   const logoSrc = logo || DEFAULT_SITE_LOGO;
+  const logoDarkSrc = logoDark || logoSrc;
   const [isScrolled, setIsScrolled] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -55,7 +57,16 @@ export default function Navbar({ logo, siteName = "Swepee", pages = [] }: Navbar
                 alt="Site logo"
                 width={140}
                 height={44}
-                className="h-9 w-auto object-contain"
+                className="h-9 w-auto object-contain block dark:hidden"
+                loading="eager"
+                fetchPriority="high"
+              />
+              <Image
+                src={logoDarkSrc}
+                alt="Site logo"
+                width={140}
+                height={44}
+                className="h-9 w-auto object-contain hidden dark:block"
                 loading="eager"
                 fetchPriority="high"
               />

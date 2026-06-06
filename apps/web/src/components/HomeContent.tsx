@@ -15,17 +15,18 @@ import { ScrollProgress } from "~/components/ui/scroll-progress";
 interface HomeContentProps {
   siteName: string;
   logo: string;
+  logoDark: string;
   whatsAppHref: string;
   hasWhatsApp: boolean;
   stacks: string[];
   navbarPages: { slug: string; title: string }[];
 }
 
-export default function HomeContent({ siteName, logo, whatsAppHref, hasWhatsApp, stacks, navbarPages }: HomeContentProps) {
+export default function HomeContent({ siteName, logo, logoDark, whatsAppHref, hasWhatsApp, stacks, navbarPages }: HomeContentProps) {
   return (
     <>
       <ScrollProgress />
-      <Navbar logo={logo} siteName={siteName} pages={navbarPages} />
+      <Navbar logo={logo} logoDark={logoDark} siteName={siteName} pages={navbarPages} />
       <main className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
         <HeroSection whatsAppHref={whatsAppHref} hasWhatsApp={hasWhatsApp} />
         <ServicesSection />
@@ -36,7 +37,7 @@ export default function HomeContent({ siteName, logo, whatsAppHref, hasWhatsApp,
         <FaqSection whatsAppHref={whatsAppHref} hasWhatsApp={hasWhatsApp} />
         <ContactCTASection whatsAppHref={whatsAppHref} hasWhatsApp={hasWhatsApp} />
       </main>
-      <Footer siteName={siteName} logo={logo} />
+      <Footer siteName={siteName} logo={logo} logoDark={logoDark} />
     </>
   );
 }

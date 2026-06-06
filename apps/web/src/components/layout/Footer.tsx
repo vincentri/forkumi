@@ -4,8 +4,9 @@ import { resolveApiPublicUrl } from "~/lib/public-url";
 
 const DEFAULT_SITE_LOGO = "/defaults/admin/default-logo-light.png";
 
-export default function Footer({ siteName = "Swepee", logo }: { siteName?: string; logo?: string }) {
+export default function Footer({ siteName = "Swepee", logo, logoDark }: { siteName?: string; logo?: string; logoDark?: string }) {
   const logoSrc = resolveApiPublicUrl(logo || DEFAULT_SITE_LOGO);
+  const logoDarkSrc = resolveApiPublicUrl(logoDark || logo || DEFAULT_SITE_LOGO);
 
   return (
     <footer className="relative border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
@@ -24,7 +25,8 @@ export default function Footer({ siteName = "Swepee", logo }: { siteName?: strin
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row">
         {/* Logo + tagline */}
         <Link href="/" className="flex items-center gap-3">
-          <Image src={logoSrc} alt="Site logo" width={120} height={38} className="h-8 w-auto object-contain" />
+          <Image src={logoSrc} alt="Site logo" width={120} height={38} className="h-8 w-auto object-contain block dark:hidden" />
+          <Image src={logoDarkSrc} alt="Site logo" width={120} height={38} className="h-8 w-auto object-contain hidden dark:block" />
           <span className="text-xs uppercase tracking-[0.2em] text-slate-400 dark:text-slate-600">{siteName}</span>
         </Link>
 
