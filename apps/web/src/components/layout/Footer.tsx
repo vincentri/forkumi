@@ -4,7 +4,7 @@ import { resolveApiPublicUrl } from "~/lib/public-url";
 
 const DEFAULT_SITE_LOGO = "/defaults/admin/default-logo-light.png";
 
-export default function Footer({ siteName = "Swepee", logo, logoDark }: { siteName?: string; logo?: string; logoDark?: string }) {
+export default function Footer({ siteName = "Quantyx", logo, logoDark }: { siteName?: string; logo?: string; logoDark?: string }) {
   const logoSrc = resolveApiPublicUrl(logo || DEFAULT_SITE_LOGO);
   const logoDarkSrc = resolveApiPublicUrl(logoDark || logo || DEFAULT_SITE_LOGO);
 

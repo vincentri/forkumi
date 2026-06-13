@@ -15,7 +15,11 @@ const quote = {
   author: "Early Client",
 };
 
-export function WhySection() {
+interface WhySectionProps {
+  siteName: string;
+}
+
+export function WhySection({ siteName }: WhySectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -40,7 +44,7 @@ export function WhySection() {
         {/* Section label */}
         <div className="section-overline">
           <div className="section-overline-dot" />
-          <span className="section-overline-text">Why Swepee</span>
+          <span className="section-overline-text">Why {siteName}</span>
         </div>
 
         <div className="mt-12 grid gap-16 md:grid-cols-2 md:gap-24">

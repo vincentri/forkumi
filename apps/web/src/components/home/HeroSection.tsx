@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils";
 import { GridPattern } from "~/components/ui/grid-pattern";
 
 interface HeroSectionProps {
+  siteName: string;
   whatsAppHref: string;
   hasWhatsApp: boolean;
 }
@@ -125,7 +126,7 @@ function ShimmerButton({
   );
 }
 
-export function HeroSection({ whatsAppHref, hasWhatsApp }: HeroSectionProps) {
+export function HeroSection({ siteName, whatsAppHref, hasWhatsApp }: HeroSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
 
@@ -186,7 +187,7 @@ export function HeroSection({ whatsAppHref, hasWhatsApp }: HeroSectionProps) {
           <motion.div variants={itemVariants} className="mb-6">
             <div className="section-overline">
               <div className="section-overline-dot" />
-              <span className="section-overline-text dark:text-white/40 text-slate-500">Swepee — Digital Craft Studio</span>
+              <span className="section-overline-text dark:text-white/40 text-slate-500">{siteName} — Digital Craft Studio</span>
             </div>
           </motion.div>
 

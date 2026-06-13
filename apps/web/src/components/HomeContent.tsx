@@ -28,11 +28,11 @@ export default function HomeContent({ siteName, logo, logoDark, whatsAppHref, ha
       <ScrollProgress />
       <Navbar logo={logo} logoDark={logoDark} siteName={siteName} pages={navbarPages} />
       <main className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-        <HeroSection whatsAppHref={whatsAppHref} hasWhatsApp={hasWhatsApp} />
+        <HeroSection siteName={siteName} whatsAppHref={whatsAppHref} hasWhatsApp={hasWhatsApp} />
         <ServicesSection />
         <CapabilitiesSection />
         <ProcessSection />
-        <WhySection />
+        <WhySection siteName={siteName} />
         <ClientsSection />
         <FaqSection whatsAppHref={whatsAppHref} hasWhatsApp={hasWhatsApp} />
         <ContactCTASection whatsAppHref={whatsAppHref} hasWhatsApp={hasWhatsApp} />
