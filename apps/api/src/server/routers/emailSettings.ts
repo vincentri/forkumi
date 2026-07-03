@@ -9,7 +9,7 @@ const EMAIL_NAMESPACE = "email";
 
 const settingsInput = z.object({
   enabled: z.boolean(),
-  provider: z.enum(["resend", "ses"]),
+  provider: z.enum(["resend"]),
   fromEmail: z.string().trim(),
   fromName: z.string().trim(),
   replyTo: z.string().trim(),

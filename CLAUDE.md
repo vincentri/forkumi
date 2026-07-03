@@ -51,6 +51,8 @@ Test files live in `packages/crud/src/__tests__/`. Framework: Vitest + @testing-
 
 No tests for tRPC routers or Next.js pages — those are verified by the build check below.
 
+**Never remove failing tests.** Fix the underlying issue instead (add Radix providers, polyfill browser APIs, fix React version mismatches, etc.). Remove a test only if the feature itself is being removed from the codebase.
+
 ## Security rules
 
 - **Password fields**: Never add password-type fields to `searchableFields` in CRUD configs. `router-factory.ts` exposes searchable fields to queries — passwords must never be searchable.
@@ -58,11 +60,14 @@ No tests for tRPC routers or Next.js pages — those are verified by the build c
 - **Role assignment guard**: Before writing `roleId`, always check `targetRole.protected`. Block unless caller `isProtectedRole`. Prevents privilege escalation via assign-role.
 - **CORS Vary header**: Dynamic `Access-Control-Allow-Origin` (per-origin allowlist) requires `Vary: Origin` on every response. Without it, CDNs serve one origin's cached headers to others. Check the active request interception layer before editing CORS behavior; this repo currently uses `apps/api/src/proxy.ts` for Next proxy logic.
 - **Web validation messages**: Public web UI must render human-readable validation errors. Do not show raw Zod/tRPC issue arrays, JSON, stack traces, or machine codes to users.
+- **Schema ownership**: Never edit `apps/api/prisma/schema.prisma` manually. All model creation and updates go through `pnpm crud:scaffold <model>`. Scaffold derives the Prisma model from the CRUD config, patches back-relations, and runs `prisma migrate dev` automatically.
+- **Migration tool**: Always use `prisma migrate dev` (via scaffold or `pnpm --filter @repo/db db:migrate`). Never use `db:push` — it creates schema drift with no migration file, breaking future `migrate dev` with checksum/drift errors.
+- **Explicit join models**: Many-to-many relations must use explicit join models — set `through` in the relation config (e.g. `{ field: "tags", model: "tag", through: "blogTag" }`). Prisma implicit m2m auto-generates `_ModelToModel` with `A`/`B` columns; explicit generates `blog_tags(blog_id, tag_id)` matching the project snake_case convention.
 
 ## Conventions
 
 - **CRUD configs**: One file per resource at `apps/api/src/crud/<model>.ts`. camelCase filename. Export as `export const ProductCRUD = defineCRUD({...})`. Built-in configs (user, role) are re-exports from `@repo/admin`.
-- **Adding a resource**: (1) write config in `apps/api/src/crud/<model>.ts`, (2) `pnpm crud:scaffold <model>`, (3) `pnpm db:push`. Nav link, tRPC procedures, admin page, and permissions are all automatic (permissions are derived at runtime via `derivePermissionOptions`).
+- **Adding a resource**: (1) write config in `apps/api/src/crud/<model>.ts`, (2) `pnpm crud:scaffold <model>`. Scaffold generates the Prisma model, patches back-relations, and runs `prisma migrate dev` automatically. Nav link, tRPC procedures, admin page, and permissions are all automatic (permissions are derived at runtime via `derivePermissionOptions`).
 - **Components**: PascalCase. Co-locate with the page they serve. Shared UI components go in `packages/ui/src/components/`.
 - **Server logic**: Built-in admin routers live in `@repo/admin/server` as factories. App-specific overrides and wiring in `apps/api/src/server/`. Client-only components (hooks, state) in `apps/api/src/app/`.
 - **Admin UI components**: Built-in UI (nav, settings, CRUD bridge, modals, auth forms) lives in `@repo/admin/ui`. App files are thin re-exports. The `AdminProvider` wraps the app's tRPC client so package components access it via `useAdminApi()`.
@@ -70,7 +75,16 @@ No tests for tRPC routers or Next.js pages — those are verified by the build c
 
 ## After implementing any feature
 
-After completing any feature implementation, always run a build check before reporting done:
+After completing any feature implementation, always run the test suite and type check before reporting done:
+
+```bash
+pnpm --filter crud test    # Run CRUD package tests
+pnpm type-check            # Run type checking across all packages
+```
+
+Fix any failures before stopping. Do not skip this step — `pnpm dev` compiles lazily and will miss type errors.
+
+Then run the build check:
 
 ```bash
 rsync -a --delete --exclude='.git' --exclude='node_modules' --exclude='.next' --exclude='pnpm-lock.yaml' --exclude='.env' --exclude='apps/web' --filter='+ apps/api/src/crud/example.ts' --filter='- apps/api/src/crud/*' --filter='- apps/api/prisma/' ~/work/utils/quantyx/ ~/work/utils/test-project/

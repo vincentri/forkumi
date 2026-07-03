@@ -68,20 +68,6 @@ export const SettingsCRUD = defineCRUD({
       note: "When disabled, server email sends fail before contacting the provider.",
     },
     {
-      name: "emailProvider",
-      type: "select",
-      label: "Provider",
-      tab: "Email",
-      namespace: "email",
-      options: [
-        { label: "Resend", value: "resend" },
-        { label: "Amazon SES", value: "ses" },
-      ],
-      default: "resend",
-      visibleWhen: { field: "emailEnabled", equals: true },
-      note: "Choose the active transactional email provider.",
-    },
-    {
       name: "emailFromEmail",
       type: "email",
       label: "From Email",

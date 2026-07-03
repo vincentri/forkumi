@@ -1,16 +1,21 @@
 import { prisma } from "@repo/db";
 import bcrypt from "bcryptjs";
 import { createPrismaAdapter } from "@repo/admin/server";
-import { createUserRouter } from "@repo/admin/server";
-import { router, permissionProcedure } from "../trpc";
+import { createUserRouter, createInviteRouter } from "@repo/admin/server";
+import { router, mergeRouters, permissionProcedure } from "../trpc";
 import { sendEmail } from "~/lib/email";
 
 const db = createPrismaAdapter(prisma);
 
-export const userRouter = createUserRouter(
+const userCrudRouter = createUserRouter(
   db,
   { router, permissionProcedure },
   { hash: bcrypt.hash, compare: bcrypt.compare },
+);
+
+const inviteRouter = createInviteRouter(
+  db,
+  { router, permissionProcedure },
   process.env.NEXTAUTH_URL,
   {
     async sendInvitationEmail({ email, inviteUrl }) {
@@ -27,3 +32,5 @@ export const userRouter = createUserRouter(
     },
   },
 );
+
+export const userRouter = mergeRouters(userCrudRouter, inviteRouter);

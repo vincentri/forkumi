@@ -73,7 +73,7 @@ the admin from "works for small data" to "works for real client scale."
    ```ts
    const m = (api.admin as any)[config.model];
    if (!m) throw new Error(
-     `No tRPC router for model "${config.model}". Did you run pnpm crud:scaffold and pnpm db:push?`
+     `No tRPC router for model "${config.model}". Did you run pnpm crud:scaffold and pnpm db:migrate?`
    );
    ```
 
@@ -146,7 +146,7 @@ the admin from "works for small data" to "works for real client scale."
 
 10. **Run "The Assignment"** (manual step, not CC work)
     After all above ships: clone fresh to test-project, time each step:
-    - `rsync` → `node scripts/setup.mjs` → `pnpm install` → `pnpm db:push` → `pnpm db:seed` → `pnpm dev`
+    - `rsync` → `node scripts/setup.mjs` → `pnpm install` → `pnpm db:migrate` → `pnpm db:seed` → `pnpm dev`
     Record actual TTHW. Target: < 5 min. Update README: "Verified TTHW: X min (as of YYYY-MM-DD)".
 
 ## Cross-Model Corrections (from outside voice)

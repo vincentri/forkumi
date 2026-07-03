@@ -45,19 +45,9 @@ export { cn } from "./lib/utils";
 export { isManagedAssetPath, resolveAssetUrl } from "./lib/asset-url";
 export { Toaster, toast } from "./components/toaster";
 export {
-  AlertTriangle, ChevronUp, ChevronDown, ChevronsUpDown, Menu, X, Moon, Sun, Copy, MoreVertical, Pencil, Trash2,
-  LayoutDashboard, Users, ShieldCheck, Settings, Database,
-  PanelLeftClose, PanelLeftOpen, FolderOpen, Folder, LogOut,
-  // Common icons available for config.icon
-  ShoppingBag, ShoppingCart, Package, Box, Tag, Tags,
-  FileText, File, Files, Image, Images, Video, Music,
-  Newspaper, BookOpen, Book, Bookmark, Library,
-  Star, Heart, Flame, Zap, Globe, Map, MapPin,
-  Calendar, Clock, Timer, Bell, Mail, MessageSquare, Phone,
-  User, UserCheck, UserPlus, Briefcase, Building2,
-  CreditCard, DollarSign, BarChart, TrendingUp, PieChart,
-  Layers, Layout, Grid, List, Table2,
-  Cpu, Code, Terminal, Wrench, Cog,
+  AlertTriangle, ChevronUp, ChevronDown, ChevronsUpDown, Copy, MoreVertical, Pencil, Trash2, X,
+  Menu, Moon, Sun, LayoutDashboard, Users, ShieldCheck, Settings,
+  PanelLeftClose, PanelLeftOpen, FolderOpen, Folder, LogOut, User,
 } from "lucide-react";
 export type { LucideIcon } from "lucide-react";
 

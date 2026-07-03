@@ -2,6 +2,9 @@
   "name": "@repo/auth",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "test": "vitest run"
+  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -9,12 +12,13 @@
     }
   },
   "dependencies": {
-    "next-auth": "^4.24.11"
+    "next-auth": "^4.24.14"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "next": "^16.2.6",
-    "typescript": "^5.8.3"
+    "next": "^16.2.9",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   },
   "peerDependencies": {
     "next": ">=14"

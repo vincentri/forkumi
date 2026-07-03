@@ -15,7 +15,7 @@ export interface ImageUploadProps {
   className?: string;
 }
 
-const ACCEPT_IMAGES = "image/jpeg,image/png,image/gif,image/webp";
+const ACCEPT_IMAGES = "image/jpeg,image/png,image/gif,image/webp,image/svg+xml";
 type ImageMode = "upload" | "url";
 
 function isExternalImageUrl(value: string | null | undefined): boolean {

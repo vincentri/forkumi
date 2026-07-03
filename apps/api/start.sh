@@ -14,7 +14,7 @@ if [ -n "$POSTGRES_USER" ]; then
   export DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 fi
 
-/tools/node_modules/.bin/prisma db push --schema=/tools/prisma/schema.prisma --skip-generate --accept-data-loss
+/tools/node_modules/.bin/prisma migrate deploy --schema=/tools/prisma/schema.prisma --config=/tools/prisma/prisma.config.ts
 NODE_PATH=/tools/node_modules /tools/node_modules/.bin/tsx packages/db/src/seed.ts
 
 PUBLIC_DIR="/app/apps/api/public"

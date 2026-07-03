@@ -1,10 +1,9 @@
 import { prisma } from "@repo/db";
 import { createEmailService, type EmailMessage } from "@repo/email";
 import { createResendProvider } from "@repo/email/providers/resend";
-import { createSesProvider } from "@repo/email/providers/ses";
 import { decryptSecret, isEncryptedSecret } from "./secret-crypto";
 
-export type EmailProviderId = "resend" | "ses";
+export type EmailProviderId = "resend";
 
 export interface EmailSettings {
   enabled: boolean;
@@ -45,13 +44,10 @@ function rowsToMap(rows: SettingsRow[]): Record<string, string> {
 
 export async function getEmailSettings(): Promise<EmailSettings> {
   const values = rowsToMap(await getEmailSettingsRows());
-  const provider = values.emailProvider === "ses" || values.emailProvider === "resend"
-    ? values.emailProvider
-    : DEFAULT_EMAIL_SETTINGS.provider;
 
   return {
     enabled: values.emailEnabled === "true",
-    provider,
+    provider: "resend",
     fromEmail: values.emailFromEmail ?? "",
     fromName: values.emailFromName ?? "",
     replyTo: values.emailReplyTo ?? "",
@@ -71,38 +67,20 @@ async function getRequiredEmailConfig() {
     throw new Error("Email from address is required.");
   }
 
-  if (settings.provider === "resend") {
-    const encryptedApiKey = values.emailResendApiKey;
-    if (!isEncryptedSecret(encryptedApiKey)) {
-      throw new Error("Resend API key is not configured.");
-    }
-
-    return {
-      ...settings,
-      provider: "resend" as const,
-      resendApiKey: decryptSecret(encryptedApiKey),
-    };
+  const encryptedApiKey = values.emailResendApiKey;
+  if (!isEncryptedSecret(encryptedApiKey)) {
+    throw new Error("Resend API key is not configured.");
   }
 
   return {
     ...settings,
-    provider: "ses" as const,
+    provider: "resend" as const,
+    resendApiKey: decryptSecret(encryptedApiKey),
   };
 }
 
 export async function createConfiguredEmailService() {
   const config = await getRequiredEmailConfig();
-  if (config.provider === "ses") {
-    return createEmailService(
-      createSesProvider({
-        defaultFrom: {
-          email: config.fromEmail,
-          name: config.fromName || undefined,
-        },
-        defaultReplyTo: config.replyTo || undefined,
-      }),
-    );
-  }
 
   return createEmailService(
     createResendProvider({

@@ -11,9 +11,13 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@repo/ui";
-import type { CRUDConfig, QueryState } from "../types";
+import { z } from "zod";
+import type { CRUDConfig, CRUDExtraTab, QueryState } from "../types";
 import { CRUDForm } from "./CRUDForm";
 import { CRUDTable } from "./CRUDTable";
+import type { ModelSelectApi } from "./fields/FieldRenderer";
+import { singularize } from "../util/label";
+import { isRowDeletable } from "../util/row";
 
 interface CRUDPageProps {
   config: CRUDConfig;
@@ -56,6 +60,12 @@ interface CRUDPageProps {
   currentUserEmail?: string;
   /** Extra actions rendered to the right of the "New" button in the table header */
   extraHeaderActions?: React.ReactNode;
+  /** tRPC router used by model-backed selects for server-side search. */
+  modelApi?: ModelSelectApi;
+  /** Extra tabs rendered inside the create/edit modal (e.g. inline schedule editor). */
+  extraTabs?: CRUDExtraTab[];
+  /** Zod object merged with the create/edit form resolver for extra tab fields. */
+  extraSchema?: z.ZodObject<z.ZodRawShape>;
 }
 
 type ModalState =
@@ -117,6 +127,9 @@ export function CRUDPage({
   emptyState,
   currentUserEmail,
   extraHeaderActions,
+  modelApi,
+  extraTabs,
+  extraSchema,
 }: CRUDPageProps) {
   const [modal, setModal] = useState<ModalState>({ type: "closed" });
   const [isMutating, setIsMutating] = useState(false);
@@ -244,7 +257,7 @@ export function CRUDPage({
     }
   }
 
-  const singularLabel = config.label.replace(/s$/, "");
+  const singularLabel = singularize(config.label);
   const activeFilterCount = Object.keys(filters).length;
   const showCheckboxes = !!(onDelete && config.deletable !== false && onBulkDelete);
   const atMaxRecords = config.maxRecords !== undefined && (listData?.total ?? 0) >= config.maxRecords;
@@ -315,6 +328,7 @@ export function CRUDPage({
         sortField={sortField}
         sortDir={sortDir}
         onSort={handleSort}
+        modelApi={modelApi}
         onEdit={onUpdate ? (row) => { setModal({ type: "edit", row }); setMutationError(null); } : undefined}
         onDelete={onDelete ? (row) => setDeleteTarget(row) : undefined}
         onDuplicate={onDuplicate ? async (row) => {
@@ -345,11 +359,7 @@ export function CRUDPage({
         onSelectAll={(checked) => {
           if (checked) {
             const selectableIds = (listData?.items ?? [])
-              .filter((row) => {
-                const isProtected = row.protected && !row.isPendingInvite;
-                const isCurrentUser = currentUserEmail && row.email === currentUserEmail;
-                return !isProtected && !isCurrentUser;
-              })
+              .filter((row) => isRowDeletable(row, currentUserEmail))
               .map((row) => String(row.id));
             setSelectedIds(new Set(selectableIds));
           } else {
@@ -433,6 +443,11 @@ export function CRUDPage({
                     isLoading={isMutating}
                     submitLabel={modal.type === "create" ? "Create" : "Update"}
                     readOnly={isProtectedRow}
+                    modelApi={modelApi}
+                    extraTabs={extraTabs}
+                    extraSchema={extraSchema}
+                    mode={modal.type === "create" ? "create" : "edit"}
+                    rowId={modal.type === "edit" ? (modal.row.id as string) : undefined}
                   />
                 )}
                 </div>

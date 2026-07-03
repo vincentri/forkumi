@@ -1,0 +1,91 @@
+// This is the e2e-only schema. It is a structural subset of
+// apps/api/prisma/schema.prisma and is consumed exclusively by the e2e
+// testcontainer — never by the API app at runtime.
+//
+// Keep in sync with the prod schema: every model here must exist in prod with
+// matching fields. The drift guard at packages/e2e/lib/__tests__/schema-drift.test.ts
+// enforces this invariant bidirectionally.
+//
+// To add a new table for a future e2e spec:
+//   1. add the model below
+//   2. regenerate the migration SQL:
+//      DATABASE_URL='postgresql://x:x@localhost:5432/x' \
+//        packages/db/node_modules/.bin/prisma migrate diff \
+//          --from-empty --to-schema schema.prisma --script \
+//          > migrations/20260615000000_init_e2e/migration.sql
+//   3. commit the updated migration file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime? @map("email_verified")
+  password      String?
+  roleId        String?   @map("role_id")
+  role          Role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  invitationsSent UserInvitation[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  permissions String[]
+  protected   Boolean  @default(false) @map("protected")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  users       User[]
+  invitations UserInvitation[]
+
+  @@map("roles")
+}
+
+model UserInvitation {
+  id          String    @id @default(cuid())
+  email       String    @unique
+  token       String    @unique
+  invitedById String?   @map("invited_by_id")
+  invitedBy   User?     @relation(fields: [invitedById], references: [id], onDelete: SetNull)
+  roleId      String?   @map("role_id")
+  role        Role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  expiresAt   DateTime  @map("expires_at")
+  acceptedAt  DateTime? @map("accepted_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([expiresAt, acceptedAt])
+  @@map("user_invitations")
+}
+
+model Settings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  namespace String?
+  value     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt     @map("updated_at")
+
+  @@map("settings")
+}
+
+model FrontPageSettings {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  namespace String?
+  value     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt     @map("updated_at")
+
+  @@map("front_page_settings")
+}

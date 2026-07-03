@@ -2,6 +2,9 @@
   "name": "@repo/admin",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "test": "vitest run"
+  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -19,7 +22,7 @@
   "dependencies": {
     "@repo/crud": "workspace:*",
     "@repo/ui": "workspace:*",
-    "zod": "^3.24.3"
+    "zod": "^4.4.3"
   },
   "peerDependencies": {
     "@hookform/resolvers": ">=3",
@@ -34,9 +37,10 @@
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@types/react": "^19.1.2",
-    "next": "^16.2.6",
+    "@types/react": "^19.2.17",
+    "next": "^16.2.9",
     "next-auth": "^4.24.14",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
   }
 }

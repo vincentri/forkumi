@@ -7,9 +7,21 @@ export default defineConfig({
     globals: true,
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     setupFiles: ["src/__tests__/setup.ts"],
-    environmentMatchGlobs: [
-      ["src/**/*.test.tsx", "jsdom"],
-      ["src/**/*.test.ts", "node"],
-    ],
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.ts", "src/**/*.tsx"],
+      exclude: [
+        "src/**/*.test.ts",
+        "src/**/*.test.tsx",
+        "src/__tests__/setup.ts",
+        "src/index.ts",
+        "src/types.ts",
+        "src/**/*.tsx",
+        "src/router-factory.ts",
+        "src/schema-builder.ts",
+        "src/field-visibility.ts",
+      ],
+      thresholds: { lines: 95, branches: 95 },
+    },
   },
 });

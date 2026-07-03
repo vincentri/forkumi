@@ -1,12 +1,3 @@
-export const BUILT_IN_MODELS = ["user", "role"] as const;
-export type BuiltInModel = (typeof BUILT_IN_MODELS)[number];
-
-export interface NavItem {
-  href: string;
-  label: string;
-  section?: string;
-}
-
 export interface AdminNavLink {
   label: string;
   href: string;
@@ -20,17 +11,6 @@ export interface AdminNavLink {
    * Omit to show the link to all authenticated users.
    */
   permissions?: string[];
-}
-
-export interface AdminSession {
-  user: {
-    id: string;
-    email: string;
-    name?: string | null;
-    role: string | null;
-    permissions: string[];
-    isProtectedRole: boolean;
-  };
 }
 
 export interface PasswordHasher {

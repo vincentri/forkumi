@@ -12,6 +12,7 @@ COPY packages/admin/package.json ./packages/admin/
 COPY packages/auth/package.json ./packages/auth/
 COPY packages/crud/package.json ./packages/crud/
 COPY packages/db/package.json ./packages/db/
+COPY packages/email/package.json ./packages/email/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/tsconfig/package.json ./packages/tsconfig/
 RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
@@ -20,18 +21,22 @@ RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
 # ---- builder ----
 FROM base AS builder
 WORKDIR /app
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=deps /app/packages/admin/node_modules ./packages/admin/node_modules
 COPY --from=deps /app/packages/auth/node_modules ./packages/auth/node_modules
 COPY --from=deps /app/packages/crud/node_modules ./packages/crud/node_modules
 COPY --from=deps /app/packages/db/node_modules ./packages/db/node_modules
+COPY --from=deps /app/packages/email/node_modules ./packages/email/node_modules
 COPY --from=deps /app/packages/ui/node_modules ./packages/ui/node_modules
 COPY apps/api ./apps/api
 COPY packages/admin ./packages/admin
 COPY packages/auth ./packages/auth
 COPY packages/crud ./packages/crud
 COPY packages/db ./packages/db
+COPY packages/email ./packages/email
 COPY packages/ui ./packages/ui
 COPY packages/tsconfig ./packages/tsconfig
 COPY package.json pnpm-workspace.yaml turbo.json ./
@@ -52,10 +57,13 @@ FROM node:22-alpine AS tools
 WORKDIR /tools
 RUN --mount=type=cache,id=npm-tools,target=/root/.npm \
     npm install --save-exact \
-      prisma@6.19.3 \
+      prisma@7.8.0 \
       tsx@4.19.3 \
       bcryptjs@2.4.3 \
-      "@prisma/client@6.19.3"
+      dotenv@16.4.7 \
+      "@prisma/client@7.8.0" \
+      "@prisma/adapter-pg@7.8.0" \
+      "pg@8.21.0"
 COPY apps/api/prisma ./prisma
 RUN PRISMA_GENERATE_SKIP_AUTOINSTALL=true \
     node_modules/.bin/prisma generate --schema ./prisma/schema.prisma

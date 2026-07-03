@@ -3,7 +3,7 @@
  * pnpm crud:delete <model>
  *
  * Removes a CRUD resource config, its barrel export, and the matching Prisma model block.
- * Run pnpm db:push afterwards to apply the schema change to your database.
+ * Run pnpm db:migrate afterwards to apply the schema change to your database.
  */
 
 import { existsSync, readFileSync, unlinkSync, writeFileSync } from "fs";
@@ -101,7 +101,7 @@ async function main() {
     return;
   }
 
-  console.log("\nDone! Run pnpm db:push to apply the schema change.");
+  console.log("\nDone! Run pnpm db:migrate to apply the schema change.");
 }
 
 main();

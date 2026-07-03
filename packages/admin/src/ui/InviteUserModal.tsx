@@ -21,25 +21,13 @@ import {
   SelectValue,
   toast,
 } from "@repo/ui";
-import { TRPCClientError } from "@trpc/client";
+import { getErrorMessage } from "./lib/getErrorMessage";
+import { InviteLinkDisplay } from "./resources/InviteLinkDisplay";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email address"),
 });
 type FormData = z.infer<typeof schema>;
-
-function getErrorMessage(err: unknown): string {
-  if (err instanceof TRPCClientError) {
-    try {
-      const issues = JSON.parse(err.message);
-      if (Array.isArray(issues) && issues[0]?.message) return issues[0].message;
-    } catch {
-      // not JSON
-    }
-    return err.message;
-  }
-  return (err as Error)?.message ?? "Something went wrong";
-}
 
 export interface InviteUserModalProps {
   open: boolean;
@@ -53,7 +41,7 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
   const [roleId, setRoleId] = useState<string>("");
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
   const [inviteEmail, setInviteEmail] = useState<string>("");
-  const [copied, setCopied] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   const {
     register,
@@ -76,7 +64,6 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
     setRoleId("");
     setInviteUrl(null);
     setInviteEmail("");
-    setCopied(false);
     onClose();
   }
 
@@ -97,20 +84,13 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
     await createInvite(data);
   }
 
-  async function handleCopy() {
-    if (!inviteUrl) return;
-    await navigator.clipboard.writeText(inviteUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
-
   async function handleSendInviteEmail() {
     if (!inviteUrl || !inviteEmail) return;
+    setSendingEmail(true);
     try {
       await sendInviteEmailMutation.mutateAsync({ email: inviteEmail, inviteUrl });
-      toast.success(`Invitation email sent to ${inviteEmail}`);
-    } catch (err) {
-      toast.error(getErrorMessage(err));
+    } finally {
+      setSendingEmail(false);
     }
   }
 
@@ -127,45 +107,15 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
         </DialogHeader>
 
         {inviteUrl ? (
-          <div className="space-y-4 mt-2">
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium">Invite link</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  readOnly
-                  value={inviteUrl}
-                  className="h-10 text-xs font-mono bg-muted"
-                  onFocus={(e) => e.target.select()}
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCopy}
-                  className="shrink-0"
-                >
-                  {copied ? "Copied!" : "Copy"}
-                </Button>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              This link expires in 7 days. Share it with the user — they will set their own password on sign-up.
-            </p>
-            <div className="flex justify-end gap-2">
-              {emailDeliveryEnabled && (
-                <Button
-                  type="button"
-                  onClick={handleSendInviteEmail}
-                  disabled={sendInviteEmailMutation.isPending}
-                >
-                  {sendInviteEmailMutation.isPending ? "Sending..." : "Send email invitation"}
-                </Button>
-              )}
-              <Button type="button" variant="outline" onClick={handleClose}>
-                Done
-              </Button>
-            </div>
-          </div>
+          <InviteLinkDisplay
+            url={inviteUrl}
+            email={inviteEmail}
+            emailDeliveryEnabled={emailDeliveryEnabled}
+            sendingEmail={sendingEmail}
+            onSendEmail={handleSendInviteEmail}
+            onDone={handleClose}
+            description="Invite link"
+          />
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2" noValidate>
             {serverError && (

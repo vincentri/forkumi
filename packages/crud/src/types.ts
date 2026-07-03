@@ -14,7 +14,10 @@ export type FieldType =
   | "range"
   | "multicheck"
   | "image"
-  | "file";
+  | "file"
+  | "schedule"
+  | "gallery"
+  | "separator";
 
 export interface SelectOption {
   label: string;
@@ -32,23 +35,43 @@ export interface SelectOptionsFrom {
   where?: Record<string, unknown>;
   /** Optional Prisma orderBy clause. */
   orderBy?: Record<string, unknown>;
+  /** Maximum options returned by the server-side search. Defaults to 50. */
+  limit?: number;
+  /** Fields to search on when the user types. Defaults to [labelField]. */
+  searchFields?: string[];
 }
 
-export interface SelectDisplayOptions {
-  /** In table cells, show the raw value or the matching option label. Defaults to "value". */
+interface SelectDisplayOptions {
+  /** In table cells, show the raw value or the matching option label. Defaults to "label" for optionsFrom fields, "value" for static/optionsQuery fields. */
   table?: "value" | "label";
   /** In filter cells, render a free text input or select dropdown. Defaults to "select" for select fields. */
   filter?: "text" | "select";
 }
 
-export interface CRUDQueryContext {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  db: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ctx?: any;
+interface PrismaModelDelegate {
+  findMany: (args: any) => Promise<any>;
+  findUnique: (args: any) => Promise<any>;
+  findFirst: (args: any) => Promise<any>;
+  create: (args: any) => Promise<any>;
+  update: (args: any) => Promise<any>;
+  delete: (args: any) => Promise<any>;
+  deleteMany: (args?: any) => Promise<any>;
+  count: (args?: any) => Promise<number>;
+  upsert: (args: any) => Promise<any>;
 }
 
-export interface CRUDListQueryContext extends CRUDQueryContext {
+export type PrismaLikeClient = Record<string, PrismaModelDelegate>;
+
+interface CRUDQueryContext {
+  db: PrismaLikeClient;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ctx?: any;
+  /** Passed to server-side option queries when the user searches or a value is already selected. */
+  search?: string;
+  selected?: string;
+}
+
+interface CRUDListQueryContext extends CRUDQueryContext {
   input: QueryState & { page: number; pageSize: number };
   baseWhere: Record<string, unknown>;
   orderBy: Record<string, unknown>;
@@ -56,7 +79,7 @@ export interface CRUDListQueryContext extends CRUDQueryContext {
   take: number;
 }
 
-export interface CRUDQueryHooks {
+interface CRUDQueryHooks {
   /**
    * Escape hatch for complex list queries: joins, aggregates, computed columns, tenant-specific rules.
    * Return the same shape as the generated list procedure.
@@ -73,7 +96,7 @@ export interface CRUDQueryHooks {
 export interface CRUDAssetReplacementContext {
   model: string;
   id?: string;
-  field: CRUDFieldImage | CRUDFieldFile;
+  field: CRUDFieldImage | CRUDFieldFile | CRUDFieldGallery;
   oldValue: string;
   newValue: string | null;
 }
@@ -122,7 +145,7 @@ export interface CRUDFormLayoutSection {
   rows?: CRUDFormLayoutItem[][];
 }
 
-export interface CRUDFieldVisibilityCondition {
+interface CRUDFieldVisibilityCondition {
   field: string;
   equals?: unknown;
   notEquals?: unknown;
@@ -184,6 +207,19 @@ export interface CRUDFieldSelect extends CRUDFieldBase {
   display?: SelectDisplayOptions;
   /** When true, allows selecting multiple values (stored as string[]) */
   multiple?: boolean;
+  /**
+   * When set alongside `multiple: true`, treats this field as a Prisma relation
+   * (many-to-many). The value array is never stored as a scalar column — it is
+   * translated to `{ set: [{id},...] }` on write and read back via `include`.
+   */
+  relation?: {
+    /** Prisma relation accessor on this model, e.g. "tags" */
+    field: string;
+    /** Target Prisma model key (lowercase), e.g. "tag" */
+    model: string;
+    /** Explicit join model key — scaffold generates a named join table (e.g. "blogTag" → blog_tags with blog_id/tag_id) */
+    through?: string;
+  };
 }
 
 export interface CRUDFieldMulticheck extends CRUDFieldBase {
@@ -210,11 +246,33 @@ export interface CRUDFieldFile extends CRUDFieldBase {
   maxSizeMB?: number;
 }
 
-interface CRUDFieldOther extends CRUDFieldBase {
-  type: Exclude<FieldType, "select" | "range" | "multicheck" | "image" | "file">;
+export interface CRUDFieldSeparator extends CRUDFieldBase {
+  type: "separator";
 }
 
-export type CRUDField = CRUDFieldSelect | CRUDFieldRange | CRUDFieldMulticheck | CRUDFieldImage | CRUDFieldFile | CRUDFieldOther;
+export interface CRUDFieldSchedule extends CRUDFieldBase {
+  type: "schedule";
+  /** Optional custom day labels. Defaults to ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]. */
+  dayLabels?: string[];
+  /** Optional explicit child model name. Defaults to {ParentModel}{PascalSingular(field.name)}. */
+  childModelName?: string;
+}
+
+export interface CRUDFieldGallery extends CRUDFieldBase {
+  type: "gallery";
+  /** Upload endpoint. Each image POSTs to this URL and stores the returned path. */
+  uploadUrl: string;
+  /** Optional max upload size in MB. Defaults to 5. */
+  maxSizeMB?: number;
+  /** Optional explicit child model name. Defaults to {ParentModel}{PascalSingular(field.name)}. */
+  childModelName?: string;
+}
+
+interface CRUDFieldOther extends CRUDFieldBase {
+  type: Exclude<FieldType, "select" | "range" | "multicheck" | "image" | "file" | "schedule" | "gallery" | "separator">;
+}
+
+export type CRUDField = CRUDFieldSelect | CRUDFieldRange | CRUDFieldMulticheck | CRUDFieldImage | CRUDFieldFile | CRUDFieldSeparator | CRUDFieldSchedule | CRUDFieldGallery | CRUDFieldOther;
 
 export interface QueryState {
   page: number;
@@ -223,6 +281,8 @@ export interface QueryState {
   sortDir?: "asc" | "desc";
   filters?: Record<string, string | boolean | null>;
 }
+
+import type { UseFormReturn } from "react-hook-form";
 
 export interface CRUDConfig {
   /** Prisma model name — lowercase (e.g. "product" for model Product) */
@@ -282,4 +342,19 @@ export interface CRUDConfig {
   formLayout?: CRUDFormLayoutSection[];
   /** Optional server-side query hooks for complex cases. Stripped before config is sent to the client. */
   query?: CRUDQueryHooks;
+  /** Optional pre-write hooks for cross-field validation. Throw to abort the write. */
+  beforeCreate?: (data: Record<string, unknown>) => void | Promise<void>;
+  beforeUpdate?: (id: string, data: Record<string, unknown>) => void | Promise<void>;
+}
+
+export interface CRUDExtraTab {
+  /** Tab label rendered in the form tab list. */
+  label: string;
+  /** Names of fields this tab reads. Used for invalid-tab switching + error badges. */
+  fieldNames: string[];
+  /** Render the tab body. Receives the react-hook-form instance + read-only/mode/id context. */
+  render: (
+    form: UseFormReturn<Record<string, unknown>>,
+    ctx: { readOnly?: boolean; mode: "create" | "edit"; id?: string },
+  ) => React.ReactNode;
 }

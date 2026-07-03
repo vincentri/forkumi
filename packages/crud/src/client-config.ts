@@ -13,7 +13,13 @@ function sanitizeField(field: CRUDField): CRUDField {
  * Remove server-only functions before a CRUD config is passed to client components.
  */
 export function toClientCRUDConfig(config: CRUDConfig): CRUDConfig {
-  const { query: _query, ...clientConfig } = config;
+  // Strip server-only function-bearing keys (query, beforeCreate, beforeUpdate).
+  // Functions can't be serialized to Client Components — a single non-stripped hook
+  // 500s the whole admin nav/page.
+  const serverOnlyKeys = new Set(["query", "beforeCreate", "beforeUpdate"]);
+  const clientConfig = Object.fromEntries(
+    Object.entries(config).filter(([k, v]) => !serverOnlyKeys.has(k) && typeof v !== "function"),
+  ) as unknown as CRUDConfig;
   return {
     ...clientConfig,
     fields: config.fields.map(sanitizeField),

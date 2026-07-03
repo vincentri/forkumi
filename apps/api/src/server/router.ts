@@ -4,7 +4,7 @@ import { router, publicProcedure, permissionProcedure } from "./trpc";
 import { TRPCError } from "@trpc/server";
 import * as CRUDConfigs from "~/crud";
 import { userRouter } from "./routers/user";
-import { roleCreateProcedure, roleUpdateProcedure, roleDeleteProcedure } from "./routers/role";
+import { roleRouter } from "./routers/role";
 import { getInvitationProcedure, acceptInvitationProcedure } from "./routers/invitation";
 import { accountRouter } from "./routers/account";
 import { emailSettingsRouter } from "./routers/emailSettings";
@@ -78,7 +78,7 @@ const crudRouters = buildCRUDRouters(
   CRUDConfigs as Record<string, import("@repo/crud").CRUDConfig>,
   router,
   procedureMapFactory,
-  prisma,
+  prisma as unknown as import("@repo/crud").PrismaLikeClient,
   {
     onAssetReplaced: ({ oldValue }) => deleteManagedAsset(oldValue),
   },
@@ -88,12 +88,14 @@ crudRouters.user = userRouter;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const autoRole = crudRouters.role as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const roleR = roleRouter as any;
 crudRouters.role = router({
   list:    autoRole.list,
   getById: autoRole.getById,
-  create:  roleCreateProcedure,
-  update:  roleUpdateProcedure,
-  delete:  roleDeleteProcedure,
+  create:  roleR.create,
+  update:  roleR.update,
+  delete:  roleR.delete,
 });
 
 export const appRouter = router({

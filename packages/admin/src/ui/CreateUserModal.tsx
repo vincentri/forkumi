@@ -15,7 +15,7 @@ import {
   Label,
   toast,
 } from "@repo/ui";
-import { TRPCClientError } from "@trpc/client";
+import { getErrorMessage } from "./lib/getErrorMessage";
 
 const schema = z
   .object({
@@ -34,19 +34,6 @@ const schema = z
     }
   });
 type FormData = z.infer<typeof schema>;
-
-function getErrorMessage(err: unknown): string {
-  if (err instanceof TRPCClientError) {
-    try {
-      const issues = JSON.parse(err.message);
-      if (Array.isArray(issues) && issues[0]?.message) return issues[0].message;
-    } catch {
-      // not JSON
-    }
-    return err.message;
-  }
-  return (err as Error)?.message ?? "Something went wrong";
-}
 
 export interface CreateUserModalProps {
   open: boolean;

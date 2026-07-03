@@ -194,7 +194,7 @@ async function main() {
   }
 
   console.log("\nNext step:");
-  console.log(`  pnpm db:push`);
+  console.log(`  pnpm db:migrate`);
 }
 
 main();

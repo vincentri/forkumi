@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildZodSchema } from "../schema-builder";
+import { buildUpdateZodSchema, buildZodSchema } from "../schema-builder";
 import type { CRUDConfig } from "../types";
 
 function makeConfig(fields: CRUDConfig["fields"]): CRUDConfig {
@@ -141,5 +141,50 @@ describe("buildZodSchema", () => {
       const result = schema.parse({ name: "Admin", id: "cma123abc" });
       expect((result as Record<string, unknown>).id).toBe("cma123abc");
     });
+  });
+});
+
+describe("buildUpdateZodSchema", () => {
+  it("all fields become optional — empty object passes", () => {
+    const schema = buildUpdateZodSchema(makeConfig([
+      { name: "title", type: "text", label: "Title", required: true },
+      { name: "price", type: "number", label: "Price", required: true },
+    ]));
+    expect(schema.parse({})).toEqual({});
+  });
+
+  it("individual fields still validate when provided", () => {
+    const schema = buildUpdateZodSchema(makeConfig([
+      { name: "email", type: "email", label: "Email", required: true },
+    ]));
+    expect(schema.parse({ email: "user@example.com" })).toEqual({ email: "user@example.com" });
+    expect(() => schema.parse({ email: "not-an-email" })).toThrow();
+  });
+
+  it("boolean fields validate when provided", () => {
+    const schema = buildUpdateZodSchema(makeConfig([
+      { name: "published", type: "boolean", label: "Published", required: true },
+    ]));
+    expect(schema.parse({ published: true })).toEqual({ published: true });
+    expect(schema.parse({})).toEqual({});
+  });
+
+  it("select fields validate enum when provided", () => {
+    const schema = buildUpdateZodSchema(makeConfig([{
+      name: "status", type: "select", label: "Status", required: true,
+      options: [{ label: "Draft", value: "draft" }, { label: "Published", value: "published" }],
+    }]));
+    expect(schema.parse({ status: "draft" })).toEqual({ status: "draft" });
+    expect(() => schema.parse({ status: "unknown" })).toThrow();
+    expect(schema.parse({})).toEqual({});
+  });
+
+  it("passthrough allows unknown fields", () => {
+    const schema = buildUpdateZodSchema(makeConfig([
+      { name: "title", type: "text", label: "Title" },
+    ]));
+    const result = schema.parse({ title: "hello", extra: "data" });
+    expect(result.title).toBe("hello");
+    expect((result as Record<string, unknown>).extra).toBe("data");
   });
 });

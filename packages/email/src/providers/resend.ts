@@ -1,4 +1,5 @@
 import type { EmailAddress, EmailMessage, EmailProvider } from "../types";
+import { formatAddress } from "../utils";
 
 const RESEND_EMAILS_URL = "https://api.resend.com/emails";
 
@@ -6,11 +7,6 @@ export interface ResendProviderOptions {
   apiKey: string;
   defaultFrom: string | EmailAddress;
   defaultReplyTo?: string | string[];
-}
-
-function formatAddress(address: string | EmailAddress): string {
-  if (typeof address === "string") return address;
-  return address.name ? `${address.name} <${address.email}>` : address.email;
 }
 
 function formatRecipient(value: EmailMessage["to"]): string | string[] {

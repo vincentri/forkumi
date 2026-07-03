@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
-import { buildCRUDRouters, createCRUDRouter } from "../router-factory";
+import { buildCRUDRouters, createCRUDRouter, createKeyValueRouter, handlePrismaError } from "../router-factory";
 import type { CRUDConfig } from "../types";
 
 // --- buildCRUDRouters ---
@@ -170,6 +170,34 @@ describe("createCRUDRouter field filters", () => {
     expect(capturedWhere[0]).toEqual({
       AND: [{ email: { contains: "test", mode: "insensitive" } }],
     });
+  });
+
+  it("update preserves explicit slug values", async () => {
+    const calls: unknown[] = [];
+    const mockPrisma = {
+      post: {
+        update: async (args: unknown) => {
+          calls.push(args);
+          return args;
+        },
+      },
+    };
+
+    const config: CRUDConfig = {
+      model: "post",
+      label: "Posts",
+      fields: [
+        { name: "title", type: "text", label: "Title", required: true },
+        { name: "slug", type: "text", label: "Slug", required: true, slugFrom: "title" },
+      ],
+    };
+
+    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    await (routerResult as any).update._mutationFn({
+      input: { id: "post_1", data: { title: "New Title", slug: "manual-slug" } },
+    });
+
+    expect(calls[0]).toEqual({ where: { id: "post_1" }, data: { title: "New Title", slug: "manual-slug" } });
   });
 });
 
@@ -414,33 +442,8 @@ describe("createCRUDRouter deletePolicy", () => {
 
 // --- handlePrismaError ---
 
-// Test the Prisma error → TRPCError conversion in isolation.
-// We can't test createCRUDRouter end-to-end without a real DB,
-// but the error handler is a pure function we can unit-test.
-
-// Re-implement the handler logic here to test the contract.
-// If router-factory ever exports handlePrismaError, delete this and import directly.
-function handlePrismaError(err: unknown): never {
-  const PRISMA_UNIQUE_VIOLATION = "P2002";
-  const PRISMA_NOT_FOUND = "P2025";
-
-  if (err && typeof err === "object" && "code" in err) {
-    const code = (err as { code: string }).code;
-    if (code === PRISMA_UNIQUE_VIOLATION) {
-      const fields = (err as { meta?: { target?: string[] } }).meta?.target?.join(", ");
-      throw new TRPCError({
-        code: "CONFLICT",
-        message: fields ? `A record with this ${fields} already exists.` : "A record with these values already exists.",
-      });
-    }
-    if (code === PRISMA_NOT_FOUND) {
-      throw new TRPCError({ code: "NOT_FOUND", message: "Record not found." });
-    }
-  }
-  throw err;
-}
-
-describe("Prisma error handling", () => {
+// Import the real function instead of re-implementing
+describe("Prisma error handling (imported handlePrismaError)", () => {
   it("P2002 with target fields → CONFLICT with field names in message", () => {
     const prismaError = { code: "P2002", meta: { target: ["email"] } };
     expect(() => handlePrismaError(prismaError)).toThrowError(TRPCError);
@@ -471,13 +474,414 @@ describe("Prisma error handling", () => {
     }
   });
 
-  it("unknown error → rethrows as-is", () => {
-    const unknownError = new Error("something else");
-    expect(() => handlePrismaError(unknownError)).toThrow("something else");
+  it("TRPCError passthrough — rethrows without wrapping", () => {
+    const trpcErr = new TRPCError({ code: "FORBIDDEN", message: "No access" });
+    expect(() => handlePrismaError(trpcErr)).toThrow(trpcErr);
   });
 
-  it("non-Prisma object → rethrows as-is", () => {
+  it("generic non-Prisma error → INTERNAL_SERVER_ERROR", () => {
+    const unknownError = new Error("something else");
+    try {
+      handlePrismaError(unknownError);
+    } catch (err) {
+      expect((err as TRPCError).code).toBe("INTERNAL_SERVER_ERROR");
+      expect((err as TRPCError).message).toBe("Something went wrong. Please try again.");
+    }
+  });
+
+  it("non-Prisma object → INTERNAL_SERVER_ERROR", () => {
     const weirdError = { message: "not a prisma error" };
-    expect(() => handlePrismaError(weirdError)).toThrow();
+    try {
+      handlePrismaError(weirdError);
+    } catch (err) {
+      expect((err as TRPCError).code).toBe("INTERNAL_SERVER_ERROR");
+    }
+  });
+
+  it("null → INTERNAL_SERVER_ERROR", () => {
+    try {
+      handlePrismaError(null);
+    } catch (err) {
+      expect((err as TRPCError).code).toBe("INTERNAL_SERVER_ERROR");
+    }
+  });
+
+  it("undefined → INTERNAL_SERVER_ERROR", () => {
+    try {
+      handlePrismaError(undefined);
+    } catch (err) {
+      expect((err as TRPCError).code).toBe("INTERNAL_SERVER_ERROR");
+    }
+  });
+});
+
+// --- createKeyValueRouter ---
+
+describe("createKeyValueRouter", () => {
+  it("get returns key-value pairs from DB", async () => {
+    const mockPrisma = {
+      setting: {
+        findMany: async () => [
+          { key: "heading", value: "Hello" },
+          { key: "body", value: "World" },
+        ],
+      },
+    };
+
+    const config: CRUDConfig = {
+      model: "setting",
+      label: "Settings",
+      mode: "keyValue",
+      fields: [
+        { name: "heading", type: "text", label: "Heading", namespace: "about" },
+        { name: "body", type: "text", label: "Body", namespace: "about" },
+      ],
+    };
+
+    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const result = await (routerResult as any).get._queryFn();
+    expect(result).toEqual({ heading: "Hello", body: "World" });
+  });
+
+  it("get returns empty string for null values", async () => {
+    const mockPrisma = {
+      setting: {
+        findMany: async () => [
+          { key: "heading", value: null },
+        ],
+      },
+    };
+
+    const config: CRUDConfig = {
+      model: "setting",
+      label: "Settings",
+      mode: "keyValue",
+      fields: [
+        { name: "heading", type: "text", label: "Heading", namespace: "about" },
+      ],
+    };
+
+    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const result = await (routerResult as any).get._queryFn();
+    expect(result).toEqual({ heading: "" });
+  });
+
+  it("update upserts each key with correct namespace", async () => {
+    const calls: unknown[] = [];
+    const mockPrisma = {
+      setting: {
+        findMany: async () => [{ key: "heading", value: "Old" }],
+        upsert: async (args: unknown) => {
+          calls.push(args);
+          return args;
+        },
+      },
+    };
+
+    const config: CRUDConfig = {
+      model: "setting",
+      label: "Settings",
+      mode: "keyValue",
+      fields: [
+        { name: "heading", type: "text", label: "Heading", namespace: "about" },
+      ],
+    };
+
+    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    await (routerResult as any).update._mutationFn({ input: { data: { heading: "New" } } });
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toEqual({
+      where: { key: "heading" },
+      update: { namespace: "about", value: "New" },
+      create: { key: "heading", namespace: "about", value: "New" },
+    });
+  });
+
+  it("searchOptions returns options for select fields with optionsQuery", async () => {
+    const mockPrisma = {};
+    const config: CRUDConfig = {
+      model: "setting",
+      label: "Settings",
+      mode: "keyValue",
+      fields: [
+        {
+          name: "theme",
+          type: "select",
+          label: "Theme",
+          namespace: "about",
+          optionsQuery: async () => [
+            { value: "light", label: "Light" },
+            { value: "dark", label: "Dark" },
+          ],
+        },
+      ],
+    };
+
+    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const result = await (routerResult as any).searchOptions._queryFn({
+      input: { field: "theme" },
+    });
+    expect(result).toEqual([
+      { value: "light", label: "Light" },
+      { value: "dark", label: "Dark" },
+    ]);
+  });
+
+  it("searchOptions throws BAD_REQUEST for non-select field", async () => {
+    const mockPrisma = {};
+    const config: CRUDConfig = {
+      model: "setting",
+      label: "Settings",
+      mode: "keyValue",
+      fields: [
+        { name: "heading", type: "text", label: "Heading", namespace: "about" },
+      ],
+    };
+
+    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    await expect(
+      (routerResult as any).searchOptions._queryFn({ input: { field: "heading" } }),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+  });
+
+  it("searchOptions throws BAD_REQUEST for unknown field", async () => {
+    const mockPrisma = {};
+    const config: CRUDConfig = {
+      model: "setting",
+      label: "Settings",
+      mode: "keyValue",
+      fields: [
+        { name: "heading", type: "text", label: "Heading", namespace: "about" },
+      ],
+    };
+
+    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    await expect(
+      (routerResult as any).searchOptions._queryFn({ input: { field: "nonexistent" } }),
+    ).rejects.toMatchObject({ code: "BAD_REQUEST" });
+  });
+});
+
+// --- searchOptions with ids ---
+
+describe("createCRUDRouter searchOptions with ids", () => {
+  it("returns labels when only ids are provided", async () => {
+    const mockPrisma = {
+      category: {
+        findMany: async (args: { where: Record<string, unknown> }) => {
+          const ids = args.where.id?.in ?? [];
+          return ids.map((id: string) => ({ id, name: `Category ${id}` }));
+        },
+      },
+    };
+
+    const config: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      fields: [
+        {
+          name: "categoryId",
+          type: "select",
+          label: "Category",
+          optionsFrom: {
+            model: "category",
+            valueField: "id",
+            labelField: "name",
+          },
+        },
+      ],
+    };
+
+    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const result = await (routerResult as any).searchOptions._queryFn({
+      input: { field: "categoryId", ids: ["1", "2"] },
+    });
+    expect(result).toEqual([
+      { value: "1", label: "Category 1" },
+      { value: "2", label: "Category 2" },
+    ]);
+  });
+
+  it("deduplicates results across ids and search", async () => {
+    const callCount = { search: 0, ids: 0 };
+    const mockPrisma = {
+      category: {
+        findMany: async (args: { where: Record<string, unknown> }) => {
+          if (args.where.OR) {
+            callCount.search++;
+            return [{ id: "1", name: "Cat 1" }];
+          }
+          if (args.where.id) {
+            callCount.ids++;
+            return [{ id: "1", name: "Cat 1" }];
+          }
+          return [];
+        },
+      },
+    };
+
+    const config: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      fields: [
+        {
+          name: "categoryId",
+          type: "select",
+          label: "Category",
+          optionsFrom: {
+            model: "category",
+            valueField: "id",
+            labelField: "name",
+          },
+        },
+      ],
+    };
+
+    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const result = await (routerResult as any).searchOptions._queryFn({
+      input: { field: "categoryId", ids: ["1"], search: "Cat" },
+    });
+    // Should deduplicate — only one result for id "1"
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual({ value: "1", label: "Cat 1" });
+  });
+});
+
+// --- createCRUDRouter searchOptions for static options ---
+
+describe("createCRUDRouter searchOptions for static options", () => {
+  it("filters static options by search term", async () => {
+    const mockPrisma = {};
+    const config: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      fields: [
+        {
+          name: "status",
+          type: "select",
+          label: "Status",
+          options: [
+            { value: "draft", label: "Draft" },
+            { value: "published", label: "Published" },
+            { value: "archived", label: "Archived" },
+          ],
+        },
+      ],
+    };
+
+    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const result = await (routerResult as any).searchOptions._queryFn({
+      input: { field: "status", search: "pub" },
+    });
+    expect(result).toEqual([{ value: "published", label: "Published" }]);
+  });
+
+  it("returns all static options when no search term", async () => {
+    const mockPrisma = {};
+    const config: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      fields: [
+        {
+          name: "status",
+          type: "select",
+          label: "Status",
+          options: [
+            { value: "draft", label: "Draft" },
+            { value: "published", label: "Published" },
+          ],
+        },
+      ],
+    };
+
+    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const result = await (routerResult as any).searchOptions._queryFn({
+      input: { field: "status" },
+    });
+    expect(result).toHaveLength(2);
+  });
+});
+
+// --- createCRUDRouter CSV export with select labels ---
+
+describe("createCRUDRouter exportCsv select label resolution", () => {
+  it("resolves select option labels in CSV output", async () => {
+    const mockPrisma = {
+      product: {
+        findMany: async () => [
+          { name: "Widget", status: "draft" },
+        ],
+      },
+    };
+
+    const config: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      fields: [
+        { name: "name", type: "text", label: "Name" },
+        {
+          name: "status",
+          type: "select",
+          label: "Status",
+          options: [
+            { value: "draft", label: "Draft" },
+            { value: "published", label: "Published" },
+          ],
+        },
+      ],
+    };
+
+    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const result = await (routerResult as any).exportCsv._mutationFn({ input: {} });
+    expect(result.csv).toBe("Name,Status\nWidget,Draft");
+  });
+});
+
+// --- createCRUDRouter readOnly mode ---
+
+describe("createCRUDRouter readOnly mode", () => {
+  it("only exposes list and getById when readOnly is true", () => {
+    const mockPrisma = {};
+    const config: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      readOnly: true,
+      fields: [{ name: "title", type: "text", label: "Title" }],
+    };
+
+    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    expect((routerResult as any).list).toBeDefined();
+    expect((routerResult as any).getById).toBeDefined();
+    expect((routerResult as any).create).toBeUndefined();
+    expect((routerResult as any).update).toBeUndefined();
+    expect((routerResult as any).delete).toBeUndefined();
+    expect((routerResult as any).bulkDelete).toBeUndefined();
+  });
+});
+
+// --- createCRUDRouter maxRecords ---
+
+describe("createCRUDRouter maxRecords", () => {
+  it("blocks create when maxRecords is reached", async () => {
+    const mockPrisma = {
+      product: {
+        count: async () => 10,
+      },
+    };
+
+    const config: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      maxRecords: 10,
+      fields: [{ name: "title", type: "text", label: "Title", required: true }],
+    };
+
+    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    await expect(
+      (routerResult as any).create._mutationFn({ input: { title: "New" } }),
+    ).rejects.toMatchObject({
+      code: "FORBIDDEN",
+      message: "Maximum of 10 products allowed.",
+    });
   });
 });

@@ -7,6 +7,7 @@ export function createRoleCRUD(
   return defineCRUD({
     model: "role",
     label: "Roles",
+    icon: "Shield",
     navGroup: "Administration",
     fields: [
       { name: "name", type: "text", label: "Role Name", required: true },

@@ -48,7 +48,7 @@ function fieldToZod(field: CRUDField): z.ZodTypeAny {
         const values = field.options.map((o) => o.value) as [string, ...string[]];
         schema = z.enum(values);
       } else {
-        schema = z.string();
+        schema = field.required ? z.string().min(1, "Required") : z.string();
       }
       break;
     case "color":
@@ -67,6 +67,29 @@ function fieldToZod(field: CRUDField): z.ZodTypeAny {
       if (field.max !== undefined) rangeSchema = rangeSchema.max(field.max);
       schema = rangeSchema;
       break;
+    }
+    case "schedule": {
+      const time = z.union([
+        z.literal(""),
+        z.null(),
+        z.string().regex(/^(0\d|1\d|2[0-3]):[0-5]\d$/),
+      ]);
+      return z.array(
+        z.object({
+          dayOfWeek: z.number().int().min(0).max(6),
+          openTime: time,
+          closeTime: time,
+        }),
+      );
+    }
+    case "gallery": {
+      return z.array(
+        z.object({
+          url: assetUrlSchema,
+          alt: z.string().optional(),
+          position: z.number().int().min(0),
+        }),
+      );
     }
     case "text":
     case "textarea":
@@ -103,6 +126,7 @@ export function buildZodSchema(config: CRUDConfig) {
 
   for (const field of config.fields) {
     if (field.showInForm === false) continue;
+    if (field.type === "separator") continue;
     shape[field.name] = fieldToZod(field);
   }
 

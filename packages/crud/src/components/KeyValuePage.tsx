@@ -3,9 +3,9 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Label, Tabs, TabsList, TabsTrigger, TabsContent, cn } from "@repo/ui";
+import { Button, Label, Separator, Tabs, TabsList, TabsTrigger, TabsContent, cn } from "@repo/ui";
 import type { CRUDConfig, CRUDField } from "../types";
-import { FieldRenderer } from "./fields/FieldRenderer";
+import { FieldRenderer, type ModelSelectApi } from "./fields/FieldRenderer";
 import { buildZodSchema } from "../schema-builder";
 import { visibleFieldsForValues } from "../field-visibility";
 
@@ -15,19 +15,22 @@ interface KeyValuePageProps {
   onSave: (data: Record<string, string>) => void | Promise<void>;
   saving?: boolean;
   extraTabContent?: Record<string, ReactNode | ((values: Record<string, unknown>) => ReactNode)>;
+  modelApi?: ModelSelectApi;
 }
 
 function normalizeDataForFields(fields: CRUDField[], data: Record<string, string>): Record<string, unknown> {
   return Object.fromEntries(
-    fields.map((field) => {
-      const storedValue = data[field.name];
-      const value: unknown =
-        (storedValue === "" || storedValue == null) && field.default !== undefined
-          ? field.default
-          : storedValue ?? "";
-      if (field.type === "boolean") return [field.name, value === true || value === "true"];
-      return [field.name, value];
-    }),
+    fields
+      .filter((field) => field.type !== "separator")
+      .map((field) => {
+        const storedValue = data[field.name];
+        const value: unknown =
+          (storedValue === "" || storedValue == null) && field.default !== undefined
+            ? field.default
+            : storedValue ?? "";
+        if (field.type === "boolean") return [field.name, value === true || value === "true"];
+        return [field.name, value];
+      }),
   );
 }
 
@@ -38,7 +41,7 @@ function renderExtraTabContent(
   return typeof content === "function" ? content(values) : content;
 }
 
-export function KeyValuePage({ config, data, onSave, saving, extraTabContent }: KeyValuePageProps) {
+export function KeyValuePage({ config, data, onSave, saving, extraTabContent, modelApi }: KeyValuePageProps) {
   const fields = useMemo(() => config.fields.filter((f) => f.showInForm !== false), [config.fields]);
   const hasTabs = fields.some((f) => (f as CRUDField & { tab?: string }).tab);
   const defaultValues = useMemo(() => normalizeDataForFields(fields, data), [fields, data]);
@@ -81,7 +84,11 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent }: 
 
   function onSubmit(values: Record<string, unknown>) {
     // Only persist the active tab's fields
-    const tabFieldNames = new Set(visibleFieldsForValues(activeFields, values).map((f) => f.name));
+    const tabFieldNames = new Set(
+      visibleFieldsForValues(activeFields, values)
+        .filter((f) => f.type !== "separator")
+        .map((f) => f.name),
+    );
     const filtered = Object.fromEntries(
       Object.entries(values)
         .filter(([k]) => tabFieldNames.has(k))
@@ -108,6 +115,7 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent }: 
                   watch={watch}
                   control={control}
                   errors={t === activeTab ? errors : {}}
+                  modelApi={modelApi}
                 />
                 {renderExtraTabContent(extraTabContent?.[t], watchedValues)}
               </div>
@@ -125,7 +133,7 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent }: 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
-      <FieldList fields={visibleFieldsForValues(fields, watchedValues)} register={register} watch={watch} control={control} errors={errors} />
+      <FieldList fields={visibleFieldsForValues(fields, watchedValues)} register={register} watch={watch} control={control} errors={errors} modelApi={modelApi} />
       <div>
         <Button type="submit" disabled={saving}>
           {saving ? "Saving…" : "Save"}
@@ -135,17 +143,29 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent }: 
   );
 }
 
-function FieldList({ fields, register, watch, control, errors }: {
+function FieldList({ fields, register, watch, control, errors, modelApi }: {
   fields: CRUDField[];
   register: ReturnType<typeof useForm>["register"];
   watch: ReturnType<typeof useForm>["watch"];
   control: ReturnType<typeof useForm>["control"];
   errors: Record<string, { message?: string } | undefined>;
+  modelApi?: ModelSelectApi;
 }) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {fields.map((field) => {
         const errorMessage = errors[field.name]?.message as string | undefined;
+        if (field.type === "separator") {
+          return (
+            <div
+              key={field.name}
+              className={cn("pt-6", field.width === "half" ? "md:col-span-1" : "md:col-span-2")}
+            >
+              <Label className="text-lg font-bold text-foreground pb-3 block">{field.label}</Label>
+              <Separator />
+            </div>
+          );
+        }
         if (field.type === "boolean") {
           return (
             <div
@@ -158,6 +178,7 @@ function FieldList({ fields, register, watch, control, errors }: {
                   register={register as any}
                   watch={watch as any}
                   control={control as any}
+                  modelApi={modelApi}
                 />
                 <Label htmlFor={field.name} className="cursor-pointer">
                   {field.label}
@@ -184,6 +205,7 @@ function FieldList({ fields, register, watch, control, errors }: {
               register={register as any}
               watch={watch as any}
               control={control as any}
+              modelApi={modelApi}
             />
             {field.note && <p className="text-xs text-muted-foreground">{field.note}</p>}
             {errorMessage && <p className="text-sm text-destructive">{errorMessage}</p>}

@@ -13,7 +13,7 @@ cd my-project
 node scripts/setup.mjs        # writes .env with a generated NEXTAUTH_SECRET
 # edit .env — set POSTGRES_* vars if your DB credentials differ from the defaults
 # start your local Postgres first (see "Local Postgres" below)
-pnpm install && pnpm db:push && pnpm db:seed
+pnpm install && pnpm db:migrate && pnpm db:seed
 pnpm dev
 ```
 
@@ -78,7 +78,7 @@ rsync -a --exclude='.git' --exclude='node_modules' --exclude='.next' --exclude='
 cd ~/work/utils/test-project
 node scripts/setup.mjs
 # start your local Postgres first (see "Local Postgres" above)
-pnpm install && pnpm db:push && pnpm db:seed
+pnpm install && pnpm db:migrate && pnpm db:seed
 pnpm dev
 ```
 
@@ -87,7 +87,7 @@ pnpm dev
 ```bash
 rsync -a --delete --exclude='.git' --exclude='node_modules' --exclude='.next' --exclude='pnpm-lock.yaml' --exclude='.env' --filter='+ apps/api/src/crud/example.ts' --filter='- apps/api/src/crud/*' --filter='- apps/api/prisma/' ~/work/utils/quantyx/ ~/work/utils/test-project/
 cd ~/work/utils/test-project
-pnpm install && pnpm db:push
+pnpm install && pnpm db:migrate
 pnpm dev
 ```
 
@@ -129,7 +129,7 @@ pnpm crud:new
 # → prompts for model name, field names/types/required
 # → writes apps/api/src/crud/<model>.ts
 # → updates schema.prisma + crud/index.ts
-pnpm db:push
+pnpm db:migrate
 ```
 
 ### Path B: Write config first, then scaffold
@@ -152,7 +152,7 @@ export const ProductCRUD = defineCRUD({
 
 ```bash
 pnpm crud:scaffold product   # reads config → updates schema + barrel
-pnpm db:push
+pnpm db:migrate
 ```
 
 Nav link, tRPC routes (`admin.product.list/create/update/delete/bulkDelete`), and admin page at `/admin/product` are automatic.
@@ -240,7 +240,7 @@ S3 uploads do not set object ACLs. Make `uploads/*` and `defaults/*` publicly re
 | `pnpm dev:web`       | Start `apps/web` only (frontend, port 3000)     |
 | `pnpm build`         | Build all packages and apps                     |
 | `pnpm lint`          | Run ESLint CLI through Turbo                    |
-| `pnpm db:push`       | Push schema to DB — local dev only (no migration files) |
+| `pnpm db:migrate`       | Push schema to DB — local dev only (no migration files) |
 | `pnpm db:migrate`    | Generate a migration file — use this for production      |
 | `pnpm db:seed`       | Create seed data (admin@example.com / password)          |
 | `pnpm db:studio`     | Open Prisma Studio                                       |
@@ -275,7 +275,7 @@ These are known trade-offs in the current template. Mitigate before using on hig
 
 ### Database migrations
 
-Use `pnpm db:migrate` (generates migration files) — not `pnpm db:push` (destructive schema sync, dev-only). Commit the generated files in `packages/db/prisma/migrations/` to your repo.
+Use `pnpm db:migrate` (generates migration files) — not `pnpm db:migrate` (destructive schema sync, dev-only). Commit the generated files in `packages/db/prisma/migrations/` to your repo.
 
 ### Required environment variables
 
@@ -302,6 +302,6 @@ For Vercel, deploy `apps/api` and `apps/web` as separate projects from the same 
 
 **`P1001: Can't reach database server`** — Postgres is not reachable from the app container. Start your centralized Postgres compose first, ensure the `pgvector_default` network exists, and make sure the DB has the network alias `postgres`.
 
-**`TypeError: Cannot read properties of undefined (reading 'list')`** — The CRUD model isn't registered. Run `pnpm crud:scaffold <model>` and `pnpm db:push`, then restart the dev server.
+**`TypeError: Cannot read properties of undefined (reading 'list')`** — The CRUD model isn't registered. Run `pnpm crud:scaffold <model>` and `pnpm db:migrate`, then restart the dev server.
 
 **`NEXTAUTH_SECRET` missing** — Run `node scripts/setup.mjs` (writes `.env` automatically) or set it manually: `openssl rand -base64 32`.

@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -185,5 +186,211 @@ describe("CRUDForm", () => {
     const unreferenced = container.querySelector("[data-layout-unreferenced]");
     expect(unreferenced).toBeInTheDocument();
     expect(within(unreferenced as HTMLElement).getByLabelText(/notes/i)).toBeInTheDocument();
+  });
+
+  it("auto-generates slug from source field", async () => {
+    const slugConfig: CRUDConfig = {
+      model: "post",
+      label: "Posts",
+      fields: [
+        { name: "title", type: "text", label: "Title" },
+        { name: "slug", type: "text", label: "Slug", slugFrom: "title" },
+      ],
+    };
+    render(<CRUDForm config={slugConfig} onSubmit={vi.fn()} />);
+    await userEvent.type(screen.getByLabelText(/title/i), "Hello World");
+    // Slug should be auto-generated
+    await waitFor(() => {
+      expect(screen.getByLabelText(/slug/i)).toHaveValue("hello-world");
+    });
+  });
+
+  it("does not overwrite existing slug value", async () => {
+    const slugConfig: CRUDConfig = {
+      model: "post",
+      label: "Posts",
+      fields: [
+        { name: "title", type: "text", label: "Title" },
+        { name: "slug", type: "text", label: "Slug", slugFrom: "title" },
+      ],
+    };
+    render(
+      <CRUDForm
+        config={slugConfig}
+        onSubmit={vi.fn()}
+        defaultValues={{ slug: "custom-slug" }}
+      />,
+    );
+    await userEvent.type(screen.getByLabelText(/title/i), "Hello World");
+    // Slug should NOT be overwritten
+    expect(screen.getByLabelText(/slug/i)).toHaveValue("custom-slug");
+  });
+
+  it("updates existing auto-generated slug when source changes", async () => {
+    const slugConfig: CRUDConfig = {
+      model: "post",
+      label: "Posts",
+      fields: [
+        { name: "title", type: "text", label: "Title" },
+        { name: "slug", type: "text", label: "Slug", slugFrom: "title" },
+      ],
+    };
+    render(
+      <CRUDForm
+        config={slugConfig}
+        onSubmit={vi.fn()}
+        defaultValues={{ title: "Old Title", slug: "old-title" }}
+      />,
+    );
+
+    await userEvent.clear(screen.getByLabelText(/title/i));
+    await userEvent.type(screen.getByLabelText(/title/i), "New Title");
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/slug/i)).toHaveValue("new-title");
+    });
+  });
+
+  it("updates existing custom slug when source changes", async () => {
+    const slugConfig: CRUDConfig = {
+      model: "post",
+      label: "Posts",
+      fields: [
+        { name: "title", type: "text", label: "Title" },
+        { name: "slug", type: "text", label: "Slug", slugFrom: "title" },
+      ],
+    };
+    render(
+      <CRUDForm
+        config={slugConfig}
+        onSubmit={vi.fn()}
+        defaultValues={{ title: "Old Title", slug: "custom-old-slug" }}
+      />,
+    );
+
+    expect(screen.getByLabelText(/slug/i)).toHaveValue("custom-old-slug");
+
+    await userEvent.clear(screen.getByLabelText(/title/i));
+    await userEvent.type(screen.getByLabelText(/title/i), "New Title");
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/slug/i)).toHaveValue("new-title");
+    });
+  });
+
+  it("keeps manually edited slug from following later source changes", async () => {
+    const slugConfig: CRUDConfig = {
+      model: "post",
+      label: "Posts",
+      fields: [
+        { name: "title", type: "text", label: "Title" },
+        { name: "slug", type: "text", label: "Slug", slugFrom: "title" },
+      ],
+    };
+    render(<CRUDForm config={slugConfig} onSubmit={vi.fn()} />);
+
+    await userEvent.type(screen.getByLabelText(/title/i), "First Title");
+    await waitFor(() => expect(screen.getByLabelText(/slug/i)).toHaveValue("first-title"));
+    await userEvent.clear(screen.getByLabelText(/slug/i));
+    await userEvent.type(screen.getByLabelText(/slug/i), "manual-slug");
+    await userEvent.clear(screen.getByLabelText(/title/i));
+    await userEvent.type(screen.getByLabelText(/title/i), "Second Title");
+
+    expect(screen.getByLabelText(/slug/i)).toHaveValue("manual-slug");
+  });
+
+  it("submits the manually edited slug", async () => {
+    const onSubmit = vi.fn();
+    const slugConfig: CRUDConfig = {
+      model: "post",
+      label: "Posts",
+      fields: [
+        { name: "title", type: "text", label: "Title" },
+        { name: "slug", type: "text", label: "Slug", slugFrom: "title" },
+      ],
+    };
+    const { container } = render(
+      <CRUDForm
+        config={slugConfig}
+        onSubmit={onSubmit}
+        defaultValues={{ title: "Old Title", slug: "old-title" }}
+      />,
+    );
+
+    await userEvent.clear(screen.getByLabelText(/title/i));
+    await userEvent.type(screen.getByLabelText(/title/i), "New Title");
+    await waitFor(() => expect(screen.getByLabelText(/slug/i)).toHaveValue("new-title"));
+    await userEvent.clear(screen.getByLabelText(/slug/i));
+    await userEvent.type(screen.getByLabelText(/slug/i), "manual-slug");
+    fireEvent.submit(container.querySelector("form")!);
+
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ title: "New Title", slug: "manual-slug" }));
+    });
+  });
+
+  it("renders tabbed form when fields have tab property", () => {
+    const tabConfig: CRUDConfig = {
+      model: "post",
+      label: "Posts",
+      fields: [
+        { name: "title", type: "text", label: "Title", tab: "General" },
+        { name: "body", type: "textarea", label: "Body", tab: "Content" },
+        { name: "metaTitle", type: "text", label: "Meta Title", tab: "SEO" },
+      ],
+    };
+    render(<CRUDForm config={tabConfig} onSubmit={vi.fn()} />);
+    expect(screen.getByRole("tab", { name: /general/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /content/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /seo/i })).toBeInTheDocument();
+  });
+
+  it("switches tabs and shows correct fields", async () => {
+    const tabConfig: CRUDConfig = {
+      model: "post",
+      label: "Posts",
+      fields: [
+        { name: "title", type: "text", label: "Title", tab: "General" },
+        { name: "body", type: "textarea", label: "Body", tab: "Content" },
+      ],
+    };
+    render(<CRUDForm config={tabConfig} onSubmit={vi.fn()} />);
+    // Title should be visible initially (General tab)
+    expect(screen.getByLabelText(/title/i)).toBeVisible();
+    // Click Content tab using userEvent for proper Radix interaction
+    await userEvent.click(screen.getByRole("tab", { name: /content/i }));
+    // Body should now be visible
+    await waitFor(() => {
+      expect(screen.getByLabelText(/body/i)).toBeVisible();
+    });
+  });
+
+  it("shows conditional field based on visibleWhen", () => {
+    const conditionalConfig: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      fields: [
+        { name: "showBadge", type: "boolean", label: "Show Badge" },
+        { name: "badgeText", type: "text", label: "Badge Text", visibleWhen: { field: "showBadge", equals: true } },
+      ],
+    };
+    render(<CRUDForm config={conditionalConfig} onSubmit={vi.fn()} defaultValues={{ showBadge: false }} />);
+    expect(screen.queryByLabelText(/badge text/i)).not.toBeInTheDocument();
+  });
+
+  it("shows conditional field when condition is met", async () => {
+    const conditionalConfig: CRUDConfig = {
+      model: "product",
+      label: "Products",
+      fields: [
+        { name: "showBadge", type: "boolean", label: "Show Badge" },
+        { name: "badgeText", type: "text", label: "Badge Text", visibleWhen: { field: "showBadge", equals: true } },
+      ],
+    };
+    render(<CRUDForm config={conditionalConfig} onSubmit={vi.fn()} defaultValues={{ showBadge: false }} />);
+    fireEvent.click(screen.getByRole("switch", { name: /show badge/i }));
+    await waitFor(() => {
+      expect(screen.getByLabelText(/badge text/i)).toBeInTheDocument();
+    });
   });
 });

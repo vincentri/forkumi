@@ -13,25 +13,28 @@
     }
   },
   "scripts": {
-    "db:push": "dotenv -e ../../.env -- sh -c 'DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma db push --schema ../../apps/api/prisma/schema.prisma'",
-    "db:migrate": "dotenv -e ../../.env -- sh -c 'DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma migrate dev --schema ../../apps/api/prisma/schema.prisma'",
-    "db:reset": "dotenv -e ../../.env -- sh -c 'DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma db push --force-reset --schema ../../apps/api/prisma/schema.prisma'",
+    "db:migrate": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma migrate dev'",
+    "db:migrate:deploy": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && DATABASE_URL=\"${DATABASE_URL:-postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB}\" prisma migrate deploy'",
+    "db:reset": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma migrate reset --force --skip-seed && prisma generate'",
     "db:seed": "dotenv -e ../../.env -- sh -c 'DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" tsx src/seed.ts'",
-    "db:studio": "dotenv -e ../../.env -- sh -c 'DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma studio --schema ../../apps/api/prisma/schema.prisma'",
-    "db:generate": "PRISMA_GENERATE_SKIP_AUTOINSTALL=true prisma generate --schema ../../apps/api/prisma/schema.prisma",
-    "postinstall": "PRISMA_GENERATE_SKIP_AUTOINSTALL=true prisma generate --schema ../../apps/api/prisma/schema.prisma"
+    "db:studio": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && DATABASE_URL=\"postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB\" prisma studio'",
+    "db:generate": "cd ../../apps/api/prisma && prisma generate",
+    "postinstall": "cd ../../apps/api/prisma && prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
-    "bcryptjs": "^2.4.3"
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "bcryptjs": "^2.4.3",
+    "pg": "^8.21.0"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.20.0",
     "dotenv-cli": "^8.0.0",
-    "prisma": "^6.19.3",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.3"
+    "prisma": "^7.8.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
   }
 }

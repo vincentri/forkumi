@@ -16,5 +16,3 @@ export { AuthBrandPanel } from "./auth/AuthBrandPanel";
 export type { AuthBrandPanelProps } from "./auth/AuthBrandPanel";
 export { AuthMobileLogo } from "./auth/AuthMobileLogo";
 export type { AuthMobileLogoProps } from "./auth/AuthMobileLogo";
-
-export type { NavItem, AdminSession } from "../types";

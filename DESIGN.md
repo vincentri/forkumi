@@ -149,7 +149,7 @@ pnpm crud:new                          # interactive — asks for model name + f
 
 # 2. Scaffold + push
 pnpm crud:scaffold <model>             # appends Prisma model, registers barrel export
-pnpm db:push                           # apply schema to DB
+pnpm db:migrate                           # apply schema to DB
 
 # Nav link, tRPC procedures, and admin page appear automatically.
 ```

@@ -1,10 +1,12 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "name" TEXT,
     "email" TEXT,
     "email_verified" TIMESTAMP(3),
-    "image" TEXT,
     "password" TEXT,
     "role_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -52,48 +54,7 @@ CREATE TABLE "settings" (
 );
 
 -- CreateTable
-CREATE TABLE "blogs" (
-    "id" TEXT NOT NULL,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "content" TEXT NOT NULL,
-    "image" TEXT,
-    "status" TEXT NOT NULL DEFAULT 'draft',
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "blogs_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "locations" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "location" TEXT NOT NULL,
-    "location_url" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "locations_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "sliders" (
-    "id" TEXT NOT NULL,
-    "legend" TEXT,
-    "title" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "image" TEXT NOT NULL,
-    "action" TEXT,
-    "actionurl" TEXT,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "sliders_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "static_sections" (
+CREATE TABLE "front_page_settings" (
     "id" TEXT NOT NULL,
     "key" TEXT NOT NULL,
     "namespace" TEXT,
@@ -101,7 +62,7 @@ CREATE TABLE "static_sections" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "static_sections_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "front_page_settings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -123,7 +84,7 @@ CREATE INDEX "user_invitations_expires_at_accepted_at_idx" ON "user_invitations"
 CREATE UNIQUE INDEX "settings_key_key" ON "settings"("key");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "static_sections_key_key" ON "static_sections"("key");
+CREATE UNIQUE INDEX "front_page_settings_key_key" ON "front_page_settings"("key");
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") REFERENCES "roles"("id") ON DELETE SET NULL ON UPDATE CASCADE;

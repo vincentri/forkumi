@@ -3,6 +3,7 @@ import { defineCRUD } from "@repo/crud";
 export const UserCRUD = defineCRUD({
   model: "user",
   label: "Users",
+  icon: "Users",
   navGroup: "Administration",
   navGroupIcon: "ShieldCheck",
   fields: [

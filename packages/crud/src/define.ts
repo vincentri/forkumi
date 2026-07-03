@@ -19,7 +19,7 @@ import type { CRUDConfig } from "./types";
 export function defineCRUD(config: CRUDConfig): CRUDConfig {
   // Apply defaults to fields
   const fields = config.fields.map((field) => ({
-    showInTable: field.type === "password" ? false : true,
+    showInTable: field.type === "password" || field.type === "separator" ? false : true,
     showInForm: true,
     sortable: true,
     required: false,

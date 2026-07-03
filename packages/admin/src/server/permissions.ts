@@ -1,6 +1,5 @@
 import type { CRUDConfig } from "@repo/crud";
-
-const STANDARD_ACTIONS = ["view", "create", "update", "delete"] as const;
+import { STANDARD_ACTIONS } from "../lib/permissions";
 
 function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);

@@ -2,15 +2,21 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { handlePrismaError } from "@repo/crud";
 import type { AdminDbAdapter } from "../adapters";
+import type { StandardAction } from "../../lib/permissions";
 
 const permissionString = z.string().regex(
   /^(\*|[a-z]+):[a-z]+$/,
   "Permission must be 'model:action' or '*:action' (e.g. 'user:view', '*:create')",
 );
 
+interface RouterDeps {
+  router: any;
+  permissionProcedure: (action: StandardAction, model?: string) => any;
+}
+
 export function createRoleRouter(
   db: AdminDbAdapter,
-  trpc: { router: any; permissionProcedure: (action: string, model?: string) => any },
+  trpc: RouterDeps,
 ) {
   const roleCreateProcedure = trpc.permissionProcedure("create", "role")
     .input(z.object({
@@ -79,5 +85,9 @@ export function createRoleRouter(
       }
     });
 
-  return { roleCreateProcedure, roleUpdateProcedure, roleDeleteProcedure };
+  return trpc.router({
+    create: roleCreateProcedure,
+    update: roleUpdateProcedure,
+    delete: roleDeleteProcedure,
+  });
 }

@@ -1,0 +1,11 @@
+{
+  "extends": "@repo/tsconfig/node.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "prisma/prisma.config.ts"]
+}

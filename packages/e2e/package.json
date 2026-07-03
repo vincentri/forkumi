@@ -1,0 +1,24 @@
+{
+  "name": "@repo/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test:e2e:full": "playwright test -c playwright.config.ts",
+    "test:e2e:core": "playwright test -c playwright.core.config.ts",
+    "test:e2e:ui": "playwright test -c playwright.config.ts --ui",
+    "test:e2e:core:ui": "playwright test -c playwright.core.config.ts --ui",
+    "test:e2e:headed": "playwright test -c playwright.config.ts --headed",
+    "test:e2e:core:report": "playwright show-report playwright-report",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@repo/tsconfig": "workspace:*",
+    "@testcontainers/postgresql": "^10.16.0",
+    "@types/node": "^25.9.3",
+    "testcontainers": "^10.16.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}

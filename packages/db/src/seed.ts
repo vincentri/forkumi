@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { prisma } from "./index";
 import { DEFAULT_BRANDING_SETTINGS, DEFAULT_FRONT_PAGE_SETTINGS } from "./default-assets";
-
-const prisma = new PrismaClient();
 
 type FrontPageSettingSeed = {
   key: string;

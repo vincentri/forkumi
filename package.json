@@ -8,22 +8,28 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
-    "db:push": "pnpm --filter @repo/db db:push",
+    "test": "turbo run test",
     "db:seed": "pnpm --filter @repo/db db:seed",
     "db:studio": "pnpm --filter @repo/db db:studio",
-    "db:migrate": "pnpm --filter @repo/db db:migrate",
+    "db:migrate": "pnpm --filter @repo/db db:migrate && pnpm --filter @repo/db db:generate",
+    "db:generate": "pnpm --filter @repo/db db:generate",
     "setup": "node scripts/setup.mjs",
     "crud:new": "node scripts/crud-new.mjs",
     "crud:scaffold": "tsx scripts/crud-scaffold.ts",
     "crud:delete": "tsx scripts/crud-delete.ts",
-    "dev:reset": "node scripts/dev-reset.mjs"
+    "dev:reset": "node scripts/dev-reset.mjs",
+    "e2e": "pnpm --filter @repo/e2e test:e2e:full",
+    "e2e:core": "pnpm --filter @repo/e2e test:e2e:core",
+    "e2e:ui": "pnpm --filter @repo/e2e test:e2e:ui",
+    "e2e:core:ui": "pnpm --filter @repo/e2e test:e2e:core:ui"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.6",
-    "tsx": "^4.19.3",
-    "turbo": "^2.5.4",
-    "typescript": "^5.8.3"
+    "eslint-config-next": "^16.2.9",
+    "tsx": "^4.22.4",
+    "turbo": "^2.9.18",
+    "typescript": "^6.0.3"
   },
   "packageManager": "pnpm@11.5.2+sha512.71c631e382066efc25625d5cf029075de07b61b37f6e27350fbd84b1bda5864c8c1967adc280776b45c30a715c0359a3be08fef42d5bb09e2b99029979692916",
   "engines": {

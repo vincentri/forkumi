@@ -20,13 +20,28 @@ function readRootEnv() {
   );
 }
 
+function parseDatabaseUrl(url) {
+  // postgresql://user:password@host:port/dbname
+  const match = url?.match(/^postgresql:\/\/([^:]+)(?::([^@]+))?@([^:\/]+)(?::(\d+))?\/(.+)$/);
+  if (!match) return null;
+  return {
+    user: match[1] ?? "postgres",
+    password: match[2] ?? "",
+    host: match[3] ?? "localhost",
+    port: match[4] ?? "5432",
+    dbName: match[5] ?? "quantyx",
+  };
+}
+
 function databaseHint() {
   const env = { ...readRootEnv(), ...process.env };
-  const host = env.POSTGRES_HOST ?? "localhost";
-  const port = env.POSTGRES_PORT ?? "5432";
-  const user = env.POSTGRES_USER ?? "postgres";
-  const dbName = env.POSTGRES_DB ?? "quantyx";
-  return `Make sure PostgreSQL is reachable at ${host}:${port} and database "${dbName}" exists. Create it manually, for example: createdb -h ${host} -p ${port} -U ${user} ${dbName}`;
+  const db = parseDatabaseUrl(env.DATABASE_URL) ?? {
+    host: "localhost",
+    port: "5432",
+    user: "postgres",
+    dbName: "quantyx",
+  };
+  return `Make sure PostgreSQL is reachable at ${db.host}:${db.port} and database "${db.dbName}" exists. Create it manually, for example: createdb -h ${db.host} -p ${db.port} -U ${db.user} ${db.dbName}`;
 }
 
 const rl = createInterface({ input: process.stdin, output: process.stdout });

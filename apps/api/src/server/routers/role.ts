@@ -5,5 +5,4 @@ import { router, permissionProcedure } from "../trpc";
 
 const db = createPrismaAdapter(prisma);
 
-export const { roleCreateProcedure, roleUpdateProcedure, roleDeleteProcedure } =
-  createRoleRouter(db, { router, permissionProcedure });
+export const roleRouter = createRoleRouter(db, { router, permissionProcedure });

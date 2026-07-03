@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { CRUDPage } from "../components/CRUDPage";
@@ -63,5 +64,25 @@ describe("CRUDPage", () => {
   it("does not render extraHeaderActions when absent", () => {
     render(<CRUDPage config={config} />);
     expect(screen.queryByText("Invite User")).not.toBeInTheDocument();
+  });
+
+  it("renders pagination when listData has multiple pages", () => {
+    const multiPageData = { ...listData, total: 50, totalPages: 3 };
+    render(<CRUDPage config={config} listData={multiPageData} />);
+    expect(screen.getByText(/showing 1–20 of 50/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/next page/i)).toBeInTheDocument();
+  });
+
+  it("renders Prev button on page 2+", () => {
+    const page2Data = { ...listData, page: 2, total: 50, totalPages: 3 };
+    render(<CRUDPage config={config} listData={page2Data} />);
+    expect(screen.getByLabelText(/previous page/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/next page/i)).toBeInTheDocument();
+  });
+
+  it("does not render pagination when total is 0", () => {
+    const emptyData = { ...listData, items: [], total: 0, totalPages: 0 };
+    render(<CRUDPage config={config} listData={emptyData} />);
+    expect(screen.queryByText(/showing/i)).not.toBeInTheDocument();
   });
 });
