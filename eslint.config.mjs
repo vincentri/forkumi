@@ -12,6 +12,7 @@ export default defineConfig([
       },
     },
     rules: {
+      "@next/next/no-img-element": "off",
       "@next/next/no-html-link-for-pages": "off",
     },
   },
@@ -20,6 +21,7 @@ export default defineConfig([
     "apps/*/.next/**",
     "coverage/**",
     "dist/**",
+    "**/public/**",
     "node_modules/**",
     "out/**",
     "pnpm-lock.yaml",

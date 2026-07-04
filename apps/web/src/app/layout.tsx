@@ -1,106 +1,30 @@
-export const dynamic = "force-dynamic";
-
 import type { Metadata } from "next";
-import Script from "next/script";
-import { TRPCProvider } from "~/lib/trpc/provider";
-import { resolveApiPublicUrl } from "~/lib/public-url";
-import { getContent } from "~/lib/trpc/server";
-import { LenisProvider } from "~/components/LenisProvider";
-import { ThemeProvider } from "~/components/ThemeProvider";
-import "~/styles/globals.css";
+import type { ReactElement, ReactNode } from "react";
 
-const DEFAULT_FAVICON = "/defaults/admin/default-favicon.png";
-const SCRIPT_TAG_PATTERN = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+import { ForkumiEffects } from "./forkumi-effects";
 
-type ScriptStrategy = "beforeInteractive" | "afterInteractive" | "lazyOnload";
-type ManagedScript = { id: string; src?: string; content?: string };
+import "../styles/forkumi.css";
 
-function getScriptSrc(attributes: string): string | undefined {
-  const match = attributes.match(/\bsrc=(["'])(.*?)\1/i);
-  return match?.[2];
-}
+export const metadata: Metadata = {
+  title: "Forkumi",
+  description: "Forkumi design subscription website",
+  icons: {
+    icon: "/assets/img/favicon-32.png",
+    shortcut: "/assets/img/favicon-32.png",
+    apple: "/assets/img/favicon-180.png",
+  },
+};
 
-function parseManagedScripts(rawScript: string, idPrefix: string): ManagedScript[] {
-  const trimmed = rawScript.trim();
-  if (!trimmed) return [];
-
-  if (!/<script\b/i.test(trimmed)) {
-    return [{ id: `${idPrefix}-0`, content: trimmed }];
-  }
-
-  const scripts: ManagedScript[] = [];
-  for (const match of trimmed.matchAll(SCRIPT_TAG_PATTERN)) {
-    const [, attributes, content] = match;
-    const src = getScriptSrc(attributes ?? "");
-    scripts.push({
-      id: `${idPrefix}-${scripts.length}`,
-      src,
-      content: src ? undefined : content.trim(),
-    });
-  }
-
-  return scripts;
-}
-
-function ManagedScripts({
-  rawScript,
-  idPrefix,
-  strategy,
+export default function RootLayout({
+  children,
 }: {
-  rawScript?: string;
-  idPrefix: string;
-  strategy: ScriptStrategy;
-}) {
-  const scripts = rawScript ? parseManagedScripts(rawScript, idPrefix) : [];
-
+  children: ReactNode;
+}): ReactElement {
   return (
-    <>
-      {scripts.map((script) =>
-        script.src ? (
-          <Script key={script.id} id={script.id} src={script.src} strategy={strategy} />
-        ) : (
-          <Script key={script.id} id={script.id} strategy={strategy}>
-            {script.content}
-          </Script>
-        ),
-      )}
-    </>
-  );
-}
-
-export async function generateMetadata(): Promise<Metadata> {
-  const [seo, general] = await Promise.all([getContent("seo"), getContent("general")]);
-  const favicon = resolveApiPublicUrl(general.favicon || DEFAULT_FAVICON);
-
-  return {
-    title: seo.meta_title || "Default Template",
-    description: seo.meta_description || "A default website template.",
-    keywords: seo.meta_keywords,
-    icons: {
-      icon: favicon,
-      shortcut: favicon,
-      apple: favicon,
-    },
-  };
-}
-
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const scripts = await getContent("scripts");
-
-  return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="en">
       <body>
-        <ManagedScripts
-          rawScript={scripts.headerScript}
-          idPrefix="cms-header-script"
-          strategy="beforeInteractive"
-        />
-        <TRPCProvider><ThemeProvider><LenisProvider />{children}</ThemeProvider></TRPCProvider>
-        <ManagedScripts
-          rawScript={scripts.footerScript}
-          idPrefix="cms-footer-script"
-          strategy="afterInteractive"
-        />
+        <ForkumiEffects />
+        {children}
       </body>
     </html>
   );
