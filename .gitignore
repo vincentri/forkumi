@@ -23,3 +23,5 @@ apps/api/public/uploads/
 *.tsbuildinfo
 skills-lock.json
 public/uploads/
+.vercel
+.env*

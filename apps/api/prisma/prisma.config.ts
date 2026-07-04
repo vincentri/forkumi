@@ -15,7 +15,10 @@ export default defineConfig({
     path: "migrations",
   },
   datasource: {
-    url: process.env.DATABASE_URL!,
+    // CLI-only (migrate/introspect). Must NOT use the transaction pooler
+    // (Supabase :6543) — migrate needs session-level advisory locks it can't
+    // do there and hangs forever. Prefer the direct/session connection.
+    url: process.env.DIRECT_URL || process.env.DATABASE_URL!,
     directUrl: process.env.DIRECT_URL || process.env.DATABASE_URL!,
   },
 });
