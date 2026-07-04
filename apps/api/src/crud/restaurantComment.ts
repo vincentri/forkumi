@@ -3,7 +3,7 @@ import { defineCRUD } from "@repo/crud";
 // Restaurant review resource. Flat list — no replies, no threaded comments.
 // Reviews carry three 1-5 star ratings (makanan, layanan, suasana) and optional
 // picture/video attachments. ratingTotal is a rounded average recomputed on
-// every write by a Prisma query extension in @repo/db (packages/db/src/index.ts).
+// every write by a Prisma query extension in ~/lib/db (apps/api/src/lib/db.ts).
 // It is read-only in the admin form (showInForm: false) — admins edit the three
 // named ratings; the total is always derived.
 export const RestaurantCommentCRUD = defineCRUD({

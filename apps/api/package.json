@@ -8,6 +8,7 @@
     "start": "next start -p 3001",
     "lint": "eslint .",
     "assets:upload-defaults": "tsx scripts/upload-default-assets-to-s3.ts",
+    "db:seed": "tsx --env-file=../../.env scripts/seed.ts",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"

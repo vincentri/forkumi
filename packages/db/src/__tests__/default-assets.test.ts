@@ -3,7 +3,6 @@ import {
   DEFAULT_ADMIN_ASSETS,
   DEFAULT_ADMIN_ASSET_PATHS,
   DEFAULT_BRANDING_SETTINGS,
-  DEFAULT_FRONT_PAGE_SETTINGS,
 } from "../default-assets";
 
 describe("DEFAULT_ADMIN_ASSETS", () => {
@@ -57,36 +56,5 @@ describe("DEFAULT_BRANDING_SETTINGS", () => {
   it("keys are unique", () => {
     const keys = DEFAULT_BRANDING_SETTINGS.map((s) => s.key);
     expect(new Set(keys).size).toBe(keys.length);
-  });
-});
-
-describe("DEFAULT_FRONT_PAGE_SETTINGS", () => {
-  it("has 11 entries", () => {
-    expect(DEFAULT_FRONT_PAGE_SETTINGS).toHaveLength(11);
-  });
-
-  it("each has key, value, and namespace", () => {
-    for (const setting of DEFAULT_FRONT_PAGE_SETTINGS) {
-      expect(typeof setting.key).toBe("string");
-      expect(typeof setting.value).toBe("string");
-      expect(typeof setting.namespace).toBe("string");
-    }
-  });
-
-  it("has expected namespaces", () => {
-    const namespaces = new Set(DEFAULT_FRONT_PAGE_SETTINGS.map((s) => s.namespace));
-    expect(namespaces).toEqual(new Set(["general", "contact", "seo", "scripts"]));
-  });
-
-  it("keys are unique", () => {
-    const keys = DEFAULT_FRONT_PAGE_SETTINGS.map((s) => s.key);
-    expect(new Set(keys).size).toBe(keys.length);
-  });
-
-  it("general namespace references admin asset paths", () => {
-    const general = DEFAULT_FRONT_PAGE_SETTINGS.filter((s) => s.namespace === "general");
-    expect(general.find((s) => s.key === "logo")?.value).toBe(DEFAULT_ADMIN_ASSETS[0].path);
-    expect(general.find((s) => s.key === "logo_dark")?.value).toBe(DEFAULT_ADMIN_ASSETS[1].path);
-    expect(general.find((s) => s.key === "favicon")?.value).toBe(DEFAULT_ADMIN_ASSETS[2].path);
   });
 });

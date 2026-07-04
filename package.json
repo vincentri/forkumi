@@ -9,7 +9,7 @@
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "test": "turbo run test",
-    "db:seed": "pnpm --filter @repo/db db:seed",
+    "db:seed": "pnpm --filter @repo/db db:seed && pnpm --filter api db:seed",
     "db:studio": "pnpm --filter @repo/db db:studio",
     "db:migrate": "pnpm --filter @repo/db db:migrate && pnpm --filter @repo/db db:generate",
     "db:generate": "pnpm --filter @repo/db db:generate",

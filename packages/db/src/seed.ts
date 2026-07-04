@@ -4,27 +4,16 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import bcrypt from "bcryptjs";
-import { DEFAULT_BRANDING_SETTINGS, DEFAULT_FRONT_PAGE_SETTINGS } from "./default-assets";
+import { DEFAULT_BRANDING_SETTINGS } from "./default-assets";
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-type FrontPageSettingSeed = {
-  key: string;
-  value: string;
-  namespace: string;
-};
-
-type FrontPageSettingsDelegate = {
-  upsert: (args: {
-    where: { key: string };
-    update: Record<string, never>;
-    create: FrontPageSettingSeed;
-  }) => Promise<unknown>;
-};
-
+// Framework built-ins only (roles, admin user, branding). App content
+// (front-page settings, contact topics) is seeded app-side — see
+// apps/api/scripts/seed.ts. Keep this package generic.
 async function main() {
   console.log("Quantyx — seeding database...");
 
@@ -73,30 +62,6 @@ async function main() {
         ...setting,
         namespace: "branding",
       },
-    });
-  }
-
-  // Default public/front-page settings live separately from admin branding settings.
-  const frontPageSettings = (prisma as unknown as { frontPageSettings: FrontPageSettingsDelegate }).frontPageSettings;
-  for (const setting of DEFAULT_FRONT_PAGE_SETTINGS) {
-    await frontPageSettings.upsert({
-      where: { key: setting.key },
-      update: {},
-      create: setting,
-    });
-  }
-
-  const defaultContactTopics = [
-    "Rekomendasi tempat makan",
-    "Umum",
-    "Kerja sama / iklan",
-    "Koreksi artikel",
-  ];
-  for (const name of defaultContactTopics) {
-    await prisma.contactTopic.upsert({
-      where: { id: name },
-      update: { status: "active" },
-      create: { id: name, name, status: "active" },
     });
   }
 
