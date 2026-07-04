@@ -236,7 +236,7 @@ const LIST={
 
 function navHTML(){
  const L=[['/','home','nHome'],['/services','services','nSvc'],['/portfolio','portfolio','nPort'],['/packages','packages','nPkg'],['/about','about','nAbout'],['/contact','contact','nContact']];
- return `<a class="brand" href="/"><img src="assets/img/logo.svg" alt="Forkumi"><span>Forkumi</span></a>
+ return `<a class="brand" href="/"><img src="/assets/img/logo.svg" alt="Forkumi"><span>Forkumi</span></a>
   <div class="nav-links">${L.map(x=>`<a href="${x[0]}" data-page="${x[1]}" data-i="${x[2]}">${t(T[x[2]])}</a>`).join('')}</div>
   <div class="nav-right">
     <div class="lang"><button id="lang-id" onclick="setLang('id')">ID</button><button id="lang-en" onclick="setLang('en')">EN</button></div>
@@ -246,7 +246,7 @@ function navHTML(){
 }
 function footerHTML(){
  return `<div class="wrap"><div class="fcols">
-  <div><div class="fbrand"><img src="assets/img/logo.svg" alt=""><span>Forkumi</span></div><p class="ftag" data-i="fTag">${t(T.fTag)}</p></div>
+  <div><div class="fbrand"><img src="/assets/img/logo.svg" alt=""><span>Forkumi</span></div><p class="ftag" data-i="fTag">${t(T.fTag)}</p></div>
   <div><h5 data-i="fExplore">${t(T.fExplore)}</h5>
     <a href="/services" data-i="nSvc">${t(T.nSvc)}</a><a href="/portfolio" data-i="nPort">${t(T.nPort)}</a><a href="/packages" data-i="nPkg">${t(T.nPkg)}</a><a href="/about" data-i="nAbout">${t(T.nAbout)}</a></div>
   <div><h5 data-i="fContact">${t(T.fContact)}</h5><a href="${WA}" target="_blank" rel="noopener">+65 8089 2716</a><a href="${MAIL}">linkforkumi@gmail.com</a><a href="${IG}" target="_blank" rel="noopener">@forkumi.design</a></div>
