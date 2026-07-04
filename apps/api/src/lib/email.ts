@@ -15,15 +15,6 @@ export interface EmailSettings {
 }
 
 const EMAIL_NAMESPACE = "email";
-const DEFAULT_EMAIL_SETTINGS: EmailSettings = {
-  enabled: false,
-  provider: "resend",
-  fromEmail: "",
-  fromName: "",
-  replyTo: "",
-  resendApiKeyConfigured: false,
-};
-
 type SettingsRow = {
   key: string;
   value: string | null;
