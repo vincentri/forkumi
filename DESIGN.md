@@ -147,9 +147,8 @@ pnpm crud:new                          # interactive — asks for model name + f
 # OR
 # Write apps/api/src/crud/<model>.ts manually (see example.ts)
 
-# 2. Scaffold + push
-pnpm crud:scaffold <model>             # appends Prisma model, registers barrel export
-pnpm db:migrate                           # apply schema to DB
+# 2. Scaffold
+pnpm crud:scaffold <model>             # appends Prisma model, registers barrel export, creates/applies migration
 
 # Nav link, tRPC procedures, and admin page appear automatically.
 ```

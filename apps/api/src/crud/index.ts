@@ -8,9 +8,20 @@
 // but are re-exported here so the barrel stays the single source for all models.
 export { UserCRUD } from "./user";
 export { RoleCRUD } from "./role";
-export { SettingsCRUD } from "./settings";
+export { SettingsCRUD } from "./setting";
 export { BlogCRUD } from "./blog";
 export { BlogCategoryCRUD } from "./blogCategory";
 export { NewsletterSubscriberCRUD } from "./newsletterSubscriber";
 export { PageCRUD } from "./page";
 export { FrontPageSettingsCRUD } from "./frontPageSetting";
+export { ContactCRUD } from "./contact";
+export { ContactTopicCRUD } from "./contactTopic";
+export { TagCRUD } from "./tag";
+export { EventCategoryCRUD } from "./eventCategory";
+export { EventCRUD } from "./event";
+export { SliderCRUD } from "./slider";
+export { SidebarPinnedEventCRUD } from "./sidebarPinnedEvent";
+export { CommentCRUD } from "./comment";
+export { RestaurantCRUD } from "./restaurant";
+export { RestaurantCommentCRUD } from "./restaurantComment";
+export { SidebarPinnedRestaurantCRUD } from "./sidebarPinnedRestaurant";

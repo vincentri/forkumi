@@ -1,6 +1,15 @@
+import "dotenv/config";
+
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import bcrypt from "bcryptjs";
-import { prisma } from "./index";
 import { DEFAULT_BRANDING_SETTINGS, DEFAULT_FRONT_PAGE_SETTINGS } from "./default-assets";
+
+const connectionString = `${process.env.DATABASE_URL}`;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 type FrontPageSettingSeed = {
   key: string;
@@ -74,6 +83,20 @@ async function main() {
       where: { key: setting.key },
       update: {},
       create: setting,
+    });
+  }
+
+  const defaultContactTopics = [
+    "Rekomendasi tempat makan",
+    "Umum",
+    "Kerja sama / iklan",
+    "Koreksi artikel",
+  ];
+  for (const name of defaultContactTopics) {
+    await prisma.contactTopic.upsert({
+      where: { id: name },
+      update: { status: "active" },
+      create: { id: name, name, status: "active" },
     });
   }
 

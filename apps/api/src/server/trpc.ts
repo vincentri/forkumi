@@ -1,5 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { getServerAuthSession } from "~/lib/auth";
+import type { StandardAction } from "@repo/admin";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
@@ -10,7 +11,7 @@ export async function createTRPCContext() {
 
 type TRPCContext = Awaited<ReturnType<typeof createTRPCContext>>;
 
-const t = initTRPC.context<TRPCContext>().create({
+export const t = initTRPC.context<TRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
     return {
@@ -24,7 +25,6 @@ const t = initTRPC.context<TRPCContext>().create({
 });
 
 export const router = t.router;
-export const mergeRouters = t.mergeRouters;
 export const publicProcedure = t.procedure;
 
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
@@ -42,7 +42,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
  * Permission format: "user:view", "product:create", "*:view" (wildcard = all models).
  * Legacy format ("view", "create") is not supported — update seed and existing roles.
  */
-export function permissionProcedure(action: string, model?: string) {
+export function permissionProcedure(action: StandardAction, model?: string) {
   return protectedProcedure.use(({ ctx, next }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const user = ctx.session.user as any;

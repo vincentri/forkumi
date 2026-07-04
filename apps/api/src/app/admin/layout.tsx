@@ -3,6 +3,7 @@ import { getServerAuthSession } from "~/lib/auth";
 import * as CRUDConfigs from "~/crud";
 import { toClientCRUDConfig, type CRUDConfig } from "@repo/crud";
 import { AdminNav, ThemeProvider } from "@repo/admin/ui";
+import { hasPermission } from "@repo/admin";
 import { getPublicSettings } from "~/lib/getPublicSettings";
 import { customLinks } from "~/lib/customLinks";
 
@@ -27,10 +28,7 @@ export default async function AdminLayout({
   const permissions: string[] = session.user.permissions ?? [];
   const isProtectedRole: boolean = session.user.isProtectedRole ?? false;
 
-  const canViewModel = (model: string) =>
-    isProtectedRole ||
-    permissions.includes(`${model}:view`) ||
-    permissions.includes("*:view");
+  const canViewModel = (model: string) => hasPermission(permissions, isProtectedRole, model, "view");
 
   const allConfigs = Object.values(CRUDConfigs).filter(
     (v): v is CRUDConfig =>
@@ -38,7 +36,14 @@ export default async function AdminLayout({
   );
 
   const navItems = [
-    ...allConfigs.filter((c) => canViewModel(c.model)).map(toClientCRUDConfig),
+    // `comment` and `restaurantComment` are surfaced via custom threaded pages
+    // (customLinks) — hide the raw CRUD links to avoid duplicate nav entries.
+    // The /admin/comment and /admin/restaurant-comment pages remain reachable
+    // directly as fallbacks.
+    ...allConfigs
+      .filter((c) => c.model !== "comment" && c.model !== "restaurantComment")
+      .filter((c) => canViewModel(c.model))
+      .map(toClientCRUDConfig),
     ...customLinks.filter((l) => {
       const guard = l.permissions?.[0];
       return !guard || isProtectedRole || permissions.includes(guard) || permissions.includes("*:view");
@@ -55,7 +60,7 @@ export default async function AdminLayout({
           logoLightUrl={logoLightUrl}
           logoDarkUrl={logoDarkUrl}
         />
-        <main className="flex-1 p-6 pt-16 md:p-8">{children}</main>
+        <main className="flex-1 min-w-0 overflow-hidden p-6 pt-16 md:p-8">{children}</main>
       </div>
     </ThemeProvider>
   );

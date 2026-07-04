@@ -7,7 +7,13 @@ export const BlogCRUD = defineCRUD({
   navGroup: "Blog",
   navGroupIcon: "Book",
   fields: [
-    { name: "image", type: "image", label: "Image", filterable: false, sortable: false },
+    {
+      name: "image",
+      type: "image",
+      label: "Image",
+      filterable: false,
+      sortable: false,
+    },
     {
       name: "slug",
       type: "text",
@@ -17,7 +23,13 @@ export const BlogCRUD = defineCRUD({
       slugFrom: "title",
     },
     { name: "title", type: "text", label: "Title", required: true },
-    { name: "description", type: "text", label: "Description", required: true },
+    {
+      name: "description",
+      type: "text",
+      label: "Description",
+      required: true,
+      showInTable: false,
+    },
     {
       name: "blogCategoryId",
       type: "select",
@@ -29,16 +41,57 @@ export const BlogCRUD = defineCRUD({
         orderBy: { title: "asc" },
         where: { status: "published" },
       },
-      display: {
-        table: "label",
-        filter: "select",
+    },
+    {
+      name: "tagIds",
+      type: "select",
+      label: "Tags",
+      multiple: true,
+      relation: { field: "tags", model: "tag", through: "blogTag" },
+      optionsFrom: {
+        model: "tag",
+        valueField: "id",
+        labelField: "name",
+        orderBy: { name: "asc" },
+        searchFields: ["name"],
       },
     },
-    { name: "content", type: "richtext", label: "Content", tab: "Content", required: true, showInTable: false },
-    { name: "metaTitle", type: "text", label: "Meta title", tab: "SEO", showInTable: false },
-    { name: "metaDescription", type: "textarea", label: "Meta description", tab: "SEO", showInTable: false },
-    { name: "metaKeywords", type: "text", label: "Meta keywords", tab: "SEO", showInTable: false },
-    { name: "publishedAt", type: "datetime", label: "Published at", default: "now", showInTable: true },
+    {
+      name: "content",
+      type: "richtext",
+      label: "Content",
+      tab: "Content",
+      required: true,
+      showInTable: false,
+    },
+    {
+      name: "metaTitle",
+      type: "text",
+      label: "Meta title",
+      tab: "SEO",
+      showInTable: false,
+    },
+    {
+      name: "metaDescription",
+      type: "textarea",
+      label: "Meta description",
+      tab: "SEO",
+      showInTable: false,
+    },
+    {
+      name: "metaKeywords",
+      type: "text",
+      label: "Meta keywords",
+      tab: "SEO",
+      showInTable: false,
+    },
+    {
+      name: "publishedAt",
+      type: "datetime",
+      label: "Published at",
+      default: "now",
+      showInTable: true,
+    },
     {
       name: "status",
       type: "select",
@@ -48,7 +101,6 @@ export const BlogCRUD = defineCRUD({
       options: [
         { label: "Draft", value: "draft" },
         { label: "Published", value: "published" },
-        { label: "Archived", value: "archived" },
       ],
     },
   ],
@@ -62,6 +114,7 @@ export const BlogCRUD = defineCRUD({
             ["slug"],
             ["description"],
             ["blogCategoryId"],
+            ["tagIds"],
             ["status", "publishedAt"],
           ],
         },
@@ -77,11 +130,7 @@ export const BlogCRUD = defineCRUD({
     {
       columns: [
         {
-          rows: [
-            ["metaTitle"],
-            ["metaDescription"],
-            ["metaKeywords"],
-          ],
+          rows: [["metaTitle"], ["metaDescription"], ["metaKeywords"]],
         },
       ],
     },

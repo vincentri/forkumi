@@ -44,8 +44,14 @@ import { UserCRUD } from "../../../apps/api/src/crud/user";
 import { RoleCRUD } from "../../../apps/api/src/crud/role";
 import { BlogCRUD } from "../../../apps/api/src/crud/blog";
 import { BlogCategoryCRUD } from "../../../apps/api/src/crud/blogCategory";
+import { TagCRUD } from "../../../apps/api/src/crud/tag";
 import { PageCRUD } from "../../../apps/api/src/crud/page";
+import { EventCRUD } from "../../../apps/api/src/crud/event";
+import { EventCategoryCRUD } from "../../../apps/api/src/crud/eventCategory";
+import { ContactCRUD } from "../../../apps/api/src/crud/contact";
+import { ContactTopicCRUD } from "../../../apps/api/src/crud/contactTopic";
 import { NewsletterSubscriberCRUD } from "../../../apps/api/src/crud/newsletterSubscriber";
+import { SliderCRUD } from "../../../apps/api/src/crud/slider";
 
 // ── Entry builder ─────────────────────────────────────
 
@@ -82,8 +88,14 @@ const ALL_CONFIGS: CRUDConfig[] = [
   RoleCRUD,
   BlogCRUD,
   BlogCategoryCRUD,
+  TagCRUD,
   PageCRUD,
+  EventCRUD,
+  EventCategoryCRUD,
+  ContactCRUD,
+  ContactTopicCRUD,
   NewsletterSubscriberCRUD,
+  SliderCRUD,
 ];
 
 const ALL_ENTRIES = ALL_CONFIGS.map(toEntry);

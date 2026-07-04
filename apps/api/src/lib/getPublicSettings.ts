@@ -1,4 +1,4 @@
-import { prisma } from "@repo/db";
+import { prisma } from "~/lib/db";
 import { createGetPublicSettings } from "@repo/admin/server";
 import { cache } from "react";
 

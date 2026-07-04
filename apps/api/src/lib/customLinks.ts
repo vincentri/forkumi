@@ -32,4 +32,28 @@ export const customLinks: AdminNavLink[] = [
       "example:view",
     ],
   },
+  {
+    label: "Comments",
+    href: "/admin/comments",
+    icon: "MessageSquare",
+    navGroup: "Blog",
+    permissions: [
+      "comment:view",
+      "comment:create",
+      "comment:update",
+      "comment:delete",
+    ],
+  },
+  {
+    label: "Restaurant Comments",
+    href: "/admin/restaurant-comments",
+    icon: "MessageSquare",
+    navGroup: "Restaurant",
+    permissions: [
+      "restaurantComment:view",
+      "restaurantComment:create",
+      "restaurantComment:update",
+      "restaurantComment:delete",
+    ],
+  },
 ];

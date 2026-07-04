@@ -1,4 +1,4 @@
-import { prisma } from "@repo/db";
+import { prisma } from "~/lib/db";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";

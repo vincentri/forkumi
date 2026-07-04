@@ -31,7 +31,6 @@ export const PageCRUD = defineCRUD({
       options: [
         { label: "Draft", value: "draft" },
         { label: "Published", value: "published" },
-        { label: "Archived", value: "archived" },
       ],
     },
   ],

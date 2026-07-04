@@ -1,18 +1,18 @@
+import "dotenv/config";
+
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
-// Prisma 7 uses a driver adapter. Runtime connects via the pooled DATABASE_URL
-// (falling back to DIRECT_URL if only that is set).
-const connectionString = process.env.DATABASE_URL ?? process.env.DIRECT_URL;
+const connectionString = `${process.env.DATABASE_URL}`;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-function createClient(): PrismaClient {
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaPg(pool);
+// Generic, domain-agnostic Prisma client. This package must NOT know about any
+// app model or business rule. App-specific query extensions (e.g. computed
+// fields on write) live app-side — see apps/api/src/lib/db.ts, which wraps the
+// base client returned here with `.$extends`.
+export function createBaseClient() {
   return new PrismaClient({
     adapter,
     log:
@@ -22,7 +22,11 @@ function createClient(): PrismaClient {
   });
 }
 
-export const prisma = globalForPrisma.prisma ?? createClient();
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma = globalForPrisma.prisma ?? createBaseClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 

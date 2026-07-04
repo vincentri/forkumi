@@ -1,8 +1,8 @@
-import { prisma } from "@repo/db";
+import { prisma } from "~/lib/db";
 import bcrypt from "bcryptjs";
 import { createPrismaAdapter } from "@repo/admin/server";
 import { createUserRouter, createInviteRouter } from "@repo/admin/server";
-import { router, mergeRouters, permissionProcedure } from "../trpc";
+import { router, permissionProcedure } from "../trpc";
 import { sendEmail } from "~/lib/email";
 
 const db = createPrismaAdapter(prisma);
@@ -33,4 +33,7 @@ const inviteRouter = createInviteRouter(
   },
 );
 
-export const userRouter = mergeRouters(userCrudRouter, inviteRouter);
+export const userRouter = router({
+  ...userCrudRouter,
+  ...inviteRouter,
+});

@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { prisma } from "@repo/db";
+import { prisma } from "~/lib/db";
 import { z } from "@repo/crud";
 import { getEmailSettings, sendEmail } from "~/lib/email";
 import { encryptSecret } from "~/lib/secret-crypto";
@@ -9,7 +9,6 @@ const EMAIL_NAMESPACE = "email";
 
 const settingsInput = z.object({
   enabled: z.boolean(),
-  provider: z.enum(["resend"]),
   fromEmail: z.string().trim(),
   fromName: z.string().trim(),
   replyTo: z.string().trim(),
@@ -64,7 +63,6 @@ export const emailSettingsRouter = router({
 
       await Promise.all([
         upsertEmailSetting("emailEnabled", input.enabled),
-        upsertEmailSetting("emailProvider", input.provider),
         upsertEmailSetting("emailFromEmail", input.fromEmail),
         upsertEmailSetting("emailFromName", input.fromName),
         upsertEmailSetting("emailReplyTo", input.replyTo),

@@ -1,13 +1,11 @@
 /**
  * Example CRUD config — shows all available field types and modes.
  * Copy this file, rename it (e.g. product.ts), and update the config.
- * Then run: pnpm crud:scaffold product && pnpm db:migrate
+ * Then run: pnpm crud:scaffold product
  *
  * This file is intentionally NOT exported from crud/index.ts.
  * It exists only as a reference — remove or keep it, your call.
  */
-
-/* ----- reference only: inert in forkumi (models below not in Prisma schema) -----
 
 import { TRPCError } from "@trpc/server";
 import { defineCRUD } from "@repo/crud";
@@ -289,7 +287,7 @@ export const ExampleCRUD = defineCRUD({
 // ---------------------------------------------------------------------------
 // KEY-VALUE MODE — settings-style form, no table UI.
 // Scaffold creates a model with its own table (key + value columns).
-// Run: pnpm crud:scaffold aboutSection && pnpm db:migrate
+// Run: pnpm crud:scaffold aboutSection
 // Use tab: "..." to group fields into tabs.
 // namespace: must be set on every field — used to filter rows by section.
 // visibleWhen: conditionally shows a field based on another field's current value.
@@ -317,6 +315,3 @@ export const AboutSectionCRUD = defineCRUD({
 // Read from apps/web (tRPC):
 //   const { data } = trpc.public.getContent.useQuery({ namespace: "aboutSection" });
 //   // data = { eyebrow: "...", heading: "...", ... }
-*/
-
-export {};

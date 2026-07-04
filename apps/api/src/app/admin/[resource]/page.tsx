@@ -1,9 +1,10 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { getServerAuthSession } from "~/lib/auth";
-import { prisma } from "@repo/db";
+import { prisma } from "~/lib/db";
 import * as CRUDConfigs from "~/crud";
 import { isCRUDResourceSlug, toClientCRUDConfig, type CRUDConfig, type CRUDFieldSelect, type CRUDField } from "@repo/crud";
+import { hasPermission } from "@repo/admin";
 import { derivePermissionOptions } from "@repo/admin/server";
 import { customLinks } from "~/lib/customLinks";
 import CRUDResourceClient from "./CRUDResourceClient";
@@ -22,8 +23,15 @@ export async function generateMetadata({ params }: ResourcePageProps): Promise<M
   return { title: config ? `${config.label} | Admin` : "Admin" };
 }
 
+// Models served by a dedicated custom admin page — the raw CRUD route is disabled.
+const CUSTOM_PAGE_REDIRECTS: Record<string, string> = {
+  "restaurant-comment": "/admin/restaurant-comments",
+};
+
 export default async function ResourcePage({ params }: ResourcePageProps) {
   const { resource } = await params;
+
+  if (CUSTOM_PAGE_REDIRECTS[resource]) redirect(CUSTOM_PAGE_REDIRECTS[resource]);
 
   const configs = Object.values(CRUDConfigs).filter(
     (v): v is CRUDConfig =>
@@ -39,10 +47,7 @@ export default async function ResourcePage({ params }: ResourcePageProps) {
   const session = await getServerAuthSession();
   const permissions: string[] = session?.user?.permissions ?? [];
   const isProtectedRole: boolean = session?.user?.isProtectedRole ?? false;
-  const canViewResource =
-    isProtectedRole ||
-    permissions.includes(`${config.model}:view`) ||
-    permissions.includes("*:view");
+  const canViewResource = hasPermission(permissions, isProtectedRole, config.model, "view");
 
   if (!canViewResource) {
     notFound();

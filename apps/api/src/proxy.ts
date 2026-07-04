@@ -3,24 +3,29 @@ import type { NextRequest } from "next/server";
 
 const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000";
 
-// In-memory rate limiter for login endpoint (Edge runtime; resets on cold start)
+// In-memory rate limiter (Edge runtime; resets on cold start)
 const RATE_LIMIT_MAX = 10;
+const PUBLIC_MUTATION_RATE_LIMIT_MAX = 20;
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+const PUBLIC_MUTATION_PATHS = new Set([
+  "/api/trpc/public.submitContact",
+  "/api/trpc/public.submitComment",
+]);
 
 type RateEntry = { count: number; windowStart: number };
 const rateLimitStore = new Map<string, RateEntry>();
 
-function isRateLimited(ip: string): boolean {
+function isRateLimited(key: string, max = RATE_LIMIT_MAX): boolean {
   const now = Date.now();
-  const entry = rateLimitStore.get(ip);
+  const entry = rateLimitStore.get(key);
 
   if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    rateLimitStore.set(ip, { count: 1, windowStart: now });
+    rateLimitStore.set(key, { count: 1, windowStart: now });
     return false;
   }
 
   entry.count += 1;
-  if (entry.count > RATE_LIMIT_MAX) return true;
+  if (entry.count > max) return true;
   return false;
 }
 
@@ -33,14 +38,25 @@ function getClientIp(request: NextRequest): string {
 }
 
 export function proxy(request: NextRequest) {
+  const ip = getClientIp(request);
+
   // Rate-limit credential login attempts (brute-force protection)
   if (
     request.method === "POST" &&
     request.nextUrl.pathname === "/api/auth/callback/credentials"
   ) {
-    const ip = getClientIp(request);
-    if (isRateLimited(ip)) {
+    if (isRateLimited(`login:${ip}`)) {
       return new NextResponse("Too many login attempts. Try again in 15 minutes.", {
+        status: 429,
+        headers: { "Retry-After": "900" },
+      });
+    }
+  }
+
+  if (request.method === "POST" && PUBLIC_MUTATION_PATHS.has(request.nextUrl.pathname)) {
+    // ponytail: local Map is enough for now; swap key store for Redis if spam volume warrants it.
+    if (isRateLimited(`public:${request.nextUrl.pathname}:${ip}`, PUBLIC_MUTATION_RATE_LIMIT_MAX)) {
+      return new NextResponse("Too many requests.", {
         status: 429,
         headers: { "Retry-After": "900" },
       });

@@ -1,13 +1,10 @@
-import { prisma } from "@repo/db";
-import { createEmailService, type EmailMessage } from "@repo/email";
+import { prisma } from "~/lib/db";
+import { type EmailMessage } from "@repo/email";
 import { createResendProvider } from "@repo/email/providers/resend";
 import { decryptSecret, isEncryptedSecret } from "./secret-crypto";
 
-export type EmailProviderId = "resend";
-
 export interface EmailSettings {
   enabled: boolean;
-  provider: EmailProviderId;
   fromEmail: string;
   fromName: string;
   replyTo: string;
@@ -15,10 +12,8 @@ export interface EmailSettings {
 }
 
 const EMAIL_NAMESPACE = "email";
-type SettingsRow = {
-  key: string;
-  value: string | null;
-};
+
+type SettingsRow = { key: string; value: string | null };
 
 async function getEmailSettingsRows(): Promise<SettingsRow[]> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,10 +30,8 @@ function rowsToMap(rows: SettingsRow[]): Record<string, string> {
 
 export async function getEmailSettings(): Promise<EmailSettings> {
   const values = rowsToMap(await getEmailSettingsRows());
-
   return {
     enabled: values.emailEnabled === "true",
-    provider: "resend",
     fromEmail: values.emailFromEmail ?? "",
     fromName: values.emailFromName ?? "",
     replyTo: values.emailReplyTo ?? "",
@@ -46,46 +39,20 @@ export async function getEmailSettings(): Promise<EmailSettings> {
   };
 }
 
-async function getRequiredEmailConfig() {
-  const values = rowsToMap(await getEmailSettingsRows());
-  const settings = await getEmailSettings();
-
-  if (!settings.enabled) {
-    throw new Error("Email delivery is disabled.");
-  }
-
-  if (!settings.fromEmail) {
-    throw new Error("Email from address is required.");
-  }
-
-  const encryptedApiKey = values.emailResendApiKey;
-  if (!isEncryptedSecret(encryptedApiKey)) {
-    throw new Error("Resend API key is not configured.");
-  }
-
-  return {
-    ...settings,
-    provider: "resend" as const,
-    resendApiKey: decryptSecret(encryptedApiKey),
-  };
-}
-
-export async function createConfiguredEmailService() {
-  const config = await getRequiredEmailConfig();
-
-  return createEmailService(
-    createResendProvider({
-      apiKey: config.resendApiKey,
-      defaultFrom: {
-        email: config.fromEmail,
-        name: config.fromName || undefined,
-      },
-      defaultReplyTo: config.replyTo || undefined,
-    }),
-  );
-}
-
 export async function sendEmail(message: EmailMessage) {
-  const email = await createConfiguredEmailService();
-  return email.send(message);
+  const values = rowsToMap(await getEmailSettingsRows());
+  if (values.emailEnabled !== "true") throw new Error("Email delivery is disabled.");
+  if (!values.emailFromEmail) throw new Error("Email from address is required.");
+  const encryptedApiKey = values.emailResendApiKey;
+  if (!isEncryptedSecret(encryptedApiKey)) throw new Error("Resend API key is not configured.");
+
+  const provider = createResendProvider({
+    apiKey: decryptSecret(encryptedApiKey),
+    defaultFrom: {
+      email: values.emailFromEmail,
+      name: values.emailFromName || undefined,
+    },
+    defaultReplyTo: values.emailReplyTo || undefined,
+  });
+  return provider.send(message);
 }

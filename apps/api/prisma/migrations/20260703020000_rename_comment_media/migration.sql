@@ -1,0 +1,4 @@
+ALTER TABLE "_restaurant_comments_medias" RENAME TO "restaurant_comment_media";
+ALTER INDEX "_restaurant_comments_medias_restaurant_comment_id_position_key" RENAME TO "restaurant_comment_media_restaurant_comment_id_position_key";
+ALTER TABLE "restaurant_comment_media" RENAME CONSTRAINT "_restaurant_comments_medias_pkey" TO "restaurant_comment_media_pkey";
+ALTER TABLE "restaurant_comment_media" RENAME CONSTRAINT "_restaurant_comments_medias_restaurant_comment_id_fkey" TO "restaurant_comment_media_restaurant_comment_id_fkey";

@@ -47,9 +47,14 @@ test.describe("Front Page Settings (keyValue)", () => {
     await expect(page.getByLabel("Meta Description")).toBeVisible();
   });
 
-  test("switch to Contact tab", async ({ page }) => {
-    await switchTab(page, "Contact");
-    await expect(page.getByLabel("WhatsApp", { exact: true })).toBeVisible();
+  test("switch to Home Page tab", async ({ page }) => {
+    await switchTab(page, "Home Page");
+    await expect(page.getByLabel("Feedback Section Title")).toBeVisible();
+  });
+
+  test("switch to Social Media tab", async ({ page }) => {
+    await switchTab(page, "Social Media");
+    await expect(page.getByLabel("Instagram")).toBeVisible();
   });
 
   test("switch to Scripts tab and edit", async ({ page }) => {

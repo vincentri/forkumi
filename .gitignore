@@ -15,6 +15,12 @@ dist/
 # generated
 packages/db/src/generated/
 
+# e2e (playwright)
+packages/e2e/.auth/
+packages/e2e/test-results/
+packages/e2e/playwright-report/
+packages/e2e/.e2e-state.json
+
 # misc
 .DS_Store
 *.log
@@ -23,6 +29,7 @@ apps/api/public/uploads/
 *.tsbuildinfo
 skills-lock.json
 public/uploads/
-.vercel
-.env*
-.serena
+graphify-out/
+**/coverage
+
+temp/

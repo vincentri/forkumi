@@ -31,8 +31,7 @@ export function CRUDResourceClient({ config, permissions, isProtectedRole, curre
           <h2 className="text-xl font-semibold text-foreground">Model not registered</h2>
           <p className="text-sm text-muted-foreground">
             The &ldquo;{config.model}&rdquo; admin router is not set up. Did you run{" "}
-            <code className="font-mono">pnpm crud:scaffold {config.model}</code> and{" "}
-            <code className="font-mono">pnpm db:migrate</code>?
+            <code className="font-mono">pnpm crud:scaffold {config.model}</code> and restart the dev server?
           </p>
         </div>
       </div>

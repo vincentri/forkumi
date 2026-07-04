@@ -3,7 +3,7 @@ import { defineCRUD } from "@repo/crud";
 export const BlogCategoryCRUD = defineCRUD({
   model: "blogCategory",
   label: "Category",
-  icon: "Tag",
+  icon: "FolderOpen",
   navGroup: "Blog",
   navGroupIcon: "Tag",
   fields: [
@@ -16,6 +16,7 @@ export const BlogCategoryCRUD = defineCRUD({
       slugFrom: "title",
     },
     { name: "title", type: "text", label: "Title", required: true },
+    { name: "position", type: "number", label: "Position", default: 0, showInTable: true, sortable: true },
     { name: "metaTitle", type: "text", label: "Meta title", tab: "SEO", showInTable: false },
     { name: "metaDescription", type: "textarea", label: "Meta description", tab: "SEO", showInTable: false },
     { name: "metaKeywords", type: "text", label: "Meta keywords", tab: "SEO", showInTable: false },
@@ -28,7 +29,6 @@ export const BlogCategoryCRUD = defineCRUD({
       options: [
         { label: "Draft", value: "draft" },
         { label: "Published", value: "published" },
-        { label: "Archived", value: "archived" },
       ],
     },
   ],
@@ -41,6 +41,7 @@ export const BlogCategoryCRUD = defineCRUD({
             ["title"],
             ["slug"],
             ["status"],
+            ["position"],
           ],
         },
         {
