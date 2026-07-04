@@ -11,7 +11,7 @@ Reusable monorepo scaffold for client projects. Includes auth (NextAuth.js), dat
 pnpm dlx degit your-github/quantyx my-project
 cd my-project
 node scripts/setup.mjs        # writes .env with a generated NEXTAUTH_SECRET
-# edit .env — set POSTGRES_* vars if your DB credentials differ from the defaults
+# edit .env — set DATABASE_URL (and DIRECT_URL for migrations) to your Postgres
 # start your local Postgres first (see "Local Postgres" below)
 pnpm install && pnpm db:migrate && pnpm db:seed
 pnpm dev
@@ -55,14 +55,11 @@ volumes:
   pgdata:
 ```
 
-Then set matching values in `.env`:
+Then point `.env` at it (host `localhost` from your Mac; `start.sh` rewrites it to `postgres` inside the container):
 
 ```env
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=admin
-POSTGRES_DB=storetrac
+DATABASE_URL="postgresql://postgres:admin@localhost:5432/storetrac"
+DIRECT_URL="postgresql://postgres:admin@localhost:5432/storetrac"
 ```
 
 From your Mac host, the same DB is still available at `localhost:5432`.
@@ -283,11 +280,8 @@ Use `pnpm db:migrate` (generates migration files) — not `pnpm db:migrate` (des
 | --- | --- |
 | `NEXTAUTH_URL` | Full URL of your app (e.g. `https://admin.yourapp.com`) |
 | `NEXTAUTH_SECRET` | Random 32-byte secret: `openssl rand -base64 32` |
-| `POSTGRES_HOST` | Production Postgres host |
-| `POSTGRES_PORT` | Postgres port (default `5432`) |
-| `POSTGRES_USER` | Postgres user |
-| `POSTGRES_PASSWORD` | Postgres password |
-| `POSTGRES_DB` | Database name |
+| `DATABASE_URL` | Postgres connection string used at runtime (pooled/PgBouncer is fine, e.g. Supabase port `6543`) |
+| `DIRECT_URL` | Direct/session connection (port `5432`) for `prisma migrate` — pooled transaction connections hang on migrate's advisory lock. Defaults to `DATABASE_URL` if unset |
 | `STORAGE_PROVIDER` | Use `s3` for durable production uploads on serverless hosts |
 | `AWS_REGION` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_S3_BUCKET` | Required when `STORAGE_PROVIDER=s3`; credentials need `s3:PutObject` |
 | `NEXT_PUBLIC_STORAGE_BASE_URL` | Optional public CDN/S3 base URL for uploaded files |

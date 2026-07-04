@@ -17,23 +17,22 @@ services:
   #     retries: 10
 
   api:
-    container_name: hoz-api
+    container_name: ${API_CONTAINER_NAME:-api}
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
     restart: unless-stopped
     # Bind-mount ./public must be writable by this user (defaults to nextjs 1001).
     # On Mac: set DOCKER_UID/GID in .env to your id -u / id -g (e.g. 501:20).
     user: "${DOCKER_UID:-1001}:${DOCKER_GID:-1001}"
     ports:
-      - "3001:3001"
+      - "${API_PORT:-3001}:3001"
     environment:
-      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-quantyx}
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-password}@postgres:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-quantyx}"
+      # Pass through the connection strings from .env.
+      # start.sh rewrites localhost/127.0.0.1/::1 to `postgres` inside the container.
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:password@postgres:5432/quantyx}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3001}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://api:3001}
@@ -60,7 +59,7 @@ services:
       #   condition: service_healthy
 
   web:
-    container_name: hoz-web
+    container_name: ${WEB_CONTAINER_NAME:-web}
     build:
       context: .
       dockerfile: apps/web/Dockerfile
@@ -69,7 +68,7 @@ services:
         NEXT_PUBLIC_WEB_URL: ${NEXT_PUBLIC_WEB_URL:-http://localhost:3000}
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${WEB_PORT:-3000}:3000"
     environment:
       API_URL: http://api:3001
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001}
@@ -79,10 +78,10 @@ services:
       api:
         condition: service_healthy
 
-networks:
-  default:
-    external: true
-    name: pgvector_default
+# networks:
+#   default:
+#     external: true
+#     name: pgvector_default
 
 # volumes:
 #   postgres_data:

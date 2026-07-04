@@ -2,13 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
-// Prisma 7 uses a driver adapter. The connection string mirrors the DATABASE_URL
-// the db scripts assemble from POSTGRES_* parts, falling back to DIRECT_URL.
-const connectionString =
-  process.env.DATABASE_URL ??
-  (process.env.POSTGRES_HOST
-    ? `postgresql://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST}:${process.env.POSTGRES_PORT}/${process.env.POSTGRES_DB}`
-    : process.env.DIRECT_URL);
+// Prisma 7 uses a driver adapter. Runtime connects via the pooled DATABASE_URL
+// (falling back to DIRECT_URL if only that is set).
+const connectionString = process.env.DATABASE_URL ?? process.env.DIRECT_URL;
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;

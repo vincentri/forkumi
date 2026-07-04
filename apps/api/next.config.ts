@@ -17,10 +17,6 @@ try {
       if (!process.env[key]) process.env[key] = val;
     }
   }
-  if (!process.env.DATABASE_URL && process.env.POSTGRES_USER) {
-    const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_HOST, POSTGRES_PORT, POSTGRES_DB } = process.env;
-    process.env.DATABASE_URL = `postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}`;
-  }
 } catch { /* .env not present — env vars provided externally (production) */ }
 
 const nextConfig: NextConfig = {
