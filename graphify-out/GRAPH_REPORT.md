@@ -1,16 +1,16 @@
 # Graph Report - forkumi  (2026-07-04)
 
 ## Corpus Check
-- 603 files · ~276,787 words
+- 653 files · ~267,221 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3799 nodes · 5508 edges · 409 communities (312 shown, 97 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 9 edges (avg confidence: 0.8)
+- 3849 nodes · 5760 edges · 405 communities (312 shown, 93 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 13 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a63d3312`
+- Built from commit: `6eec8d03`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -282,9 +282,11 @@
 - [[_COMMUNITY_Community 268|Community 268]]
 - [[_COMMUNITY_Community 269|Community 269]]
 - [[_COMMUNITY_Community 270|Community 270]]
+- [[_COMMUNITY_Community 271|Community 271]]
 - [[_COMMUNITY_Community 272|Community 272]]
 - [[_COMMUNITY_Community 273|Community 273]]
 - [[_COMMUNITY_Community 274|Community 274]]
+- [[_COMMUNITY_Community 275|Community 275]]
 - [[_COMMUNITY_Community 276|Community 276]]
 - [[_COMMUNITY_Community 277|Community 277]]
 - [[_COMMUNITY_Community 278|Community 278]]
@@ -300,10 +302,9 @@
 - [[_COMMUNITY_Community 288|Community 288]]
 - [[_COMMUNITY_Community 289|Community 289]]
 - [[_COMMUNITY_Community 290|Community 290]]
+- [[_COMMUNITY_Community 291|Community 291]]
 - [[_COMMUNITY_Community 292|Community 292]]
 - [[_COMMUNITY_Community 293|Community 293]]
-- [[_COMMUNITY_Community 294|Community 294]]
-- [[_COMMUNITY_Community 295|Community 295]]
 - [[_COMMUNITY_Community 296|Community 296]]
 - [[_COMMUNITY_Community 297|Community 297]]
 - [[_COMMUNITY_Community 299|Community 299]]
@@ -387,40 +388,38 @@
 - [[_COMMUNITY_Community 380|Community 380]]
 - [[_COMMUNITY_Community 381|Community 381]]
 - [[_COMMUNITY_Community 382|Community 382]]
-- [[_COMMUNITY_Community 383|Community 383]]
-- [[_COMMUNITY_Community 384|Community 384]]
 - [[_COMMUNITY_Community 398|Community 398]]
 - [[_COMMUNITY_Community 409|Community 409]]
 - [[_COMMUNITY_Community 410|Community 410]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `CRUDConfig` - 46 edges
-2. `verifyClaim()` - 40 edges
-3. `CRUDField` - 33 edges
-4. `extractClaims()` - 29 edges
-5. `canonicalizeRoute()` - 25 edges
-6. `renderReport()` - 23 edges
-7. `CRUDFieldSelect` - 23 edges
-8. `recText()` - 22 edges
-9. `recText()` - 22 edges
-10. `Button` - 22 edges
+1. `cn()` - 67 edges
+2. `CRUDConfig` - 46 edges
+3. `verifyClaim()` - 40 edges
+4. `CRUDField` - 33 edges
+5. `extractClaims()` - 29 edges
+6. `Button` - 26 edges
+7. `canonicalizeRoute()` - 25 edges
+8. `defineCRUD()` - 24 edges
+9. `renderReport()` - 23 edges
+10. `CRUDFieldSelect` - 23 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `CommentsPage()` --calls--> `useAdminApi()`  [INFERRED]
+  apps/api/src/app/admin/comments/page.tsx → packages/admin/src/ui/AdminProvider.tsx
+- `RestaurantCommentsPage()` --calls--> `useAdminApi()`  [INFERRED]
+  apps/api/src/app/admin/restaurant-comments/page.tsx → packages/admin/src/ui/AdminProvider.tsx
 - `lookupInvitation()` --calls--> `sha256()`  [INFERRED]
   apps/api/src/server/routers/invitation.ts → packages/admin/src/server/utils.ts
 - `ResourcePage()` --calls--> `derivePermissionOptions()`  [INFERRED]
   apps/api/src/app/admin/[resource]/page.tsx → packages/admin/src/server/permissions.ts
-- `generateMetadata()` --calls--> `resolveAssetUrl()`  [INFERRED]
-  apps/api/src/app/layout.tsx → packages/ui/src/lib/asset-url.ts
-- `createConfiguredEmailService()` --calls--> `createResendProvider()`  [INFERRED]
-  apps/api/src/lib/email.ts → packages/email/src/providers/resend.ts
-- `createConfiguredEmailService()` --calls--> `createEmailService()`  [EXTRACTED]
-  apps/api/src/lib/email.ts → packages/email/src/service.ts
+- `BlogSearchSelect()` --calls--> `useAdminApi()`  [INFERRED]
+  apps/api/src/app/admin/comments/BlogSearchSelect.tsx → packages/admin/src/ui/AdminProvider.tsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (409 total, 97 thin omitted)
+## Communities (405 total, 93 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.06
@@ -428,7 +427,7 @@ Nodes (79): isKnownUrl(), findRecContradictions(), asArray(), buildScriptHasMigr
 
 ### Community 1 - "Community 1"
 Cohesion: 0.05
-Nodes (58): AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertDescription, AlertTitle, alertVariants, AlertDialogAction (+50 more)
+Nodes (71): AccordionContent, AccordionItem, AccordionTrigger, Alert, AlertDescription, AlertTitle, alertVariants, AlertDialogAction (+63 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.09
@@ -443,48 +442,48 @@ Cohesion: 0.08
 Nodes (44): Path, Path, Path, Path, benchmark_pair(), count_tokens(), main(), print_table() (+36 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.13
-Nodes (15): CRUDFormProps, CRUDPageProps, CRUDTableProps, KeyValuePageProps, ModelSelectApi, ResourcePage(), ResourcePageProps, ModelWithOptions (+7 more)
+Cohesion: 0.21
+Nodes (6): customLinks, hasPermission(), CUSTOM_PAGE_REDIRECTS, ResourcePage(), ResourcePageProps, toClientCRUDConfig()
 
 ### Community 6 - "Community 6"
-Cohesion: 0.08
-Nodes (23): Checkbox, CRUDTable(), useSelectLabelMap(), SelectContent, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton (+15 more)
+Cohesion: 0.09
+Nodes (21): CRUDTable(), useSelectLabelMap(), SelectContent, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator (+13 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.08
-Nodes (48): affectedFiles(), appliesAlsoEntry(), cacheLifeIntent(), dedupEditTarget(), dedupeRecommendations(), dedupIntent(), firstAffectedFile(), fixShape() (+40 more)
+Cohesion: 0.17
+Nodes (25): affectedFiles(), appliesAlsoEntry(), cacheLifeIntent(), dedupEditTarget(), dedupeRecommendations(), dedupIntent(), firstAffectedFile(), fixShape() (+17 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.04
 Nodes (48): default, dependencies, class-variance-authority, clsx, lucide-react, @radix-ui/react-accordion, @radix-ui/react-alert-dialog, @radix-ui/react-avatar (+40 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.14
-Nodes (30): assetFields(), cleanupReplacedAssets(), galleryAssetFields(), isStringOrNull(), buildCRUDRouters(), createCRUDRouter(), createKeyValueRouter(), buildCsv() (+22 more)
+Cohesion: 0.15
+Nodes (25): buildCRUDRouters(), createCRUDRouter(), createKeyValueRouter(), buildCsv(), applyDeletePolicies(), applyReferencingUpdate(), handlePrismaError(), AnyProcedureBuilder (+17 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.17
-Nodes (18): AcceptInviteForm(), AcceptInviteFormProps, FormData, schema, AuthBrandPanel(), AuthBrandPanelProps, AuthMobileLogo(), AuthMobileLogoProps (+10 more)
+Cohesion: 0.08
+Nodes (39): AcceptInviteForm(), AcceptInviteFormProps, FormData, schema, AuthBrandPanel(), AuthBrandPanelProps, AuthMobileLogo(), AuthMobileLogoProps (+31 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.09
-Nodes (20): RichTextEditor(), BooleanField(), Props, ColorField(), Props, DateTimeField(), Props, FieldRendererProps (+12 more)
+Cohesion: 0.10
+Nodes (23): BooleanField(), Props, ColorField(), Props, DateTimeField(), Props, FieldRenderer(), FieldRendererProps (+15 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.06
 Nodes (33): afterRender(), applyI18n(), COMPARE, FAQ, footerHTML(), headHTML(), ICONS, INCLUDED (+25 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.05
-Nodes (38): dependencies, class-variance-authority, framer-motion, @hookform/resolvers, lenis, motion, next, next-themes (+30 more)
+Cohesion: 0.10
+Nodes (19): dependencies, next, react, react-dom, devDependencies, @repo/tsconfig, @types/node, @types/react (+11 more)
 
 ### Community 14 - "Community 14"
-Cohesion: 0.06
-Nodes (29): afterRender(), applyI18n(), COMPARE, FAQ, footerHTML(), headHTML(), ICONS, INCLUDED (+21 more)
+Cohesion: 0.16
+Nodes (23): buildDebugArtifact(), candidateFamily(), candidateTarget(), coerceOptionalString(), contradictsNoChangeReason(), flattenObservations(), HARD_REGEN_TRIGGERS, hasUnsupportedCacheLifeCdnClaim() (+15 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.07
-Nodes (32): AcceptInvitePage(), AccountClient(), AccountPage(), metadata, AdminLayout(), generateMetadata(), GET(), GET() (+24 more)
+Cohesion: 0.33
+Nodes (8): AuthAdapter, AuthUser, createAuthOptions(), createGetServerAuthSession(), getJwtCallback(), getSessionCallback(), mockAdapter(), TEST_USER
 
 ### Community 16 - "Community 16"
 Cohesion: 0.06
@@ -495,36 +494,36 @@ Cohesion: 0.09
 Nodes (21): migrateAndSeed(), MigrateAndSeedOpts, startDatabase(), GlobalSetupFn, makeGlobalSetup(), API_PRISMA_DIR, E2E_PRISMA_DIR, PRISMA_BIN (+13 more)
 
 ### Community 18 - "Community 18"
-Cohesion: 0.12
-Nodes (23): applySlugFields(), crudModelToSlug(), isCRUDResourceSlug(), CRUDAssetReplacementContext, CRUDDeletePolicy, CRUDDeletePolicyAction, CRUDFieldBase, CRUDFieldGallery (+15 more)
+Cohesion: 0.11
+Nodes (24): applySlugFields(), crudModelToSlug(), isCRUDResourceSlug(), CRUDAssetReplacementContext, CRUDDeletePolicyAction, CRUDExtraTab, CRUDFieldBase, CRUDFieldGallery (+16 more)
 
 ### Community 19 - "Community 19"
 Cohesion: 0.06
-Nodes (31): default, default, types, dependencies, bcryptjs, pg, @prisma/adapter-pg, @prisma/client (+23 more)
+Nodes (33): default, default, types, dependencies, bcryptjs, dotenv, pg, @prisma/adapter-pg (+25 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.13
-Nodes (15): BlogCRUD, BlogCategoryCRUD, FrontPageSettingsCRUD, NewsletterSubscriberCRUD, PageCRUD, SettingsCRUD, UserCRUD, ALL_CONFIGS (+7 more)
+Cohesion: 0.10
+Nodes (24): BlogCRUD, BlogCategoryCRUD, CommentCRUD, ContactCRUD, ContactTopicCRUD, EventCRUD, EventCategoryCRUD, NewsletterSubscriberCRUD (+16 more)
 
 ### Community 21 - "Community 21"
 Cohesion: 0.06
 Nodes (30): Accessibility, Animation Triggers, Availability, Choosing Animation Style, Common Patterns, Composing Shared Elements with List Identity, Core Concepts, Critical Placement Rule (+22 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.13
-Nodes (27): formatPublicText(), assertValidObservations(), compactFinalText(), escape(), formatBytes(), formatEvidenceText(), formatGatedTargets(), formatNum() (+19 more)
+Cohesion: 0.10
+Nodes (43): formatCandidateLabel(), formatKind(), formatPublicText(), formatRoute(), asArray(), assertValidObservations(), buildFinalReportMessage(), candidateForDisplay() (+35 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.08
-Nodes (18): COL_SPANS, CRUDForm(), GRID_COLS, layoutFieldNames(), layoutItemField(), ImageUpload, GalleryEditor(), GalleryEditorProps (+10 more)
+Cohesion: 0.07
+Nodes (23): COL_SPANS, CRUDForm(), GRID_COLS, layoutFieldNames(), layoutItemField(), ImageUpload, KeyValuePage(), TabsContent (+15 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.10
-Nodes (22): SheetContent, SheetContentProps, SheetDescription, SheetFooter(), SheetHeader(), SheetOverlay, SheetTitle, sheetVariants (+14 more)
+Cohesion: 0.11
+Nodes (16): BlogSearchSelect(), Option, Props, CRUDFormProps, CRUDTableProps, KeyValuePageProps, PopoverContent, ScrollArea (+8 more)
 
 ### Community 25 - "Community 25"
-Cohesion: 0.11
-Nodes (18): lineOf(), isApplicable(), metadata, scan(), isApplicable(), metadata, scan(), scanners (+10 more)
+Cohesion: 0.13
+Nodes (16): lineOf(), isApplicable(), metadata, scan(), isApplicable(), metadata, scan(), metadata (+8 more)
 
 ### Community 26 - "Community 26"
 Cohesion: 0.25
@@ -532,15 +531,15 @@ Nodes (24): arrayAt(), deploymentRegressionDecision(), dropWithObservation(), fo
 
 ### Community 27 - "Community 27"
 Cohesion: 0.13
-Nodes (17): lookupSkillRule(), lookupUrl(), HERE, KNOWN_CANDIDATE_KINDS, knownCitation(), loadSupportTopics(), nonEmptyArray(), nonEmptyString() (+9 more)
+Nodes (16): HERE, KNOWN_CANDIDATE_KINDS, loadSupportTopics(), nonEmptyArray(), nonEmptyString(), normalizeTopic(), parseFrontmatter(), parseFrontmatterValue() (+8 more)
 
 ### Community 28 - "Community 28"
 Cohesion: 0.11
 Nodes (14): sanitizeCitations(), applyDollarStrip(), stripDollarLiterals(), metadata, STRING_FIELDS, metadata, STRING_FIELDS, metadata (+6 more)
 
 ### Community 29 - "Community 29"
-Cohesion: 0.17
-Nodes (20): absoluteBriefPath(), briefRoots(), buildBrief(), cachePolicyGuidance(), capBriefFiles(), closestAncestorLayoutFiles(), isCatchAllPlaceholder(), isDynamicPlaceholder() (+12 more)
+Cohesion: 0.16
+Nodes (22): absoluteBriefPath(), briefRoots(), buildBrief(), cachePolicyGuidance(), capBriefFiles(), closestAncestorLayoutFiles(), isCatchAllPlaceholder(), isDynamicPlaceholder() (+14 more)
 
 ### Community 30 - "Community 30"
 Cohesion: 0.16
@@ -559,8 +558,8 @@ Cohesion: 0.09
 Nodes (21): Adding a Resource, Architecture, Custom Admin Pages, Database migrations, Default Branding Assets, Deploy targets, Environment Variables, Field Types (+13 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.10
-Nodes (21): dependencies, @aws-sdk/client-s3, bcryptjs, @hookform/resolvers, next, next-auth, @prisma/client, react (+13 more)
+Cohesion: 0.04
+Nodes (46): dependencies, @aws-sdk/client-s3, bcryptjs, @hookform/resolvers, isomorphic-dompurify, next, next-auth, @prisma/client (+38 more)
 
 ### Community 35 - "Community 35"
 Cohesion: 0.10
@@ -575,28 +574,28 @@ Cohesion: 0.10
 Nodes (21): scripts, build, crud:delete, crud:new, crud:scaffold, db:generate, db:migrate, db:seed (+13 more)
 
 ### Community 38 - "Community 38"
-Cohesion: 0.16
-Nodes (15): gates, MAX_CODE_CANDIDATES, metadata, HERE, main(), REFS, renderCandidates(), renderScanners() (+7 more)
+Cohesion: 0.24
+Nodes (8): gates, metadata, HERE, main(), REFS, renderCandidates(), renderScanners(), trimTrailingBlankLine()
 
 ### Community 39 - "Community 39"
-Cohesion: 0.16
-Nodes (18): formatCandidateLabel(), formatCandidateLine(), formatKind(), formatNumberLike(), formatRoute(), formatSignal(), formatSignalPart(), formatSignalValue() (+10 more)
+Cohesion: 0.17
+Nodes (14): formatNumberLike(), formatSignal(), formatSignalPart(), formatSignalValue(), humanizeKey(), KIND_LABELS, normalizeObservedWindowUnits(), PUBLIC_ASSIGNMENT_LABELS (+6 more)
 
 ### Community 40 - "Community 40"
-Cohesion: 0.15
-Nodes (10): KeyValuePage(), TabsContent, TabsList, TabsTrigger, assetUrlSchema, buildUpdateZodSchema(), buildZodSchema(), fieldToZod() (+2 more)
+Cohesion: 0.48
+Nodes (4): assetUrlSchema, buildUpdateZodSchema(), buildZodSchema(), fieldToZod()
 
 ### Community 41 - "Community 41"
-Cohesion: 0.18
-Nodes (16): compareVersion(), HERE, LIBRARY_PATH, libraryForStack(), loadLibrary(), matchesFrameworkVersion(), parseVersion(), citationApplies() (+8 more)
+Cohesion: 0.16
+Nodes (19): compareVersion(), HERE, LIBRARY_PATH, libraryForStack(), loadLibrary(), lookupSkillRule(), lookupUrl(), matchesFrameworkVersion() (+11 more)
 
 ### Community 42 - "Community 42"
 Cohesion: 0.19
 Nodes (15): escapeODataString(), mergeIntoEvidence(), odataEq(), SCANNER_KINDS, simplify(), SPEC_GENERATORS, specsForCandidate(), queryMetric() (+7 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.20
-Nodes (18): citationSubset(), inferFrameworkPlaybook(), inferPlaybook(), resolveFiles(), candidateRefFor(), supportTopicSubset(), topicCitationsApply(), buildFanoutPlan() (+10 more)
+Cohesion: 0.23
+Nodes (15): citationSubset(), inferFrameworkPlaybook(), inferPlaybook(), candidateRefFor(), buildFanoutPlan(), buildManifest(), candidateFamilyKey(), HERE (+7 more)
 
 ### Community 44 - "Community 44"
 Cohesion: 0.20
@@ -619,16 +618,16 @@ Cohesion: 0.11
 Nodes (18): 1.1 Stop on blockers, 1. Collect, scan, and merge signals, 2.1 Ask about audit scope when needed, 2.2 Deep-dive and reconcile, 2.3 Generate briefs and investigate, 2.4 Collect outputs, 2. Gate candidates, 3. Verify recommendations (+10 more)
 
 ### Community 49 - "Community 49"
-Cohesion: 0.13
-Nodes (14): api, deleteManagedAsset(), managedUploadKey(), AppRouter, autoRole, BlogDelegate, BlogRow, ContentRow (+6 more)
+Cohesion: 0.07
+Nodes (28): autoComment, autoRestaurantComment, autoRole, BlogCategoryDelegate, BlogCategoryRow, BlogDelegate, blogInclude, BlogRow (+20 more)
 
 ### Community 50 - "Community 50"
 Cohesion: 0.11
 Nodes (17): default, dependencies, next-auth, devDependencies, next, @repo/tsconfig, typescript, vitest (+9 more)
 
 ### Community 51 - "Community 51"
-Cohesion: 0.33
-Nodes (8): ImageMode, ImageUploadProps, isAllowedImageReference(), isExternalImageUrl(), assetBaseUrl(), isManagedAssetPath(), resolveAssetUrl(), stripTrailingSlash()
+Cohesion: 0.30
+Nodes (7): GET(), GET(), contentTypeForPath(), MIME, resolvePublicFile(), servePublicFile(), MockNextResponse
 
 ### Community 52 - "Community 52"
 Cohesion: 0.11
@@ -663,12 +662,12 @@ Cohesion: 0.12
 Nodes (16): 1.1 Avoid Boolean Prop Proliferation, 1.2 Use Compound Components, 1. Component Architecture, 2.1 Decouple State Management from UI, 2.2 Define Generic Context Interfaces for Dependency Injection, 2.3 Lift State into Provider Components, 2. State Management, 3.1 Create Explicit Component Variants (+8 more)
 
 ### Community 60 - "Community 60"
-Cohesion: 0.25
-Nodes (9): AccountClientProps, PasswordFormValues, ProfileFormValues, Card, CardContent, CardDescription, CardFooter, CardHeader (+1 more)
+Cohesion: 0.24
+Nodes (11): AccountClientProps, PasswordFormValues, ProfileFormValues, Card, CardContent, CardDescription, CardFooter, CardHeader (+3 more)
 
 ### Community 61 - "Community 61"
-Cohesion: 0.25
-Nodes (4): DEFAULT_KIND_CAPS, DIVERSITY_ELIGIBILITY, isDiversityEligible(), selectLaunchCandidates()
+Cohesion: 0.23
+Nodes (8): AccountClient(), AccountPage(), metadata, AdminLayout(), authOptions, getServerAuthSession, { mockFindUnique, mockCompare }, handler
 
 ### Community 62 - "Community 62"
 Cohesion: 0.25
@@ -695,8 +694,8 @@ Cohesion: 0.18
 Nodes (9): getMetricThrottle(), isRateLimited(), parsePositiveIntEnv(), resolveConcurrency(), resolveRateLimit(), retryOnRateLimit(), SemaphoreAbortError, setDailyQuotaBlocked() (+1 more)
 
 ### Community 69 - "Community 69"
-Cohesion: 0.20
-Nodes (11): extractRoute(), apply(), metadata, apply(), metadata, MODE_PATTERNS, isJsxLike(), isNextConfig() (+3 more)
+Cohesion: 0.53
+Nodes (5): isJsxLike(), isNextConfig(), metadata, scan(), snippet()
 
 ### Community 70 - "Community 70"
 Cohesion: 0.13
@@ -727,8 +726,8 @@ Cohesion: 0.14
 Nodes (13): Before / After, Benchmarks, How It Work, <img src="../../docs/assets/dancing-rock.svg" width="20" height="20" alt="rock"/> Caveman (285 tokens), Install, 📄 Original (706 tokens), Part of Caveman, Security (+5 more)
 
 ### Community 77 - "Community 77"
-Cohesion: 0.08
-Nodes (26): Button, ModalState, DialogContent, DialogDescription, DialogFooter(), DialogHeader(), DialogOverlay, DialogTitle (+18 more)
+Cohesion: 0.07
+Nodes (35): BlogRef, CommentNode, CommentRow(), CommentsPage(), StatusFilter, timeAgo(), TreeProps, Button (+27 more)
 
 ### Community 78 - "Community 78"
 Cohesion: 0.14
@@ -739,28 +738,28 @@ Cohesion: 0.14
 Nodes (14): Abstract, Accessibility, Availability, Choosing Animation Style, CSS Pseudo-Elements, Next.js Integration, React View Transitions, `router.back()` and Browser Back Button (+6 more)
 
 ### Community 80 - "Community 80"
-Cohesion: 0.15
-Nodes (12): name, private, scripts, assets:upload-defaults, build, dev, lint, start (+4 more)
+Cohesion: 0.25
+Nodes (4): FrontPageSettingsCRUD, buildThreadedComments(), commentRouter, isBotSubmission()
 
 ### Community 81 - "Community 81"
-Cohesion: 0.15
-Nodes (12): default, exports, name, peerDependencies, react, react-dom, private, scripts (+4 more)
+Cohesion: 0.06
+Nodes (32): default, dependencies, @hookform/resolvers, lucide-react, react-hook-form, @repo/ui, @tanstack/react-table, @trpc/server (+24 more)
 
 ### Community 82 - "Community 82"
 Cohesion: 0.15
 Nodes (12): 10x Check, Accepted Scope, CEO Plan: DX Polish Pass v2, Context, Cross-Model Corrections (from outside voice), Deferred to TODOS.md (not selected in this review), DX Polish Pass (base scope — do first), Expansion Items (after DX polish pass) (+4 more)
 
 ### Community 83 - "Community 83"
-Cohesion: 0.16
-Nodes (16): CRUDPage(), downloadCsv(), getErrorMessage(), withToast(), CrudResourceView(), Props, KeyValueResourceView(), Props (+8 more)
+Cohesion: 0.14
+Nodes (24): CRUDPage(), CRUDPageProps, downloadCsv(), withToast(), CrudResourceView(), Props, InviteLinkModal(), KeyValueResourceView() (+16 more)
 
 ### Community 84 - "Community 84"
 Cohesion: 0.15
 Nodes (12): Available Tools, Debug Tricks, Example: Get Errors, `get_errors`, `get_logs`, `get_page_metadata`, `get_project_metadata`, `get_routes` (+4 more)
 
 ### Community 85 - "Community 85"
-Cohesion: 0.32
-Nodes (8): formatRecipient(), ResendProviderOptions, createEmailService(), EmailAddress, EmailMessage, EmailProvider, EmailSendResult, formatAddress()
+Cohesion: 0.21
+Nodes (9): createResendProvider(), formatRecipient(), ResendProviderOptions, fetchSpy, EmailAddress, EmailMessage, EmailProvider, EmailSendResult (+1 more)
 
 ### Community 86 - "Community 86"
 Cohesion: 0.15
@@ -779,20 +778,20 @@ Cohesion: 0.17
 Nodes (11): Commands, Editing Rules, graphify, Key Commands, Local Skills, Quantyx Agent Guide, Repo Shape, RTK (Rust Token Killer) - Token-Optimized Commands (+3 more)
 
 ### Community 90 - "Community 90"
-Cohesion: 0.17
-Nodes (4): @trpc/server, Blog, Page, serverApi
+Cohesion: 0.29
+Nodes (8): ImageUploadField(), ImageUploadFieldProps, assetFields(), cleanupReplacedAssets(), galleryAssetFields(), isStringOrNull(), CRUDFieldImage, CRUDRouterOptions
 
 ### Community 91 - "Community 91"
 Cohesion: 0.17
 Nodes (11): Boundaries, Caveman Compress, Compress, Compression Rules, Pattern, Preserve EXACTLY (never modify), Preserve Structure, Process (+3 more)
 
 ### Community 92 - "Community 92"
-Cohesion: 0.17
-Nodes (12): devDependencies, jsdom, react, react-dom, @repo/tsconfig, @testing-library/jest-dom, @testing-library/react, @testing-library/user-event (+4 more)
+Cohesion: 0.31
+Nodes (8): ALLOWED_EXTENSIONS, ALLOWED_MIME, ALLOWED_VIDEO_EXTENSIONS, ALLOWED_VIDEO_MIME, isUploadPath(), POST(), sanitizePath(), sanitizeSvg()
 
 ### Community 93 - "Community 93"
-Cohesion: 0.33
-Nodes (10): buildBudgetSummary(), buildChatPreview(), buildExactChatMessage(), buildOptions(), buildPrintCheck(), buildQuestionPayload(), buildQuestionText(), renderBudgetSummaryMarkdown() (+2 more)
+Cohesion: 0.31
+Nodes (11): buildBudgetSummary(), buildChatPreview(), buildExactChatMessage(), buildOptions(), buildPrintCheck(), buildQuestionPayload(), buildQuestionText(), renderBudgetSummaryMarkdown() (+3 more)
 
 ### Community 95 - "Community 95"
 Cohesion: 0.17
@@ -807,8 +806,8 @@ Cohesion: 0.17
 Nodes (11): Common Mistakes, Display Strategy, Don't Use Manual Font Links, Font in Specific Components, Font Optimization, Font Weights and Styles, Google Fonts, Local Fonts (+3 more)
 
 ### Community 98 - "Community 98"
-Cohesion: 0.14
-Nodes (6): createInvitationRouter(), createRoleRouter(), AdminDbAdapter, createPrismaAdapter(), createGetPublicSettings(), sha256()
+Cohesion: 0.15
+Nodes (8): StandardAction, createInvitationRouter(), createRoleRouter(), permissionString, RouterDeps, RouterDeps, AdminDbAdapter, createPrismaAdapter()
 
 ### Community 99 - "Community 99"
 Cohesion: 0.27
@@ -823,24 +822,24 @@ Cohesion: 0.17
 Nodes (12): Animation Timing, Card Expand/Collapse with `startTransition`, Cross-Fade Without Remount, Exclude Elements with `useOptimistic`, Isolate Elements from Parent Animations, Patterns and Guidelines, Preserve State with Activity, Reusable Animated Collapse (+4 more)
 
 ### Community 102 - "Community 102"
-Cohesion: 0.18
-Nodes (11): devDependencies, autoprefixer, postcss, @repo/tsconfig, tailwindcss, @types/bcryptjs, @types/node, @types/react (+3 more)
+Cohesion: 0.32
+Nodes (7): resolvePublicDir(), ALLOWED_EXTENSIONS, ALLOWED_MIME, ALLOWED_VIDEO_EXTENSIONS, ALLOWED_VIDEO_MIME, POST(), sanitizeSvg()
 
 ### Community 103 - "Community 103"
-Cohesion: 0.23
-Nodes (9): hasPermission(), StandardAction, permissionString, RouterDeps, createUserRouter(), RouterDeps, AdminNavLink, PasswordHasher (+1 more)
+Cohesion: 0.27
+Nodes (4): SettingsCRUD, UserCRUD, AdminNavLink, PasswordHasher
 
 ### Community 104 - "Community 104"
 Cohesion: 0.36
 Nodes (10): computeImpactLabel(), cwvIssue(), formatCwvIssue(), formatInteger(), joinEnglish(), parseSigNumber(), round1(), round2() (+2 more)
 
 ### Community 105 - "Community 105"
-Cohesion: 0.47
-Nodes (3): STANDARD_ACTIONS, capitalize(), derivePermissionOptions()
+Cohesion: 0.21
+Nodes (5): STANDARD_ACTIONS, createGetPublicSettings(), capitalize(), derivePermissionOptions(), sha256()
 
 ### Community 106 - "Community 106"
-Cohesion: 0.27
-Nodes (7): createInviteRouter(), getAppUrl(), InvitationRouterOptions, RouterDeps, createInviteRouterForTest(), mockDb(), mockTrpc()
+Cohesion: 0.24
+Nodes (8): createInviteRouter(), getAppUrl(), InvitationRouterOptions, RouterDeps, createUserRouter(), createInviteRouterForTest(), mockDb(), mockTrpc()
 
 ### Community 107 - "Community 107"
 Cohesion: 0.18
@@ -863,20 +862,20 @@ Cohesion: 0.20
 Nodes (9): compilerOptions, baseUrl, ignoreDeprecations, isolatedModules, paths, exclude, extends, include (+1 more)
 
 ### Community 112 - "Community 112"
-Cohesion: 0.20
-Nodes (8): db, roleRouter, db, inviteRouter, userCrudRouter, userRouter, procedureMapFactory(), permissionProcedure()
+Cohesion: 0.40
+Nodes (4): db, inviteRouter, userCrudRouter, userRouter
 
 ### Community 113 - "Community 113"
 Cohesion: 0.20
 Nodes (9): After implementing any feature, Agent guidance, Architecture, Conventions, gstack, @repo/admin — subpath exports, @repo/auth — adapter pattern, Security rules (+1 more)
 
 ### Community 114 - "Community 114"
-Cohesion: 0.36
-Nodes (9): createConfiguredEmailService(), EmailProviderId, EmailSettings, getEmailSettings(), getEmailSettingsRows(), getRequiredEmailConfig(), rowsToMap(), sendEmail() (+1 more)
+Cohesion: 0.19
+Nodes (12): EmailSettings, getEmailSettings(), getEmailSettingsRows(), rowsToMap(), sendEmail(), SettingsRow, { mockSettingsFindMany }, emailSettingsRouter (+4 more)
 
 ### Community 116 - "Community 116"
-Cohesion: 0.27
-Nodes (8): escapeRegex(), apply(), COUNT_CLAIM_TYPES, metadata, rewriteCount(), apply(), metadata, STRIP_DIRECTIVES
+Cohesion: 0.16
+Nodes (14): escapeRegex(), extractRoute(), apply(), COUNT_CLAIM_TYPES, metadata, rewriteCount(), apply(), metadata (+6 more)
 
 ### Community 117 - "Community 117"
 Cohesion: 0.20
@@ -919,8 +918,8 @@ Cohesion: 0.22
 Nodes (3): realProcedure, stubPrisma, stubProcedure
 
 ### Community 127 - "Community 127"
-Cohesion: 0.24
-Nodes (5): accountRouter, createTRPCContext(), protectedProcedure, t, TRPCContext
+Cohesion: 0.14
+Nodes (11): accountRouter, restaurantCommentRouter, db, roleRouter, AppRouter, procedureMapFactory(), createTRPCContext(), permissionProcedure() (+3 more)
 
 ### Community 128 - "Community 128"
 Cohesion: 0.20
@@ -955,12 +954,12 @@ Cohesion: 0.33
 Nodes (7): candidateForGroup(), gate(), groupFindings(), metadata, questionFor(), SCANNER_GATES, uniqueStrings()
 
 ### Community 137 - "Community 137"
-Cohesion: 0.18
-Nodes (13): asArray(), buildFinalReportMessage(), candidateForDisplay(), displayCandidate(), displayCandidateObject(), displayCandidateRef(), extractCoverageLine(), impactString() (+5 more)
+Cohesion: 0.47
+Nodes (4): isPermissionOptions(), MulticheckField(), Props, CRUDFieldMulticheck
 
 ### Community 138 - "Community 138"
-Cohesion: 0.28
-Nodes (6): DEFAULT_ADMIN_ASSET_PATHS, DEFAULT_ADMIN_ASSETS, DEFAULT_BRANDING_SETTINGS, DEFAULT_FRONT_PAGE_SETTINGS, FrontPageSettingsDelegate, FrontPageSettingSeed
+Cohesion: 0.29
+Nodes (6): DEFAULT_ADMIN_ASSET_PATHS, DEFAULT_ADMIN_ASSETS, DEFAULT_BRANDING_SETTINGS, adapter, pool, prisma
 
 ### Community 139 - "Community 139"
 Cohesion: 0.22
@@ -971,8 +970,8 @@ Cohesion: 0.25
 Nodes (7): Auth behavior, File size limit, Reporting a vulnerability, Security, Snyk High Risk Rating, What the skill does NOT do, What triggers the rating
 
 ### Community 141 - "Community 141"
-Cohesion: 0.25
-Nodes (8): dependencies, @hookform/resolvers, lucide-react, react-hook-form, @repo/ui, @tanstack/react-table, @trpc/server, zod
+Cohesion: 0.47
+Nodes (3): deleteManagedAsset(), managedUploadKey(), mockSend
 
 ### Community 142 - "Community 142"
 Cohesion: 0.39
@@ -1055,8 +1054,8 @@ Cohesion: 0.29
 Nodes (6): 1. Static Options, 2. `optionsFrom` — Config-Driven Dynamic Options, 3. `optionsQuery` — Custom Server-Side Query, 4. Many-to-Many (m2m) Relation, display Property, Select Modes
 
 ### Community 162 - "Community 162"
-Cohesion: 0.29
-Nodes (5): emailSettingsRouter, resendApiKeyInput, settingsInput, SettingValue, testEmailInput
+Cohesion: 0.60
+Nodes (3): buildOrderBy(), buildWhere(), isFilterableField()
 
 ### Community 163 - "Community 163"
 Cohesion: 0.48
@@ -1079,8 +1078,8 @@ Cohesion: 0.48
 Nodes (6): classifySubtype(), collectRanges(), findMatchingParen(), isInsideAnyRange(), metadata, scan()
 
 ### Community 168 - "Community 168"
-Cohesion: 0.38
-Nodes (6): config, getClientIp(), isRateLimited(), proxy(), RateEntry, rateLimitStore
+Cohesion: 0.32
+Nodes (7): config, getClientIp(), isRateLimited(), proxy(), PUBLIC_MUTATION_PATHS, RateEntry, rateLimitStore
 
 ### Community 169 - "Community 169"
 Cohesion: 0.29
@@ -1130,13 +1129,9 @@ Nodes (5): Auto-Clarity, Boundaries, Intensity, Persistence, Rules
 Cohesion: 0.33
 Nodes (5): caveman-stats, Example output, How to invoke, See also, What it does
 
-### Community 181 - "Community 181"
-Cohesion: 0.36
-Nodes (6): CandidateContractError, candidateLabel(), nonEmptyString(), VALID_SCOPES, validateCandidate(), validateCandidates()
-
 ### Community 182 - "Community 182"
-Cohesion: 0.22
-Nodes (11): applyHardGates(), flagsEndpointReason(), isFlagsEndpointCandidate(), normalizeRoute(), VERCEL_FLAGS_PACKAGES, applyAuthDisqualifier(), isAuthRoute(), attachDisplayRoute() (+3 more)
+Cohesion: 0.10
+Nodes (20): CandidateContractError, candidateLabel(), nonEmptyString(), VALID_SCOPES, validateCandidate(), validateCandidates(), applyHardGates(), flagsEndpointReason() (+12 more)
 
 ### Community 183 - "Community 183"
 Cohesion: 0.47
@@ -1242,6 +1237,10 @@ Nodes (4): computeBotShare(), gate(), metadata, totalRequestsFromSignals()
 Cohesion: 0.60
 Nodes (4): extractHighColdRoutes(), extractSlowHotRoutes(), gate(), metadata
 
+### Community 209 - "Community 209"
+Cohesion: 0.21
+Nodes (4): AboutSectionCRUD, ExampleCRUD, createRoleCRUD(), RoleCRUD
+
 ### Community 210 - "Community 210"
 Cohesion: 0.60
 Nodes (4): extractErrorRatesByRoute(), extractFunctionRoutes(), gate(), metadata
@@ -1261,6 +1260,10 @@ Nodes (3): aggregateSkuStats(), gate(), metadata
 ### Community 214 - "Community 214"
 Cohesion: 0.40
 Nodes (4): Quick Reference, Suspense Boundaries, usePathname, useSearchParams
+
+### Community 215 - "Community 215"
+Cohesion: 0.83
+Nodes (3): generateValidData(), pickIdentifier(), ts()
 
 ### Community 216 - "Community 216"
 Cohesion: 0.70
@@ -1474,6 +1477,10 @@ Nodes (3): exclude, extends, include
 Cohesion: 0.50
 Nodes (3): Component File Organization, Design Thinking, Frontend Aesthetics Guidelines
 
+### Community 271 - "Community 271"
+Cohesion: 0.50
+Nodes (3): resendApiKeyInput, settingsInput, testEmailInput
+
 ### Community 272 - "Community 272"
 Cohesion: 0.67
 Nodes (3): extractColdStarts(), gate(), metadata
@@ -1490,13 +1497,9 @@ Nodes (3): gate(), metadata, sumRows()
 Cohesion: 0.60
 Nodes (4): extractErrors(), extractFromStatusRows(), gate(), metadata
 
-### Community 277 - "Community 277"
-Cohesion: 0.67
-Nodes (3): resolveWhatsAppHref(), WA_HOSTS, withMessage()
-
 ### Community 278 - "Community 278"
-Cohesion: 0.10
-Nodes (24): PopoverContent, ScrollArea, FieldRenderer(), FileUploadField(), FileUploadFieldProps, ImageUploadField(), ImageUploadFieldProps, ModelMultiSelectField() (+16 more)
+Cohesion: 0.39
+Nodes (6): ModelSelectField(), ModelSelectInner(), Props, Props, SelectField(), CRUDFieldSelect
 
 ### Community 279 - "Community 279"
 Cohesion: 0.50
@@ -1534,33 +1537,41 @@ Nodes (4): How Multiple VTs Interact, Nested VT Limitation, Two Patterns Coexist
 Cohesion: 0.50
 Nodes (3): apiHost, apiProtocol, nextConfig
 
+### Community 291 - "Community 291"
+Cohesion: 0.17
+Nodes (7): AcceptInvitePage(), @trpc/client, generateMetadata(), getPublicSettings, SignInPage(), api, TRPCProvider()
+
+### Community 296 - "Community 296"
+Cohesion: 0.25
+Nodes (6): createExtendedClient(), globalForPrisma, adapter, createBaseClient(), globalForPrisma, pool
+
 ### Community 409 - "Community 409"
 Cohesion: 0.67
 Nodes (3): gate(), metadata, sumBilled()
 
 ### Community 410 - "Community 410"
-Cohesion: 0.67
-Nodes (3): isApplicable(), metadata, scan()
+Cohesion: 0.16
+Nodes (12): MAX_CODE_CANDIDATES, scanners, isApplicable(), metadata, scan(), metadata, HERE, main() (+4 more)
 
 ## Knowledge Gaps
-- **1694 isolated node(s):** `HERE`, `LIBRARY_PATH`, `SERVICE_DIMENSION`, `SPEC_GENERATORS`, `KIND_LABELS` (+1689 more)
+- **1699 isolated node(s):** `HERE`, `LIBRARY_PATH`, `SERVICE_DIMENSION`, `SPEC_GENERATORS`, `KIND_LABELS` (+1694 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **97 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **93 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `CRUDConfig` connect `Community 5` to `Community 6`, `Community 103`, `Community 40`, `Community 9`, `Community 105`, `Community 11`, `Community 77`, `Community 46`, `Community 15`, `Community 18`, `Community 83`, `Community 20`, `Community 23`, `Community 24`, `Community 126`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
-- **Why does `gates` connect `Community 38` to `Community 27`, `Community 182`, `Community 22`?**
+- **Why does `CRUDConfig` connect `Community 83` to `Community 162`, `Community 5`, `Community 6`, `Community 40`, `Community 9`, `Community 105`, `Community 10`, `Community 77`, `Community 46`, `Community 209`, `Community 18`, `Community 20`, `Community 23`, `Community 24`, `Community 90`, `Community 126`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+- **Why does `dependencies` connect `Community 34` to `Community 291`?**
   _High betweenness centrality (0.008) - this node is a cross-community bridge._
-- **Why does `scanners` connect `Community 25` to `Community 3`, `Community 38`?**
-  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **Why does `gates` connect `Community 38` to `Community 410`, `Community 27`, `Community 182`, `Community 22`?**
+  _High betweenness centrality (0.008) - this node is a cross-community bridge._
 - **What connects `Caveman compress scripts.  This package provides tools to compress natural langu`, `Heuristic denylist for files that must never be shipped to a third-party API.`, `Strip outer ```markdown ... ``` fence when it wraps the entire output.` to the rest of the system?**
-  _1703 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1708 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.05789009697325889 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.046620046620046623 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.04912280701754386 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.09085213032581453 - nodes in this community are weakly interconnected._
