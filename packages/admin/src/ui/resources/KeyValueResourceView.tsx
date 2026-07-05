@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { KeyValuePage, type CRUDConfig } from "@repo/crud";
-import { toast } from "@repo/ui";
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, toast } from "@repo/ui";
 import { getErrorMessage } from "../lib/getErrorMessage";
 import { SettingsEmailSecretPanel } from "./SettingsEmailSecretPanel";
 import { useDynamicOptions } from "./useDynamicOptions";
@@ -17,11 +18,22 @@ interface Props {
 /**
  * Renders a keyValue-mode resource (e.g. Settings) — single form, no table.
  * For Settings specifically, injects an extra "Email" tab with the email provider config.
+ * When the config declares `supportedLocales`, renders a locale switcher that
+ * scopes the GET/UPDATE to a single (key, locale) row.
  */
 export function KeyValueResourceView({ config, m, permissions, isProtectedRole }: Props) {
-  // The keyValue router only has `get` and `update` (not `list`).
+  const supportedLocales = config.supportedLocales ?? [];
+  const defaultLocale = config.defaultLocale ?? supportedLocales[0] ?? "en";
+  const isLocalized = supportedLocales.length > 0;
+
+  const [locale, setLocale] = useState(defaultLocale);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, isLoading, refetch } = (m as any).get.useQuery();
+  const queryInput = isLocalized ? { locale } : undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, isLoading, refetch } = (m as any).get.useQuery(queryInput, {
+    enabled: true,
+  });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateMutation = (m as any).update.useMutation();
   const canUpdate = isProtectedRole || permissions.includes(`${config.model}:update`) || permissions.includes("*:update");
@@ -34,11 +46,31 @@ export function KeyValueResourceView({ config, m, permissions, isProtectedRole }
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">{config.label}</h1>
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">{config.label}</h1>
+        {isLocalized && supportedLocales.length > 1 ? (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Locale</span>
+            <Select value={locale} onValueChange={setLocale}>
+              <SelectTrigger className="w-40" aria-label="Locale">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {supportedLocales.map((loc) => (
+                  <SelectItem key={loc} value={loc}>
+                    {loc}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : null}
+      </div>
       <KeyValuePage
         config={runtimeConfig}
         data={data ?? {}}
         modelApi={m}
+        locale={locale}
         saving={updateMutation.isPending}
         extraTabContent={config.model === "settings" ? {
           Email: (values) => (
@@ -48,9 +80,12 @@ export function KeyValueResourceView({ config, m, permissions, isProtectedRole }
             />
           ),
         } : undefined}
-        onSave={async (values) => {
+        onSave={async (values, savedLocale) => {
           try {
-            await updateMutation.mutateAsync({ data: values });
+            await updateMutation.mutateAsync({
+              data: values,
+              ...(isLocalized ? { locale: savedLocale ?? locale } : {}),
+            });
             await refetch();
             toast.success("Saved");
           } catch (err) {

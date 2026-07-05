@@ -67,6 +67,27 @@ describe("createUserRouter", () => {
       expect(result.items[0].password).toBeUndefined();
       expect(result.total).toBe(1);
     });
+
+    // Regression: the findMany `select` must only reference real User columns.
+    // A stale `emailVerified` (dropped from the schema) made admin.user.list
+    // 500 against real Prisma even though the mock-based test above passed.
+    it("findMany select only references existing User fields", async () => {
+      const db = mockDb();
+      const trpc = mockTrpc();
+      const hasher = mockPasswordHasher();
+      const router = createUserRouter(db, trpc, hasher);
+      const ctx = { session: { user: {} } };
+
+      await (router as any).list({ ctx, input: { page: 1, pageSize: 20 } });
+
+      const select = (db as any).user.findMany.mock.calls[0][0].select as Record<string, unknown>;
+      const knownUserFields = ["id", "email", "name", "password", "roleId", "createdAt", "updatedAt"];
+      for (const field of Object.keys(select)) {
+        if (field === "role") continue;
+        expect(knownUserFields).toContain(field);
+      }
+      expect(select).not.toHaveProperty("emailVerified");
+    });
   });
 
   describe("create", () => {

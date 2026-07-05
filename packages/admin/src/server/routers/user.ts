@@ -32,7 +32,7 @@ export function createUserRouter(
       const validSort = ["name", "email", "createdAt"].includes(sortField) ? sortField : "createdAt";
       const orderBy = { [validSort]: sortDir ?? "desc" };
       const [rawItems, total] = await Promise.all([
-        db.user.findMany({ where, skip, take: pageSize, orderBy, select: { id: true, name: true, email: true, emailVerified: true, password: true, roleId: true, createdAt: true, updatedAt: true, role: { select: { id: true, name: true, protected: true } } } }),
+        db.user.findMany({ where, skip, take: pageSize, orderBy, select: { id: true, name: true, email: true, password: true, roleId: true, createdAt: true, updatedAt: true, role: { select: { id: true, name: true, protected: true } } } }),
         db.user.count({ where }),
       ]);
 
@@ -66,7 +66,6 @@ export function createUserRouter(
           isPendingInvite: true,
           protected: true,
           password: undefined,
-          emailVerified: null,
         }));
 
       const items = [...inviteRows, ...userItems];

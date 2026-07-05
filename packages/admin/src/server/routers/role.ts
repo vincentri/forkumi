@@ -18,6 +18,27 @@ export function createRoleRouter(
   db: AdminDbAdapter,
   trpc: RouterDeps,
 ) {
+  const roleListProcedure = trpc.permissionProcedure("view", "role")
+    .input(z.object({
+      page: z.number().min(1).default(1),
+      pageSize: z.number().min(1).max(100).default(20),
+      search: z.string().optional(),
+      sortField: z.string().optional(),
+      sortDir: z.enum(["asc", "desc"]).optional(),
+    }))
+    .query(async ({ input }: { input: any }) => {
+      const { page, pageSize, search, sortField, sortDir } = input;
+      const skip = (page - 1) * pageSize;
+      const where = search ? { name: { contains: search, mode: "insensitive" as const } } : {};
+      const validSort = ["name", "createdAt"].includes(sortField) ? sortField : "createdAt";
+      const orderBy = { [validSort]: sortDir ?? "desc" };
+      const [items, total] = await Promise.all([
+        db.role.findMany({ where, skip, take: pageSize, orderBy }),
+        db.role.count({ where }),
+      ]);
+      return { items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
+    });
+
   const roleCreateProcedure = trpc.permissionProcedure("create", "role")
     .input(z.object({
       name: z.string(),
@@ -86,6 +107,7 @@ export function createRoleRouter(
     });
 
   return trpc.router({
+    list: roleListProcedure,
     create: roleCreateProcedure,
     update: roleUpdateProcedure,
     delete: roleDeleteProcedure,

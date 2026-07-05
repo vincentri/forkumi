@@ -12,10 +12,12 @@ import { visibleFieldsForValues } from "../field-visibility";
 interface KeyValuePageProps {
   config: CRUDConfig;
   data: Record<string, string>;
-  onSave: (data: Record<string, string>) => void | Promise<void>;
+  onSave: (data: Record<string, string>, locale?: string) => void | Promise<void>;
   saving?: boolean;
   extraTabContent?: Record<string, ReactNode | ((values: Record<string, unknown>) => ReactNode)>;
   modelApi?: ModelSelectApi;
+  /** Active locale — shown as a badge and passed through onSave so the parent can route the write to the right (key, locale) row. */
+  locale?: string;
 }
 
 function normalizeDataForFields(fields: CRUDField[], data: Record<string, string>): Record<string, unknown> {
@@ -41,7 +43,7 @@ function renderExtraTabContent(
   return typeof content === "function" ? content(values) : content;
 }
 
-export function KeyValuePage({ config, data, onSave, saving, extraTabContent, modelApi }: KeyValuePageProps) {
+export function KeyValuePage({ config, data, onSave, saving, extraTabContent, modelApi, locale }: KeyValuePageProps) {
   const fields = useMemo(() => config.fields.filter((f) => f.showInForm !== false), [config.fields]);
   const hasTabs = fields.some((f) => (f as CRUDField & { tab?: string }).tab);
   const defaultValues = useMemo(() => normalizeDataForFields(fields, data), [fields, data]);
@@ -94,7 +96,7 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent, mo
         .filter(([k]) => tabFieldNames.has(k))
         .map(([k, v]) => [k, v == null ? "" : String(v)]),
     ) as Record<string, string>;
-    onSave(filtered);
+    onSave(filtered, locale);
   }
 
   if (hasTabs) {

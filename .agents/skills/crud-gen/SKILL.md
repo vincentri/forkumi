@@ -86,6 +86,9 @@ Full checklist: `references/security.md`.
 - **Never** edit `apps/api/prisma/schema.prisma` manually — all model changes via `pnpm crud:scaffold <model>`.
 - **Never** use `pnpm db:push` — creates schema drift, breaks `migrate dev`. Use `prisma migrate dev` (scaffold runs it).
 - **Never** manually register exports in `apps/api/src/crud/index.ts` — scaffold appends them.
+- **Never** flatten admin routers to the `appRouter` root. Every admin resource router MUST be nested under `admin` (client calls `api.admin.<model>.*`). Flattening 404s every admin call. Verified by `apps/api/src/server/router.test.ts`.
+- **Never** combine tRPC v11 routers via `router({ ...routerA, ...routerB })` — spreading drops all procedures (`_def.procedures` isn't an own prop). Use `mergeRouters(a, b)` from `apps/api/src/server/trpc.ts`.
+- **Never** leave a router `select` referencing Prisma fields that don't exist on the model. When the schema drops/renames a field, update every `select` in the same change. Mock tests don't catch this; runtime does.
 - **Never** put `password` in `searchableFields`.
 - **Never** write `roleId` without protected-role guard.
 - **Never** store plaintext passwords.

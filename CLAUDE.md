@@ -28,7 +28,7 @@ packages/
 `packages/auth` exports factories (`createAuthOptions`, `createGetServerAuthSession`) that accept a db adapter and password hasher. No dependency on `@repo/db` or `bcryptjs`. Apps wire these in `apps/api/src/lib/auth.ts`.
 
 Key files:
-- `apps/api/src/server/router.ts` — root tRPC router, all admin sub-routers wired here
+- `apps/api/src/server/router.ts` — root tRPC router; admin resource routers MUST be nested under `admin` (client accesses `api.admin.<model>`), `account` and `public` stay at root
 - `apps/api/src/crud/*.ts` — per-resource CRUD configs (thin re-exports from `@repo/admin` for built-ins)
 - `packages/crud/src/router-factory.ts` — generates tRPC list/create/update/delete procedures
 - `packages/crud/src/components/CRUDPage.tsx` — main admin table+form+modal component
@@ -49,7 +49,7 @@ pnpm --filter crud test --watch  # watch mode
 
 Test files live in `packages/crud/src/__tests__/`. Framework: Vitest + @testing-library/react. Coverage focuses on CRUDPage component behavior (error banner, form visibility, table rendering).
 
-No tests for tRPC routers or Next.js pages — those are verified by the build check below.
+No tests for Next.js pages — those are verified by the build check below. tRPC router *shape* is locked by `apps/api/src/server/router.test.ts` (admin namespace + root account/public) and router `select` fields by `@repo/admin` user-router tests.
 
 **Never remove failing tests.** Fix the underlying issue instead (add Radix providers, polyfill browser APIs, fix React version mismatches, etc.). Remove a test only if the feature itself is being removed from the codebase.
 
@@ -63,6 +63,9 @@ No tests for tRPC routers or Next.js pages — those are verified by the build c
 - **Schema ownership**: Never edit `apps/api/prisma/schema.prisma` manually. All model creation and updates go through `pnpm crud:scaffold <model>`. Scaffold derives the Prisma model from the CRUD config, patches back-relations, and runs `prisma migrate dev` automatically.
 - **Migration tool**: Always use `prisma migrate dev` (via scaffold or `pnpm --filter @repo/db db:migrate`). Never use `db:push` — it creates schema drift with no migration file, breaking future `migrate dev` with checksum/drift errors.
 - **Explicit join models**: Many-to-many relations must use explicit join models — set `through` in the relation config (e.g. `{ field: "tags", model: "tag", through: "blogTag" }`). Prisma implicit m2m auto-generates `_ModelToModel` with `A`/`B` columns; explicit generates `blog_tags(blog_id, tag_id)` matching the project snake_case convention.
+- **tRPC admin namespace**: Every admin resource router (user, role, settings, emailSettings, and any `crud:scaffold`ed model) MUST sit under `admin` in `appRouter` — the client (`CRUDResourceClient`, `CrudResourceView`, modals) calls `api.admin.<model>.<procedure>`. Flattening to root 404s every admin call. `router.test.ts` pins this.
+- **Merge routers, never spread**: Combining tRPC v11 routers via `router({ ...routerA, ...routerB })` silently drops all procedures (they live in `_def.procedures`, not as own props). Use `mergeRouters(routerA, routerB)` from `~/server/trpc`. The spread form passes type-check + mock tests but 500s at runtime.
+- **Router `select` ⇄ schema sync**: Any `select` in a router's `findMany`/`findUnique` must reference only fields that exist on the Prisma model. When the schema is customized (field dropped/renamed), update the select in the same change. Mock-based router tests don't validate `select` against the real schema — stale fields surface only at runtime.
 
 ## Conventions
 

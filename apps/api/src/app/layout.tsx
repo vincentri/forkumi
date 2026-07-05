@@ -1,7 +1,6 @@
 export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
-import Script from "next/script";
 import "./globals.css";
 import { TRPCProvider } from "~/lib/trpc/provider";
 import { Toaster, resolveAssetUrl } from "@repo/ui";
@@ -26,11 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
-        <Script id="admin-theme-init" strategy="beforeInteractive">
-          {`(function(){var t=localStorage.getItem('theme');var p=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if((t||p)==='dark')document.documentElement.classList.add('dark');})()`}
-        </Script>
-        <TRPCProvider>
+      <body>        <TRPCProvider>
           {children}
           <Toaster richColors position="bottom-right" />
         </TRPCProvider>

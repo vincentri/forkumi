@@ -296,6 +296,14 @@ export interface CRUDConfig {
    * - "keyValue": settings-style form, data stored in shared key_values table
    */
   mode?: "crud" | "keyValue";
+  /**
+   * Locales available for the locale switcher on keyValue resources. First entry
+   * is the default. Omit to keep the resource single-locale (legacy behavior).
+   * Only applies when `mode === "keyValue"`.
+   */
+  supportedLocales?: string[];
+  /** Fallback locale used when a request omits one. Defaults to the first entry of `supportedLocales` or "en". */
+  defaultLocale?: string;
   /** Groups this resource under a collapsible section in the sidebar */
   navGroup?: string;
   /** Lucide icon name for the nav group header (e.g. "ShieldCheck"). Used by the first item in the group. */

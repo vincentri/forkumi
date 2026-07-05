@@ -36,16 +36,9 @@ export default async function AdminLayout({
   );
 
   const navItems = [
-    // `comment` and `restaurantComment` are surfaced via custom threaded pages
-    // (customLinks) — hide the raw CRUD links to avoid duplicate nav entries.
-    // The /admin/comment and /admin/restaurant-comment pages remain reachable
-    // directly as fallbacks.
-    ...allConfigs
-      .filter((c) => c.model !== "comment" && c.model !== "restaurantComment")
-      .filter((c) => canViewModel(c.model))
-      .map(toClientCRUDConfig),
+    ...allConfigs.map(toClientCRUDConfig),
     ...customLinks.filter((l) => {
-      const guard = l.permissions?.[0];
+      const guard = (l as { permissions?: string[] }).permissions?.[0];
       return !guard || isProtectedRole || permissions.includes(guard) || permissions.includes("*:view");
     }),
   ];

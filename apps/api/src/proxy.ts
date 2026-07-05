@@ -1,33 +1,10 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000";
+const LOGIN_LIMIT = 10;
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 
-// In-memory rate limiter (Edge runtime; resets on cold start)
-const RATE_LIMIT_MAX = 10;
-const PUBLIC_MUTATION_RATE_LIMIT_MAX = 20;
-const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-const PUBLIC_MUTATION_PATHS = new Set([
-  "/api/trpc/public.submitContact",
-  "/api/trpc/public.submitComment",
-]);
-
-type RateEntry = { count: number; windowStart: number };
-const rateLimitStore = new Map<string, RateEntry>();
-
-function isRateLimited(key: string, max = RATE_LIMIT_MAX): boolean {
-  const now = Date.now();
-  const entry = rateLimitStore.get(key);
-
-  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    rateLimitStore.set(key, { count: 1, windowStart: now });
-    return false;
-  }
-
-  entry.count += 1;
-  if (entry.count > max) return true;
-  return false;
-}
+const attempts = new Map<string, { count: number; resetAt: number }>();
 
 function getClientIp(request: NextRequest): string {
   return (
@@ -37,55 +14,52 @@ function getClientIp(request: NextRequest): string {
   );
 }
 
-export function proxy(request: NextRequest) {
-  const ip = getClientIp(request);
+function isRateLimited(key: string): boolean {
+  const now = Date.now();
+  const existing = attempts.get(key);
 
-  // Rate-limit credential login attempts (brute-force protection)
-  if (
-    request.method === "POST" &&
-    request.nextUrl.pathname === "/api/auth/callback/credentials"
-  ) {
-    if (isRateLimited(`login:${ip}`)) {
-      return new NextResponse("Too many login attempts. Try again in 15 minutes.", {
-        status: 429,
-        headers: { "Retry-After": "900" },
-      });
-    }
+  if (!existing || existing.resetAt <= now) {
+    attempts.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return false;
   }
 
-  if (request.method === "POST" && PUBLIC_MUTATION_PATHS.has(request.nextUrl.pathname)) {
-    // ponytail: local Map is enough for now; swap key store for Redis if spam volume warrants it.
-    if (isRateLimited(`public:${request.nextUrl.pathname}:${ip}`, PUBLIC_MUTATION_RATE_LIMIT_MAX)) {
-      return new NextResponse("Too many requests.", {
-        status: 429,
-        headers: { "Retry-After": "900" },
-      });
-    }
+  existing.count += 1;
+  return existing.count > LOGIN_LIMIT;
+}
+
+function setCorsHeaders(response: NextResponse, origin: string | null): void {
+  if (origin === ALLOWED_ORIGIN) {
+    response.headers.set("Access-Control-Allow-Origin", origin);
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    response.headers.set("Vary", "Origin");
   }
+}
 
-  const origin = request.headers.get("origin") ?? "";
-  const isAllowed = origin === ALLOWED_ORIGIN;
+export function proxy(request: NextRequest): NextResponse {
+  const origin = request.headers.get("origin");
 
-  // Handle CORS preflight
   if (request.method === "OPTIONS") {
     const response = new NextResponse(null, { status: 204 });
-    response.headers.set("Vary", "Origin");
-    if (isAllowed) {
-      const requestedHeaders = request.headers.get("access-control-request-headers");
-      response.headers.set("Access-Control-Allow-Origin", origin);
-      response.headers.set("Access-Control-Allow-Credentials", "true");
-      response.headers.set("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-      response.headers.set("Access-Control-Allow-Headers", requestedHeaders ?? "Content-Type, Authorization");
-    }
+    setCorsHeaders(response, origin);
+    response.headers.set("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+    response.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    response.headers.set("Access-Control-Max-Age", "900");
     return response;
   }
 
-  const response = NextResponse.next();
-  response.headers.set("Vary", "Origin");
-  if (isAllowed) {
-    response.headers.set("Access-Control-Allow-Origin", origin);
-    response.headers.set("Access-Control-Allow-Credentials", "true");
+  if (
+    request.method === "POST" &&
+    request.nextUrl.pathname === "/api/auth/callback/credentials" &&
+    isRateLimited(`login:${getClientIp(request)}`)
+  ) {
+    return new NextResponse("Too many requests", {
+      status: 429,
+      headers: { "Retry-After": "900" },
+    });
   }
+
+  const response = NextResponse.next();
+  setCorsHeaders(response, origin);
   return response;
 }
 

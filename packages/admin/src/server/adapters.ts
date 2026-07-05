@@ -13,6 +13,7 @@ export interface AdminDbAdapter {
     create: (args: any) => Promise<any>;
     update: (args: any) => Promise<any>;
     delete: (args: any) => Promise<any>;
+    count: (args?: any) => Promise<number>;
   };
   userInvitation: {
     findMany: (args: any) => Promise<any[]>;
@@ -40,6 +41,7 @@ export function createPrismaAdapter(prisma: any): AdminDbAdapter {
       create: (args) => prisma.role.create(args),
       update: (args) => prisma.role.update(args),
       delete: (args) => prisma.role.delete(args),
+      count: (args) => prisma.role.count(args),
     },
     userInvitation: {
       findMany: (args) => prisma.userInvitation.findMany(args),

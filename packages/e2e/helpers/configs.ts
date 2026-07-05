@@ -1,114 +1,56 @@
-/**
- * Imports all CRUD configs from the API and normalizes them into
- * ResourceEntry objects that the generic test suite can iterate.
- *
- * Singular label derivation mirrors CRUDPage.tsx:
- *   config.label.replace(/s$/, "")
- */
-
 import type { CRUDConfig, CRUDField } from "@repo/crud";
-
-// ── Types ─────────────────────────────────────────────
+import { RoleCRUD } from "../../../apps/api/src/crud/role";
+import { SettingsCRUD } from "../../../apps/api/src/crud/setting";
+import { UserCRUD } from "../../../apps/api/src/crud/user";
 
 export interface ResourceEntry {
   config: CRUDConfig;
-  url: string;
-  singular: string;
-  fields: CRUDField[];
-  requiredFields: CRUDField[];
-  uniqueFields: CRUDField[];
-  firstTextField: CRUDField | undefined;
-  creatable: boolean;
-  editable: boolean;
-  deletable: boolean;
+  slug: string;
+  path: string;
   mode: "crud" | "keyValue";
+  tableFields: CRUDField[];
+  formFields: CRUDField[];
 }
 
-// ── URL helper ────────────────────────────────────────
-
-function modelToUrl(model: string): string {
-  const slug = model
+function modelToSlug(model: string): string {
+  return model
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     .replace(/[\s_]+/g, "-")
     .toLowerCase();
-  return `/admin/${slug}`;
 }
 
-// ── Config imports ────────────────────────────────────
+function visibleTableFields(config: CRUDConfig): CRUDField[] {
+  return config.fields.filter((field) => field.showInTable !== false);
+}
 
-// Import each config individually to avoid pulling in the entire barrel
-// (which includes server-side code that shouldn't run in the browser).
-// These are the config objects — they're plain data, no server deps.
-
-import { UserCRUD } from "../../../apps/api/src/crud/user";
-import { RoleCRUD } from "../../../apps/api/src/crud/role";
-import { BlogCRUD } from "../../../apps/api/src/crud/blog";
-import { BlogCategoryCRUD } from "../../../apps/api/src/crud/blogCategory";
-import { TagCRUD } from "../../../apps/api/src/crud/tag";
-import { PageCRUD } from "../../../apps/api/src/crud/page";
-import { EventCRUD } from "../../../apps/api/src/crud/event";
-import { EventCategoryCRUD } from "../../../apps/api/src/crud/eventCategory";
-import { ContactCRUD } from "../../../apps/api/src/crud/contact";
-import { ContactTopicCRUD } from "../../../apps/api/src/crud/contactTopic";
-import { NewsletterSubscriberCRUD } from "../../../apps/api/src/crud/newsletterSubscriber";
-import { SliderCRUD } from "../../../apps/api/src/crud/slider";
-
-// ── Entry builder ─────────────────────────────────────
+function visibleFormFields(config: CRUDConfig): CRUDField[] {
+  return config.fields.filter((field) => field.showInForm !== false);
+}
 
 function toEntry(config: CRUDConfig): ResourceEntry {
-  const singular = config.label.replace(/s$/, "");
-  const fields = config.fields.filter((f) => f.showInForm !== false);
-  const requiredFields = fields.filter((f) => f.required);
-  const uniqueFields = fields.filter((f) => f.unique);
-  const firstTextField = fields.find((f) =>
-    ["text", "email", "textarea"].includes(f.type) && !f.slugFrom,
-  );
-  const mode = config.mode ?? "crud";
-  const isReadOnly = config.readOnly === true;
+  const slug = modelToSlug(config.model);
 
   return {
     config,
-    url: modelToUrl(config.model),
-    singular,
-    fields,
-    requiredFields,
-    uniqueFields,
-    firstTextField,
-    creatable: mode === "crud" && config.creatable !== false && !isReadOnly,
-    editable: mode === "crud" && config.editable !== false && !isReadOnly,
-    deletable: mode === "crud" && config.deletable !== false && !isReadOnly,
-    mode,
+    slug,
+    path: `/admin/${slug}`,
+    mode: config.isKeyValue ? "keyValue" : "crud",
+    tableFields: visibleTableFields(config),
+    formFields: visibleFormFields(config),
   };
 }
 
-// ── All entries ───────────────────────────────────────
-
-const ALL_CONFIGS: CRUDConfig[] = [
-  UserCRUD,
-  RoleCRUD,
-  BlogCRUD,
-  BlogCategoryCRUD,
-  TagCRUD,
-  PageCRUD,
-  EventCRUD,
-  EventCategoryCRUD,
-  ContactCRUD,
-  ContactTopicCRUD,
-  NewsletterSubscriberCRUD,
-  SliderCRUD,
-];
-
+const ALL_CONFIGS: CRUDConfig[] = [UserCRUD, RoleCRUD, SettingsCRUD];
 const ALL_ENTRIES = ALL_CONFIGS.map(toEntry);
 
-/** Table-mode resources that support full CRUD lifecycle. */
 export const tableEntries = ALL_ENTRIES.filter(
-  (e) => e.mode === "crud" && e.creatable,
+  (entry) => entry.mode === "crud" && entry.tableFields.length > 0,
 );
 
-/** Read-only table-mode resources (list only, no create/edit/delete). */
 export const readOnlyEntries = ALL_ENTRIES.filter(
-  (e) => e.mode === "crud" && !e.creatable,
+  (entry) => entry.config.readOnly === true,
 );
 
-/** keyValue-mode resources (Settings, FrontPageSettings). */
-export const keyValueEntries = ALL_ENTRIES.filter((e) => e.mode === "keyValue");
+export const keyValueEntries = ALL_ENTRIES.filter(
+  (entry) => entry.mode === "keyValue",
+);

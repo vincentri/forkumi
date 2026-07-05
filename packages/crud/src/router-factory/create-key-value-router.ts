@@ -10,6 +10,10 @@ import type { AnyProcedureBuilder, AnyRouterBuilder } from "./procedures";
  * Create a tRPC router for a keyValue-style resource (e.g. Settings).
  * Exposes `get`, `update`, `options`, `searchOptions`. No list — keyValue stores
  * a single record of `key: value` pairs.
+ *
+ * `get` / `update` take an optional `locale` arg. When the resource config
+ * declares `supportedLocales`, the admin UI renders a switcher; storage is
+ * partitioned by `(key, locale)` so each language has its own row.
  */
 export function createKeyValueRouter(
   config: CRUDConfig,
@@ -29,14 +33,20 @@ export function createKeyValueRouter(
   const db = prismaClient as PrismaLikeClient;
 
   const fieldKeys = config.fields.map((field) => field.name);
+  const defaultLocale = config.defaultLocale ?? config.supportedLocales?.[0] ?? "en";
+
+  const localeInput = z.object({ locale: z.string().optional() });
 
   return routerFn({
-    get: procedure.query(async () => {
-      const rows = await db[model].findMany({
-        where: { key: { in: fieldKeys } },
-      });
-      return Object.fromEntries(rows.map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
-    }),
+    get: procedure
+      .input(localeInput.optional())
+      .query(async ({ input }: { input?: { locale?: string } }) => {
+        const locale = input?.locale ?? defaultLocale;
+        const rows = await db[model].findMany({
+          where: { key: { in: fieldKeys }, locale },
+        });
+        return Object.fromEntries(rows.map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
+      }),
     options: procedure.query(async ({ ctx }: { ctx?: unknown }) => {
       const selectFields = config.fields.filter(
         (field): field is CRUDFieldSelect => field.type === "select" && !!field.optionsQuery,
@@ -58,10 +68,11 @@ export function createKeyValueRouter(
         },
       ),
     update: procedure
-      .input(z.object({ data: z.record(z.string(), z.string()) }))
-      .mutation(async ({ input }: { input: { data: Record<string, string> } }) => {
+      .input(z.object({ data: z.record(z.string(), z.string()), locale: z.string().optional() }))
+      .mutation(async ({ input }: { input: { data: Record<string, string>; locale?: string } }) => {
+        const locale = input.locale ?? defaultLocale;
         const previousRows = await db[model].findMany({
-          where: { key: { in: Object.keys(input.data) } },
+          where: { key: { in: Object.keys(input.data) }, locale },
         });
         const previousValues = Object.fromEntries(previousRows.map((row: { key: string; value: unknown }) => [row.key, row.value]));
 
@@ -69,9 +80,9 @@ export function createKeyValueRouter(
           Object.entries(input.data).map(([key, value]) => {
             const fieldMeta = config.fields.find((f) => f.name === key);
             return db[model].upsert({
-              where: { key },
+              where: { key_locale: { key, locale } },
               update: { namespace: fieldMeta?.namespace ?? null, value },
-              create: { key, namespace: fieldMeta?.namespace ?? null, value },
+              create: { key, locale, namespace: fieldMeta?.namespace ?? null, value },
             });
           }),
         );

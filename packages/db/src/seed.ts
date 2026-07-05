@@ -11,9 +11,6 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-// Framework built-ins only (roles, admin user, branding). App content
-// (front-page settings, contact topics) is seeded app-side — see
-// apps/api/scripts/seed.ts. Keep this package generic.
 async function main() {
   console.log("Quantyx — seeding database...");
 

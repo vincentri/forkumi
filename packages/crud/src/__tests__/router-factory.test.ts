@@ -539,7 +539,7 @@ describe("createKeyValueRouter", () => {
     };
 
     const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
-    const result = await (routerResult as any).get._queryFn();
+    const result = await (routerResult as any).get._queryFn({ input: undefined });
     expect(result).toEqual({ heading: "Hello", body: "World" });
   });
 
@@ -562,11 +562,11 @@ describe("createKeyValueRouter", () => {
     };
 
     const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
-    const result = await (routerResult as any).get._queryFn();
+    const result = await (routerResult as any).get._queryFn({ input: undefined });
     expect(result).toEqual({ heading: "" });
   });
 
-  it("update upserts each key with correct namespace", async () => {
+  it("update upserts each key with composite key_locale and correct namespace", async () => {
     const calls: unknown[] = [];
     const mockPrisma = {
       setting: {
@@ -582,19 +582,42 @@ describe("createKeyValueRouter", () => {
       model: "setting",
       label: "Settings",
       mode: "keyValue",
+      supportedLocales: ["en", "id"],
       fields: [
         { name: "heading", type: "text", label: "Heading", namespace: "about" },
       ],
     };
 
     const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
-    await (routerResult as any).update._mutationFn({ input: { data: { heading: "New" } } });
+    await (routerResult as any).update._mutationFn({ input: { data: { heading: "New" }, locale: "id" } });
     expect(calls).toHaveLength(1);
     expect(calls[0]).toEqual({
-      where: { key: "heading" },
+      where: { key_locale: { key: "heading", locale: "id" } },
       update: { namespace: "about", value: "New" },
-      create: { key: "heading", namespace: "about", value: "New" },
+      create: { key: "heading", locale: "id", namespace: "about", value: "New" },
     });
+  });
+
+  it("get filters by locale when supplied", async () => {
+    const findCalls: unknown[] = [];
+    const mockPrisma = {
+      setting: {
+        findMany: async (args: unknown) => {
+          findCalls.push(args);
+          return [];
+        },
+      },
+    };
+    const config: CRUDConfig = {
+      model: "setting",
+      label: "Settings",
+      mode: "keyValue",
+      supportedLocales: ["en", "id"],
+      fields: [{ name: "heading", type: "text", label: "Heading", namespace: "about" }],
+    };
+    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    await (routerResult as any).get._queryFn({ input: { locale: "id" } });
+    expect(findCalls[0]).toMatchObject({ where: { locale: "id" } });
   });
 
   it("searchOptions returns options for select fields with optionsQuery", async () => {

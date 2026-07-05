@@ -1,6 +1,3 @@
-// This file is the single source of truth for your database schema.
-// Add your domain models below the NextAuth required models.
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,51 +7,45 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime? @map("email_verified")
-  password      String?
-  roleId        String?   @map("role_id")
-  role          Role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
-
-  invitationsSent UserInvitation[]
+  id              String           @id @default(cuid())
+  email           String           @unique
+  name            String?
+  password        String?
+  roleId          String?          @map("role_id")
+  role            Role?            @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  sentInvitations UserInvitation[] @relation("InvitationSender")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
 
   @@map("users")
 }
 
-// ============================================================
-// Domain models
-// ============================================================
-
 model Role {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  permissions String[]
-  protected   Boolean  @default(false) @map("protected")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id          String           @id @default(cuid())
+  name        String           @unique
+  permissions String[]         @default([])
+  protected   Boolean          @default(false)
   users       User[]
   invitations UserInvitation[]
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
 
   @@map("roles")
 }
 
 model UserInvitation {
   id          String    @id @default(cuid())
-  email       String    @unique  // one invitation row per email at a time
-  token       String    @unique  // SHA-256(rawToken) — never store the raw token
-  invitedById String?   @map("invited_by_id")
-  invitedBy   User?     @relation(fields: [invitedById], references: [id], onDelete: SetNull)
+  email       String
+  token       String    @unique
   roleId      String?   @map("role_id")
   role        Role?     @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  invitedById String?   @map("invited_by_id")
+  invitedBy   User?     @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: SetNull)
   expiresAt   DateTime  @map("expires_at")
   acceptedAt  DateTime? @map("accepted_at")
   createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
-  @@index([expiresAt, acceptedAt])
   @@map("user_invitations")
 }
 
@@ -64,310 +55,20 @@ model Settings {
   namespace String?
   value     String?
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("settings")
 }
 
-// Example:
-// model Post {
-//   id        String   @id @default(cuid())
-//   title     String
-//   content   String?
-//   published Boolean  @default(false)
-//   authorId  String   @map("author_id")
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
-//   author    User     @relation(fields: [authorId], references: [id])
-//
-//   @@map("posts")
-// }
-
-model Blog {
-  id        String   @id @default(cuid())
-  image     String?
-  slug      String
-  title     String
-  description String
-  blogCategoryId String? @map("blog_category_id")
-  blogCategory BlogCategory? @relation(fields: [blogCategoryId], references: [id], onDelete: SetNull)
-  blogTags  BlogTag[]
-  content   String
-  metaTitle String? @map("meta_title")
-  metaDescription String? @map("meta_description")
-  metaKeywords String? @map("meta_keywords")
-  publishedAt DateTime? @default(now()) @map("published_at")
-  status    String @default("draft")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  comments  Comment[]
-  @@map("blogs")
-}
-
-model BlogCategory {
-  id              String   @id @default(cuid())
-  slug            String
-  title           String
-  metaTitle       String?  @map("meta_title")
-  metaDescription String?  @map("meta_description")
-  metaKeywords    String?  @map("meta_keywords")
-  status          String   @default("draft")
-  position        Int      @default(0)
-  blogs           Blog[]
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt     @map("updated_at")
-
-  @@map("blog_categories")
-}
-
-model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("newsletter_subscribers")
-}
-
-model Page {
-  id        String   @id @default(cuid())
-  title     String
-  slug      String
-  content   String
-  status    String @default("draft")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("pages")
-}
-
 model FrontPageSettings {
   id        String   @id @default(cuid())
-  key       String   @unique
+  key       String
   namespace String?
+  locale    String   @default("en")
   value     String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("front_page_settings")
-}
-
-model Contact {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  topic     String
-  message   String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("contacts")
-}
-
-model ContactTopic {
-  id        String   @id @default(cuid())
-  name      String
-  status    String @default("active")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("contact_topics")
-}
-
-model Tag {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String
-  status    String @default("inactive")
-  metaTitle String? @map("meta_title")
-  metaDescription String? @map("meta_description")
-  metaKeywords String? @map("meta_keywords")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-  blogTags  BlogTag[]
-
-  @@map("tags")
-}
-
-model EventCategory {
-  id        String   @id @default(cuid())
-  slug      String
-  title     String
-  metaTitle String? @map("meta_title")
-  metaDescription String? @map("meta_description")
-  metaKeywords String? @map("meta_keywords")
-  status    String @default("draft")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-  events    Event[]
-
-  @@map("event_categories")
-}
-
-model Event {
-  id        String   @id @default(cuid())
-  image     String?
-  slug      String
-  title     String
-  description String
-  eventCategoryId String? @map("event_category_id")
-  eventCategory EventCategory? @relation(fields: [eventCategoryId], references: [id], onDelete: SetNull)
-  location  String
-  content   String
-  date      String
-  time      String
-  organizedBy String @map("organized_by")
-  metaTitle String? @map("meta_title")
-  metaDescription String? @map("meta_description")
-  metaKeywords String? @map("meta_keywords")
-  publishedAt DateTime? @default(now()) @map("published_at")
-  status    String @default("draft")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-  sidebarPinnedEvents SidebarPinnedEvent[]
-
-  @@map("events")
-}
-
-model SidebarPinnedEvent {
-  id        String   @id @default(cuid())
-  eventId   String   @map("event_id")
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  position  Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@unique([eventId])
-  @@index([position])
-  @@map("sidebar_pinned_events")
-}
-
-model Slider {
-  id        String   @id @default(cuid())
-  blog_id    String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("sliders")
-}
-
-model BlogTag {
-  blogId  String  @map("blog_id")
-  tagId   String  @map("tag_id")
-  blog    Blog  @relation(fields: [blogId], references: [id], onDelete: Cascade)
-  tag     Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-
-  @@id([blogId, tagId])
-  @@map("blog_tags")
-}
-
-model Comment {
-  id         String    @id @default(cuid())
-  blogId     String    @map("blog_id")
-  blog       Blog      @relation(fields: [blogId], references: [id])
-  authorName String    @map("author_name")
-  content    String
-  isAdmin    Boolean   @default(false) @map("is_admin")
-  status     String    @default("pending")
-  parentId   String?   @map("parent_id")
-  parent     Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: SetNull)
-  replies    Comment[] @relation("CommentReplies")
-  createdAt  DateTime  @default(now()) @map("created_at")
-  updatedAt  DateTime  @updatedAt     @map("updated_at")
-
-  @@map("comments")
-}
-
-model Restaurant {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String
-  location  String
-  priceStart Float? @map("price_start")
-  priceEnd  Float? @map("price_end")
-  content   String
-  urlMenu   String? @map("url_menu")
-  urlWeb    String? @map("url_web")
-  urlMap    String? @map("url_map")
-  phone     String?
-  embedLink String? @map("embed_link")
-  thumbnail String?
-  images    RestaurantImage[]
-  operationTimes RestaurantOperationTime[]
-  restaurant_comments RestaurantComment[]
-  metaTitle String? @map("meta_title")
-  metaDescription String? @map("meta_description")
-  metaKeywords String? @map("meta_keywords")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  sidebar_pinned_restaurants SidebarPinnedRestaurant[]
-  @@map("restaurants")
-}
-
-model RestaurantImage {
-  id           String   @id @default(cuid())
-  restaurantId String   @map("restaurant_id")
-  url          String
-  alt          String?
-  position     Int      @default(0) @map("position")
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-
-  @@unique([restaurantId, position])
-  @@map("restaurant_images")
-}
-
-model RestaurantOperationTime {
-  id           String   @id @default(cuid())
-  restaurantId String   @map("restaurant_id")
-  dayOfWeek    Int      @map("day_of_week")
-  openTime     String?  @map("open_time")
-  closeTime    String?  @map("close_time")
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-
-  @@unique([restaurantId, dayOfWeek])
-  @@map("restaurant_operation_times")
-}
-
-model RestaurantComment {
-  id        String   @id @default(cuid())
-  restaurantId String @map("restaurant_id")
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
-  authorName String @map("author_name")
-  content   String
-  media     RestaurantCommentMedia[]
-  ratingMakanan Int? @map("rating_makanan")
-  ratingLayanan Int? @map("rating_layanan")
-  ratingSuasana Int? @map("rating_suasana")
-  ratingTotal Int? @map("rating_total")
-  status    String @default("pending")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("restaurant_comments")
-}
-
-model RestaurantCommentMedia {
-  id                     String   @id @default(cuid())
-  restaurantCommentId  String   @map("restaurant_comment_id")
-  url         String
-  alt         String?
-  position    Int      @default(0) @map("position")
-  restaurantComment  RestaurantComment @relation(fields: [restaurantCommentId], references: [id], onDelete: Cascade)
-
-  @@unique([restaurantCommentId, position])
-  @@map("restaurant_comment_media")
-}
-
-model SidebarPinnedRestaurant {
-  id        String   @id @default(cuid())
-  restaurantId String @map("restaurant_id")
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
-  position  Float
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt     @map("updated_at")
-
-  @@map("sidebar_pinned_restaurants")
+  @@unique([key, locale])
+  @@map("front_page_settings")
 }
