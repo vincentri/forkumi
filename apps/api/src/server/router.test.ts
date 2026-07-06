@@ -10,8 +10,12 @@ vi.mock("~/lib/email", () => ({ sendEmail: vi.fn() }));
 
 const mocks = vi.hoisted(() => ({
   settingsRows: [{ key: "brandingAppName", value: "Forkumi" }],
-  frontPageSettingsRows: [{ key: "site_name", value: "Forkumi Front" }],
+  frontPageSettingsRows: [
+    { key: "site_name", locale: "en", value: "Forkumi Front" },
+    { key: "meta_title", locale: "en", value: "Forkumi SEO" },
+  ],
   prisma: {
+    $transaction: vi.fn((operations: Array<Promise<unknown>>) => Promise.all(operations)),
     settings: { findMany: vi.fn() },
     frontPageSettings: { findMany: vi.fn(), upsert: vi.fn() },
     role: { findMany: vi.fn(), count: vi.fn() },
@@ -21,6 +25,7 @@ const mocks = vi.hoisted(() => ({
 }));
 mocks.prisma.settings.findMany.mockResolvedValue(mocks.settingsRows);
 mocks.prisma.frontPageSettings.findMany.mockResolvedValue(mocks.frontPageSettingsRows);
+mocks.prisma.frontPageSettings.upsert.mockResolvedValue({});
 mocks.prisma.role.findMany.mockResolvedValue([]);
 mocks.prisma.role.count.mockResolvedValue(0);
 mocks.prisma.user.findMany.mockResolvedValue([]);
@@ -60,8 +65,83 @@ describe("appRouter shape — admin namespace contract", () => {
 
   it("exposes admin.frontPageSettings.get", async () => {
     const result = await caller().admin.frontPageSettings.get({ locale: "en" });
-    expect(result).toEqual({ site_name: "Forkumi Front" });
+    expect(result).toEqual({ site_name: "Forkumi Front", meta_title: "Forkumi SEO" });
     expect(mocks.prisma.frontPageSettings.findMany).toHaveBeenCalled();
+  });
+
+  it("exposes public.frontPageSettings.get", async () => {
+    mocks.prisma.settings.findMany.mockClear();
+    mocks.prisma.frontPageSettings.findMany.mockClear();
+
+    const result = await caller().public.frontPageSettings.get({ locale: "en" });
+
+    expect(result).toEqual({ site_name: "Forkumi Front", meta_title: "Forkumi SEO" });
+    expect(mocks.prisma.frontPageSettings.findMany).toHaveBeenCalledWith({
+      where: {
+        locale: {
+          in: ["en", "id"],
+        },
+      },
+    });
+    expect(mocks.prisma.settings.findMany).not.toHaveBeenCalled();
+  });
+
+  it("defaults public.frontPageSettings.get to id locale", async () => {
+    mocks.prisma.frontPageSettings.findMany.mockClear();
+
+    await caller().public.frontPageSettings.get();
+
+    expect(mocks.prisma.frontPageSettings.findMany).toHaveBeenCalledWith({
+      where: {
+        locale: {
+          in: ["id", "en"],
+        },
+      },
+    });
+  });
+
+  it("falls back to the default locale for missing public front page settings", async () => {
+    mocks.prisma.frontPageSettings.findMany.mockResolvedValueOnce([
+      { key: "footerTagline", locale: "en", value: "Shared fallback" },
+    ]);
+
+    const result = await caller().public.frontPageSettings.get({ locale: "id" });
+
+    expect(result).toEqual({ footerTagline: "Shared fallback" });
+  });
+
+  it("writes shared front page fields to all supported locales", async () => {
+    mocks.prisma.frontPageSettings.upsert.mockClear();
+
+    await caller().admin.frontPageSettings.update({
+      locale: "id",
+      data: { site_name: "Forkumi Shared" },
+    });
+
+    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledTimes(2);
+    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      where: { key_locale: { key: "site_name", locale: "en" } },
+      create: expect.objectContaining({ key: "site_name", locale: "en", value: "Forkumi Shared" }),
+    }));
+    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      where: { key_locale: { key: "site_name", locale: "id" } },
+      create: expect.objectContaining({ key: "site_name", locale: "id", value: "Forkumi Shared" }),
+    }));
+  });
+
+  it("keeps localized front page fields scoped to the selected locale", async () => {
+    mocks.prisma.frontPageSettings.upsert.mockClear();
+
+    await caller().admin.frontPageSettings.update({
+      locale: "id",
+      data: { headerCtaLabel: "Ngobrol" },
+    });
+
+    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledTimes(1);
+    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      where: { key_locale: { key: "headerCtaLabel", locale: "id" } },
+      create: expect.objectContaining({ key: "headerCtaLabel", locale: "id", value: "Ngobrol" }),
+    }));
   });
 
   it("exposes admin.role.list", async () => {
@@ -82,6 +162,7 @@ describe("appRouter shape — admin namespace contract", () => {
     const c = caller();
     expect(typeof c.account?.getProfile).toBe("function");
     expect(typeof c.public?.getInvitation).toBe("function");
+    expect(typeof c.public?.frontPageSettings?.get).toBe("function");
   });
 });
 

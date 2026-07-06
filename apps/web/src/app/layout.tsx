@@ -21,7 +21,7 @@ export default function RootLayout({
   children: ReactNode;
 }): ReactElement {
   return (
-    <html lang="en">
+    <html lang="id">
       <body>
         <ForkumiEffects />
         {children}

@@ -1,8 +1,8 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { DEFAULT_ADMIN_ASSET_PATHS } from "@repo/db/default-assets";
 import { existsSync, readFileSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import { extname, join } from "node:path";
+import { readFile, readdir, stat } from "node:fs/promises";
+import { extname, join, relative } from "node:path";
 
 const CONTENT_TYPES: Record<string, string> = {
   ".gif": "image/gif",
@@ -36,6 +36,19 @@ function assetKey(assetPath: string): string {
   return assetPath.replace(/^\/+/, "");
 }
 
+async function collectFiles(dir: string): Promise<string[]> {
+  const entries = await readdir(dir);
+  const files = await Promise.all(
+    entries.map(async (entry) => {
+      const path = join(dir, entry);
+      const info = await stat(path);
+      return info.isDirectory() ? collectFiles(path) : [path];
+    }),
+  );
+
+  return files.flat();
+}
+
 async function main() {
   loadRootEnv();
 
@@ -66,6 +79,26 @@ async function main() {
     }));
 
     console.log(`Uploaded ${assetPath} to s3://${bucket}/${key}`);
+  }
+
+  const webAssetsDir = join(process.cwd(), "../web/public/assets");
+  if (!existsSync(webAssetsDir)) {
+    return;
+  }
+
+  const webAssetFiles = await collectFiles(webAssetsDir);
+  for (const filePath of webAssetFiles) {
+    const key = `assets/${relative(webAssetsDir, filePath).split("\\").join("/")}`;
+    const body = await readFile(filePath);
+
+    await s3.send(new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: body,
+      ContentType: contentTypeFor(filePath),
+    }));
+
+    console.log(`Uploaded /${key} to s3://${bucket}/${key}`);
   }
 }
 

@@ -169,6 +169,8 @@ interface CRUDFieldBase {
   tab?: string;
   /** Namespace stored as a DB column on keyValue rows — enables filtered queries */
   namespace?: string;
+  /** For localized keyValue resources, set false to save the same value for every locale. Defaults to true. */
+  localized?: boolean;
   /** Small helper text displayed below the field */
   note?: string;
   /** Form width in keyValue forms. Defaults to full width. */

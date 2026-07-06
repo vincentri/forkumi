@@ -1,0 +1,405 @@
+import type { Metadata } from "next";
+import type { ReactElement } from "react";
+
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  firstValue,
+  getFrontPageSettings,
+  normalizeLocale,
+} from "../front-page-settings";
+import { getMarqueeItems } from "../marquee";
+import { WhySubscribeSection } from "./_components/WhySubscribeSection";
+import { PlansSection } from "./_components/PlansSection";
+import { getPortfolios, type PortfolioItem } from "../portfolio";
+import { resolveAssetUrl } from "../front-page-settings";
+
+type HomePageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+const HERO_DEFAULTS: Record<"id" | "en", {
+  stamp: string;
+  titleLine1: string;
+  titleLine2: string;
+  titleLine3: string;
+  subtitle: string;
+  primaryLabel: string;
+  secondaryLabel: string;
+  scrollText: string;
+}> = {
+  en: {
+    stamp: "INDONESIA · WORLDWIDE",
+    titleLine1: "Unlimited",
+    titleLine2: "design",
+    titleLine3: "for brands on the rise",
+    subtitle:
+      "Your design subscription for startups & SMEs. One monthly price, unlimited requests, premium-quality design — zero drama.",
+    primaryLabel: "Get Started",
+    secondaryLabel: "View Packages",
+    scrollText: "Scroll",
+  },
+  id: {
+    stamp: "INDONESIA · GLOBAL",
+    titleLine1: "Desain",
+    titleLine2: "tanpa batas",
+    titleLine3: "buat brand yang naik kelas",
+    subtitle:
+      "Partner desain langganan buat startup & UMKM. Satu harga bulanan, request sepuasnya, kualitas desain premium — tanpa drama.",
+    primaryLabel: "Mulai Sekarang",
+    secondaryLabel: "Lihat Paket",
+    scrollText: "Gas scroll",
+  },
+};
+
+const HERO_HIGHLIGHT_INDEX_DEFAULT = "1";
+const HERO_SECONDARY_URL_DEFAULT = "packages";
+const HERO_MASCOT_FALLBACK = "/assets/img/mascot.png";
+const HERO_WHATSAPP_FALLBACK =
+  "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan.";
+
+const WHY_FORKUMI_DEFAULTS: Record<"id" | "en", {
+  eye: string;
+  head: string;
+  labels: [string, string, string, string];
+  units: [string, string, string, string];
+}> = {
+  en: {
+    eye: "Why Forkumi",
+    head: "Real results, zero drama",
+    labels: ["First design", "Unlimited revisions", "Long-term lock-in", "Files are yours"],
+    units: ["H", "", "", ""],
+  },
+  id: {
+    eye: "Kenapa Forkumi",
+    head: "Hasil nyata, tanpa drama",
+    labels: ["Desain pertama", "Revisi sepuasnya", "Ikatan jangka panjang", "File jadi milikmu"],
+    units: ["JAM", "", "", ""],
+  },
+};
+
+const WHY_FORKUMI_NUMS = ["≤24", "∞", "0", "100%"] as const;
+const WHY_FORKUMI_BG_COLORS = ["var(--card-purple)", "var(--card-rose)", "var(--card-yellow)", "var(--card-purple)"] as const;
+const WHY_FORKUMI_TEXT_COLORS = ["var(--purple)", "var(--rose)", "#EFC75E", "var(--purple)"] as const;
+
+const WORK_DEFAULTS: Record<"id" | "en", {
+  eye: string;
+  headLine1: string;
+  headLine2: string;
+  intro: string;
+}> = {
+  en: {
+    eye: "Portfolio",
+    headLine1: "Our latest",
+    headLine2: "work",
+    intro: "Our latest client — plus plenty more on Instagram.",
+  },
+  id: {
+    eye: "Portfolio",
+    headLine1: "Karya",
+    headLine2: "terbaru kami",
+    intro: "Klien terbaru kami — dan masih banyak lagi di Instagram.",
+  },
+};
+
+const WORK_HIGHLIGHT_INDEX_DEFAULT = "1";
+const PKG_HIGHLIGHT_INDEX_DEFAULT = "1";
+const WHATSAPP_FALLBACK_URL = "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.";
+
+const PKG_DEFAULTS: Record<"id" | "en", {
+  eye: string;
+  headLine1: string;
+  headLine2: string;
+  intro: string;
+  note: string;
+}> = {
+  en: {
+    eye: "Packages",
+    headLine1: "Pick the",
+    headLine2: "right plan",
+    intro: "Flat monthly price, no hidden fees. Pause or cancel anytime.",
+    note: "Limited promo — normal price struck through. Pause or cancel anytime, no penalty.",
+  },
+  id: {
+    eye: "Paket",
+    headLine1: "Pilih paket",
+    headLine2: "yang pas",
+    intro: "Harga tetap bulanan, tanpa biaya tersembunyi. Pause atau stop kapan aja.",
+    note: "Promo terbatas — harga normal dicoret. Pause / stop kapan aja, tanpa penalti.",
+  },
+};
+
+function pickFeatured(items: PortfolioItem[], id: string | undefined): PortfolioItem[] {
+  if (!id) {
+    return [];
+  }
+  const match = items.find((item) => item.id === id);
+  return match ? [match] : [];
+}
+
+export async function generateMetadata({ params }: HomePageProps): Promise<Metadata> {
+  const { locale: rawLocale } = await params;
+  const locale = normalizeLocale(rawLocale);
+  const settings = await getFrontPageSettings(locale);
+  const title = firstValue(settings.homePageSeoMetaTitle, settings.meta_title) ?? DEFAULT_TITLE;
+  const description =
+    firstValue(settings.homePageSeoMetaDescription, settings.meta_description) ?? DEFAULT_DESCRIPTION;
+  const keywords = firstValue(settings.homePageSeoMetaKeywords, settings.meta_keywords);
+
+  return {
+    title,
+    description,
+    keywords,
+    alternates: {
+      languages: {
+        id: "/id/",
+        en: "/en/",
+      },
+    },
+  };
+}
+
+export default async function HomePage({ params }: HomePageProps): Promise<ReactElement> {
+  const { locale: rawLocale } = await params;
+  const locale = normalizeLocale(rawLocale);
+  const settings = await getFrontPageSettings(locale);
+  const defaults = HERO_DEFAULTS[locale];
+
+  const stamp = firstValue(settings.heroStamp, defaults.stamp) ?? defaults.stamp;
+  const titleLines = [
+    firstValue(settings.heroTitleLine1, defaults.titleLine1) ?? defaults.titleLine1,
+    firstValue(settings.heroTitleLine2, defaults.titleLine2) ?? defaults.titleLine2,
+    firstValue(settings.heroTitleLine3, defaults.titleLine3) ?? defaults.titleLine3,
+  ];
+  const highlightIndex = Number.parseInt(
+    settings.heroTitleHighlightIndex ?? HERO_HIGHLIGHT_INDEX_DEFAULT,
+    10,
+  );
+  const subtitle = firstValue(settings.heroSubtitle, defaults.subtitle) ?? defaults.subtitle;
+  const primaryLabel =
+    firstValue(settings.heroCtaPrimaryLabel, defaults.primaryLabel) ?? defaults.primaryLabel;
+  const secondaryLabel =
+    firstValue(settings.heroCtaSecondaryLabel, defaults.secondaryLabel) ?? defaults.secondaryLabel;
+  const secondaryUrl = settings.heroCtaSecondaryUrl || HERO_SECONDARY_URL_DEFAULT;
+  const mascotSrc = resolveAssetUrl(settings.heroImage) ?? HERO_MASCOT_FALLBACK;
+  const scrollText = firstValue(settings.heroScrollText, defaults.scrollText) ?? defaults.scrollText;
+  const marqueeItems = await getMarqueeItems(locale);
+
+  const workDefaults = WORK_DEFAULTS[locale];
+  const workEye = firstValue(settings.workEye, workDefaults.eye) ?? workDefaults.eye;
+  const workHeadLine1 =
+    firstValue(settings.workHeadLine1, workDefaults.headLine1) ?? workDefaults.headLine1;
+  const workHeadLine2 =
+    firstValue(settings.workHeadLine2, workDefaults.headLine2) ?? workDefaults.headLine2;
+  const workHighlightIndex = Number.parseInt(
+    settings.workHeadHighlightIndex ?? WORK_HIGHLIGHT_INDEX_DEFAULT,
+    10,
+  );
+  const workIntro = firstValue(settings.workIntro, workDefaults.intro) ?? workDefaults.intro;
+
+  const pkgDefaults = PKG_DEFAULTS[locale];
+  const pkgEye = firstValue(settings.pkgEye, pkgDefaults.eye) ?? pkgDefaults.eye;
+  const pkgHeadLine1 =
+    firstValue(settings.pkgHeadLine1, pkgDefaults.headLine1) ?? pkgDefaults.headLine1;
+  const pkgHeadLine2 =
+    firstValue(settings.pkgHeadLine2, pkgDefaults.headLine2) ?? pkgDefaults.headLine2;
+  const pkgHighlightIndex = Number.parseInt(
+    settings.pkgHeadHighlightIndex ?? PKG_HIGHLIGHT_INDEX_DEFAULT,
+    10,
+  );
+  const pkgIntro = firstValue(settings.pkgIntro, pkgDefaults.intro) ?? pkgDefaults.intro;
+  const pkgNote = firstValue(settings.pkgNote, pkgDefaults.note) ?? pkgDefaults.note;
+
+  const allPortfolios = await getPortfolios(locale);
+  const featuredPortfolios = pickFeatured(allPortfolios, settings.homeFeaturedPortfolioId);
+
+  const whyDefaults = WHY_FORKUMI_DEFAULTS[locale];
+  const whyEye = firstValue(settings.whyForkumiEye, whyDefaults.eye) ?? whyDefaults.eye;
+  const whyHead = firstValue(settings.whyForkumiHead, whyDefaults.head) ?? whyDefaults.head;
+  const whyStats = WHY_FORKUMI_NUMS.map((defaultNum, i) => {
+    const slot = i + 1;
+    return {
+      num: settings[`stat${slot}Num`] || defaultNum,
+      unit: settings[`stat${slot}Unit`] ?? whyDefaults.units[i],
+      label:
+        firstValue(settings[`stat${slot}Label`], whyDefaults.labels[i]) ??
+        whyDefaults.labels[i],
+      bgColor: settings[`stat${slot}Color`]?.trim() || WHY_FORKUMI_BG_COLORS[i],
+      textColor: settings[`stat${slot}TextColor`]?.trim() || WHY_FORKUMI_TEXT_COLORS[i],
+    };
+  });
+
+  return (
+    <>
+      <div id="cursor"></div><div id="dot"></div>
+      <div id="splash"><img src="/assets/img/logo.svg" alt="Forkumi" /><div className="sname">Forkumi</div><div className="bar"><i></i></div></div>
+      <nav id="nav-mount"></nav>
+
+      <header className="hero" id="top">
+        <img className="sparkle" src="/assets/img/sparkle_purple.png" style={{ top: "17%", left: "43%", width: "42px" }} data-d="0.5" alt="" />
+        <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ bottom: "26%", left: "30%", width: "32px" }} data-d="0.8" alt="" />
+        <img className="sparkle" src="/assets/img/sparkle_rose.png" style={{ top: "30%", right: "30%", width: "50px" }} data-d="0.6" alt="" />
+        <div className="stamp">{stamp}</div>
+        <div className="wrap">
+          <div className="hero-left">
+            <h1>
+              {titleLines.map((line, i) => (
+                <span key={i} className={i === highlightIndex ? "hl" : undefined}>
+                  {i > 0 ? <><br />{line}</> : line}
+                </span>
+              ))}
+            </h1>
+            <p className="sub">{subtitle}</p>
+            <div className="cta">
+              <a className="btn primary" href={HERO_WHATSAPP_FALLBACK} target="_blank" rel="noopener" data-frontpage-whatsapp>
+                {primaryLabel} <span className="ar">➔</span>
+              </a>
+              <a className="btn ghost" href={secondaryUrl}>{secondaryLabel}</a>
+            </div>
+          </div>
+          <div className="hero-right"><img className="mascot" src={mascotSrc} alt="Forkumi mascot" /></div>
+        </div>
+        <a className="scrolldown" href="#stats"><span className="m"></span><span>{scrollText}</span></a>
+      </header>
+      
+      <div className="strip">
+        {marqueeItems.length > 0 ? (
+          <div className="t">
+            <span>{marqueeItems.map((item) => `✦ ${item}`).join("\u00A0\u00A0\u00A0") + "\u00A0\u00A0\u00A0"}</span>
+            <span aria-hidden="true">{marqueeItems.map((item) => `✦ ${item}`).join("\u00A0\u00A0\u00A0") + "\u00A0\u00A0\u00A0"}</span>
+          </div>
+        ) : null}
+      </div>
+      
+      <section className="sec g-lav" id="stats">
+        <div className="wrap">
+          <div className="sec-top"><div><span className="eyebrow reveal">{whyEye}</span><h2 className="sec-head reveal">{whyHead}</h2></div></div>
+          <div className="stats">
+            {whyStats.map((stat, i) => (
+              <div key={i} className="stat reveal" style={{ background: stat.bgColor }}>
+                <div className="num" style={{ color: stat.textColor }}>{stat.num}{stat.unit ? <span style={{ fontSize: ".5em" }}> {stat.unit}</span> : null}</div>
+                <div className="lbl">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      <WhySubscribeSection rawLocale={rawLocale} bg="g-pink" />
+      
+      <section className="sec g-peach" id="work">
+        <div className="wrap">
+          <div className="sec-top">
+            <div>
+              <span className="eyebrow reveal">{workEye}</span>
+              <h2 className="sec-head reveal">
+                <span className={workHighlightIndex === 0 ? "hl" : undefined}>{workHeadLine1}</span>
+                <br />
+                <span className={workHighlightIndex === 1 ? "hl" : undefined}>{workHeadLine2}</span>
+              </h2>
+            </div>
+            <p className="intro reveal d1">{workIntro}</p>
+          </div>
+          {featuredPortfolios.map((item, i) => {
+            const badge = i === 0
+              ? (locale === "id" ? "Klien Terbaru" : "Latest Client")
+              : (locale === "id" ? "Klien" : "Client");
+            const isLogo = !!item.logoBg;
+            const resolvedImage = resolveAssetUrl(item.image);
+            const imageBlock = isLogo ? (
+              <div className="pimg logo" style={{ background: item.logoBg ?? "#241C16" }}>
+                <span className="pbadge">{badge}</span>
+                {resolvedImage ? <img src={resolvedImage} alt={item.name} loading="lazy" /> : null}
+              </div>
+            ) : resolvedImage ? (
+              <div className="pimg">
+                <span className="ph">{item.name}</span>
+                <span className="pbadge">{badge}</span>
+                <img src={resolvedImage} alt={item.name} loading="lazy" />
+              </div>
+            ) : (
+              <div className="pimg">
+                <span className="ph">{item.name}</span>
+                <span className="pbadge">{badge}</span>
+              </div>
+            );
+            const primaryCta = item.url ? (
+              <a className="btn primary sm" href={item.url} target="_blank" rel="noopener">
+                {locale === "id" ? "Kunjungi Website" : "Visit Website"} <span className="ar">➔</span>
+              </a>
+            ) : (
+              <a className="btn primary sm" href={WHATSAPP_FALLBACK_URL} target="_blank" rel="noopener">
+                {locale === "id" ? "Diskusi Proyek" : "Discuss a Project"} <span className="ar">➔</span>
+              </a>
+            );
+            return (
+              <div key={item.id} className="port-feat reveal" style={{ marginBottom: "26px" }}>
+                {imageBlock}
+                <div className="port-info">
+                  <h3>{item.name}</h3>
+                  <div className="psub">{item.sub}</div>
+                  {item.tags.length > 0 ? (
+                    <div className="ptags">
+                      {item.tags.map((tag, ti) => (
+                        <span key={ti}>{tag}</span>
+                      ))}
+                    </div>
+                  ) : null}
+                  <p>{item.blurb}</p>
+                  <div className="port-btns">
+                    {primaryCta}
+                    <a className="btn ghost sm" href="/portfolio">
+                      {locale === "id" ? "Lihat semua" : "See all"}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+      
+      <section className="sec g-blue" id="packages">
+        <div className="wrap">
+          <div className="sec-top">
+            <div>
+              <span className="eyebrow reveal">{pkgEye}</span>
+              <h2 className="sec-head reveal">
+                <span className={pkgHighlightIndex === 0 ? "hl" : undefined}>{pkgHeadLine1}</span>
+                <br />
+                <span className={pkgHighlightIndex === 1 ? "hl" : undefined}>{pkgHeadLine2}</span>
+              </h2>
+            </div>
+            <p className="intro reveal d1">{pkgIntro}</p>
+          </div>
+          <PlansSection locale={locale} />
+          <p className="pnote reveal">{pkgNote}</p>
+        </div>
+      </section>
+      
+      <section className="sec g-lav" id="faq">
+        <div className="wrap">
+          <div className="sec-top"><div><span className="eyebrow reveal" data-i="faqEye"></span><h2 className="sec-head reveal" data-head="faqHead"></h2></div></div>
+          <div data-list="faqHome"></div>
+        </div>
+      </section>
+      
+      <section className="cta-sec">
+        <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ top: "20%", left: "14%", width: "44px" }} data-d="0.6" alt="" />
+        <img className="sparkle" src="/assets/img/sparkle_rose.png" style={{ bottom: "18%", right: "16%", width: "52px" }} data-d="0.7" alt="" />
+        <div className="wrap">
+          <span className="eyebrow center" style={{ color: "var(--gold)", justifyContent: "center", width: "100%" }} data-i="ctaEye"></span>
+          <h2 className="reveal" data-head="ctaHead" style={{ margin: "14px 0 0" }}></h2>
+          <p className="sub reveal d1" data-i="ctaSub"></p>
+          <div className="cta reveal d2">
+            <a className="btn primary" href="https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain." target="_blank" rel="noopener" data-frontpage-whatsapp><span data-i="ctaBtn"></span> <span className="ar">➔</span></a>
+            <a className="btn ghost" href="packages"><span data-i="ctaBtn2"></span></a>
+          </div>
+        </div>
+      </section>
+      
+      <footer id="footer-mount"></footer>
+      <a className="fab" href="https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan." target="_blank" rel="noopener" title="WhatsApp" data-frontpage-whatsapp><span className="icon-dot" aria-hidden="true" /></a>
+    </>
+  );
+}

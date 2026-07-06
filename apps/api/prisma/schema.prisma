@@ -72,3 +72,107 @@ model FrontPageSettings {
   @@unique([key, locale])
   @@map("front_page_settings")
 }
+
+model MarqueeItem {
+  id        String   @id @default(cuid())
+  text      String
+  locale    String   @default("en")
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([locale, position])
+  @@map("marquee_items")
+}
+
+model WhysubCard {
+  id        String   @id @default(cuid())
+  icon      String   @default("team")
+  color     String   @default("purple")
+  heading   String
+  paragraph String
+  locale    String   @default("en")
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([locale, position])
+  @@map("whysub_cards")
+}
+
+model CompareCategory {
+  id        String   @id @default(cuid())
+  name      String
+  locale    String   @default("en")
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([locale, position])
+  @@map("compare_categories")
+}
+
+model CompareCriterion {
+  id        String   @id @default(cuid())
+  label     String
+  cells     String   @default("y,n,l")
+  locale    String   @default("en")
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([locale, position])
+  @@map("compare_criteria")
+}
+
+model Portfolio {
+  id        String   @id @default(cuid())
+  name      String
+  sub       String
+  blurbId   String?
+  blurbEn   String?
+  image     String?
+  logoBg    String?
+  tags      String?
+  url       String?
+  igUrl     String?
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([position])
+  @@map("portfolios")
+}
+
+model Plan {
+  id          String        @id @default(cuid())
+  name        String
+  color       String        @default("purple")
+  price       String
+  normalPrice String        @map("normal_price")
+  best        Boolean       @default(false)
+  ctaUrl      String?       @map("cta_url")
+  position    Int           @default(0)
+  active      Boolean       @default(true)
+  features    PlanFeature[]
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([position])
+  @@map("plans")
+}
+
+model PlanFeature {
+  id        String   @id @default(cuid())
+  planId    String   @map("plan_id")
+  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  text      String
+  locale    String   @default("en")
+  position  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([planId, locale, position])
+  @@map("plan_features")
+}

@@ -136,6 +136,8 @@ nav .brand img{width:34px;height:34px}
 .stat .num{font-size:clamp(30px,3.6vw,46px);font-weight:800;color:var(--purple);letter-spacing:-1px;line-height:1}
 .stat:nth-child(2) .num{color:var(--rose)}.stat:nth-child(3) .num{color:#EFC75E}
 .stat .lbl{font-size:13px;color:var(--body);font-weight:600;margin-top:8px}
+.stat.purple{background:var(--card-purple)}.stat.rose{background:var(--card-rose)}.stat.gold{background:var(--card-yellow)}.stat.none{background:#fff}
+.stat.purple .num{color:var(--purple)}.stat.rose .num{color:var(--rose)}.stat.gold .num{color:#EFC75E}.stat.none .num{color:var(--purple)}
 
 /* industries big list */
 .ind{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:2px solid var(--line);padding:clamp(16px,2.4vw,28px) 0;position:relative;cursor:pointer}

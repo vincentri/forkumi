@@ -7,7 +7,22 @@ const WA=WA_BASE+"?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20d
 const WAP="https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20paket%20";
 const IG="https://www.instagram.com/forkumi.design/";
 const MAIL="mailto:linkforkumi@gmail.com";
-let lang=localStorage.getItem('forkumi_lang')||'id';
+const PHONE="tel:+6580892716";
+const LOCALES=['id','en'];
+const DEFAULT_LANG='id';
+function getPathLocale(){var p=location.pathname.split('/').filter(Boolean)[0];return LOCALES.includes(p)?p:DEFAULT_LANG}
+function localPath(path){if(!path||path[0]!=='/'||path.startsWith('//'))return path;if(/^\/(id|en)(\/|$)/.test(path))return path;return '/'+lang+(path==='/'?'':path)}
+function localePath(nextLang){var parts=location.pathname.split('/').filter(Boolean);if(LOCALES.includes(parts[0]))parts[0]=nextLang;else parts.unshift(nextLang);return '/'+parts.join('/')+location.search+location.hash}
+let lang=getPathLocale();
+function fpSettings(){return window.__FORKUMI_FRONT_PAGE_SETTINGS__||{}}
+function clean(v){return typeof v==='string'&&v.trim()?v.trim():''}
+function setting(key,fallback){return clean(fpSettings()[key])||fallback}
+function esc(v){return String(v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function safeHref(key,fallback){var v=setting(key,'');return /^(https?:|mailto:|tel:)/.test(v)?v:fallback}
+function stripSlash(v){return v.replace(/\/$/,'')}
+function assetBase(){return stripSlash(process.env.NEXT_PUBLIC_STORAGE_BASE_URL||process.env.NEXT_PUBLIC_API_URL||'http://localhost:3001')}
+function safeAsset(key,fallback){var v=setting(key,'');if(/^(https?:|data:|blob:)/.test(v))return v;if(/^\/(uploads|defaults|assets)\//.test(v))return assetBase()+v;if(/^(uploads|defaults|assets)\//.test(v))return assetBase()+'/'+v;if(v.charAt(0)==='/')return v;return fallback}
+function whatsappUrl(fallback){return safeHref('contactWhatsappUrl',fallback)}
 
 const ICONS={brand:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10"/>',graphic:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 15l5-5 4 4 3-3 6 6"/>',uiux:'<rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',social:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3.5M15.4 6.5l-6.8 4"/>',motion:'<polygon points="5 3 19 12 5 21 5 3"/>',video:'<rect x="2" y="5" width="14" height="14" rx="2"/><path d="M22 8l-6 4 6 4z"/>',illus:'<path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M2 2l7.5 7.5M2 2l4 1 1 4"/>',web:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>',star:'<path d="M12 2l2.6 6.6L21 9.2l-5 4.3L17.5 21 12 17.3 6.5 21 8 13.5l-5-4.3 6.4-.6z"/>',lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',bolt:'<path d="M13 2L3 14h7l-1 8 10-12h-7z"/>',team:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/>',file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',data:'<path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/>',chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',insta:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/>'};
 
@@ -33,10 +48,7 @@ const T={
  whyIntro:{id:'Lebih hemat dari karyawan tetap, lebih konsisten dari freelancer.',en:'Cheaper than a full-time hire, more consistent than freelancers.'},
  featEye:{id:'Portfolio',en:'Portfolio'},featHead:{id:['Karya','terbaru kami'],en:['Our latest','work'],hl:1},
  featIntro:{id:'Klien terbaru kami — dan masih banyak lagi di Instagram.',en:'Our latest client — plus plenty more on Instagram.'},
- pkgEye:{id:'Paket',en:'Packages'},pkgHead:{id:['Pilih paket','yang pas'],en:['Pick the','right plan'],hl:1},
- pkgIntro:{id:'Harga tetap bulanan, tanpa biaya tersembunyi. Pause atau stop kapan aja.',en:'Flat monthly price, no hidden fees. Pause or cancel anytime.'},
  faqEye:{id:'FAQ',en:'FAQ'},faqHead:{id:['Masih','ragu?'],en:['Still','unsure?'],hl:1},
- pkgNote:{id:'Promo terbatas — harga normal dicoret. Pause / stop kapan aja, tanpa penalti.',en:'Limited promo — normal price struck through. Pause or cancel anytime, no penalty.'},
  // industries / services / about / etc
  indEye:{id:'Industri',en:'Industries'},indHead:{id:['Industri yang','kami layani'],en:['Industries','we serve'],hl:1},
  indIntro:{id:'Dari startup teknologi sampai UMKM lokal — desain Forkumi cocok untuk semua bidang.',en:'From tech startups to local SMEs — Forkumi fits every sector.'},
@@ -144,11 +156,6 @@ const PHASES=[
  {t:{id:'Pengerjaan',en:'Production'},steps:{id:['Konfirmasi pembayaran','Tim langsung gas','Kirim ≤24 jam'],en:['Confirm payment','Team gets to work','Deliver in ≤24h']},d:{id:'Begitu pembayaran masuk, tim langsung garap sesuai brief-mu. Pengiriman pertama maks 24 jam.',en:'Once payment clears, the team starts right away. First delivery in max 24 hours.'}},
  {t:{id:'Penilaian',en:'Review'},steps:{id:['Revisi sepuasnya','Laporan tiap 3 bulan','Penyesuaian strategi'],en:['Revise freely','Quarterly reports','Strategy tune-ups']},d:{id:'Minta revisi sepuasnya dari tiap hasil. Tiap 3 bulan kami kirim laporan biar strategimu makin tajam.',en:'Request all the revisions you want. Every 3 months we report back so your strategy stays sharp.'}}
 ];
-const PLANS=[
- {c:'purple',name:'Basic',price:'Rp 1.500k',normal:'Rp 2.500k',feats:{id:['1 Permintaan Desain','Branding','Sosial Media','Riset','Laporan Kuartalan'],en:['1 Design Request','Branding','Social Media','Research','Quarterly Report']}},
- {c:'rose',best:true,name:'Standard',price:'Rp 4.500k',normal:'Rp 6.500k',feats:{id:['2 Permintaan Desain','Semua di Basic','Video Editing','Pengemasan','Website'],en:['2 Design Requests','All in Basic','Video Editing','Packaging','Website']}},
- {c:'gold',name:'Premium',price:'Rp 6.500k',normal:'Rp 9.500k',feats:{id:['3 Permintaan Desain','Semua di Standard','Ilustrasi','UI/UX Design','Motion Graphics'],en:['3 Design Requests','All in Standard','Illustration','UI/UX Design','Motion Graphics']}}
-];
 const PKGNOTE={id:'Promo terbatas — harga normal dicoret. Pause / stop kapan aja, tanpa penalti.',en:'Limited promo — normal price struck through. Pause or cancel anytime, no penalty.'};
 const INCLUDED=[
  {ic:'bolt',c:'purple',h:{id:'Pengerjaan ≤24 jam',en:'≤24h turnaround'},p:{id:'Untuk request desain standar.',en:'For standard design requests.'}},
@@ -191,18 +198,17 @@ const PORTFOLIO=[
 function t(o){return o?o[lang]:''}
 function headHTML(o){return o[lang].map((l,i)=>`<span ${i===o.hl?'class="hl"':''}>${l}</span>`).join('<br>')}
 function card(c){return `<div class="gcard ${c.c} reveal"><div class="ci"><svg viewBox="0 0 24 24">${ICONS[c.ic]}</svg></div><h4>${t(c.h)}</h4><p>${t(c.p)}</p></div>`}
-function planCard(pl){return `<div class="plan ${pl.c} ${pl.best?'best':''} reveal">${pl.best?`<span class="star">★ ${lang==='id'?'Favorit':'Popular'}</span>`:''}<div class="pn">${pl.name}</div><ul>${pl.feats[lang].map(f=>`<li>${f}</li>`).join('')}</ul><div class="startfrom">${lang==='id'?'Mulai dari':'Start from'}</div><div class="price">${pl.price}<span style="font-size:14px">/mo</span></div><div class="normal">${pl.normal}/mo</div><a class="pick" href="${WAP+encodeURIComponent(pl.name)}" target="_blank" rel="noopener">${lang==='id'?'Pilih Paket':'Choose Plan'}</a><div class="tc-note">${lang==='id'?'*S&K berlaku':'*T&C applied'}</div></div>`}
 function faqItem(qa){return `<div class="faq-q reveal"><div class="q" onclick="this.parentNode.classList.toggle('open')"><span>${t(qa.q)}</span><span class="plus">+</span></div><div class="a"><p>${t(qa.a)}</p></div></div>`}
 function mark(v){var m=v==='y'?['yes','✓']:v==='n'?['no','✕']:['lim','–'];return '<span class="mk '+m[0]+'">'+m[1]+'</span>'}
 function portCard(p,home,i){
  var badge=i===0?(lang==='id'?'Klien Terbaru':'Latest Client'):(lang==='id'?'Klien':'Client');
  var btns='';
  if(p.url) btns+='<a class="btn primary sm" href="'+p.url+'" target="_blank" rel="noopener">'+(lang==='id'?'Kunjungi Website':'Visit Website')+' <span class="ar">➔</span></a>';
- else btns+='<a class="btn primary sm" href="'+WA+'" target="_blank" rel="noopener">'+(lang==='id'?'Diskusi Proyek':'Discuss a Project')+' <span class="ar">➔</span></a>';
+ else btns+='<a class="btn primary sm" href="'+esc(whatsappUrl(WA))+'" target="_blank" rel="noopener">'+(lang==='id'?'Diskusi Proyek':'Discuss a Project')+' <span class="ar">➔</span></a>';
  if(home) btns+='<a class="btn ghost sm" href="/portfolio">'+(lang==='id'?'Lihat semua':'See all')+'</a>';
  else if(p.ig) btns+='<a class="btn ghost sm" href="'+p.ig+'" target="_blank" rel="noopener">Instagram</a>';
  var pimg=p.logo
-  ? '<div class="pimg logo" style="background:'+(p.bg||'#241C16')+'"><span class="pbadge">'+badge+'</span><img src="assets/img/'+p.logo+'" alt="'+p.name+'" loading="lazy"></div>'
+  ? '<div class="pimg logo" style="background:'+(p.bg||'#241C16')+'"><span class="pbadge">'+badge+'</span><img src="/assets/img/'+p.logo+'" alt="'+p.name+'" loading="lazy"></div>'
   : '<div class="pimg"><span class="ph">'+p.name+'</span><span class="pbadge">'+badge+'</span><img src="'+p.img+'" alt="'+p.name+'" loading="lazy" onerror="this.style.display=\'none\'"></div>';
  return '<div class="port-feat reveal" style="margin-bottom:26px">'+pimg+'<div class="port-info"><h3>'+p.name+'</h3><div class="psub">'+p.sub+'</div><div class="ptags">'+p.tags.map(function(x){return '<span>'+x+'</span>'}).join('')+'</div><p>'+t(p.blurb)+'</p><div class="port-btns">'+btns+'</div></div></div>';
 }
@@ -220,10 +226,9 @@ const LIST={
  included:()=>INCLUDED.map(card).join(''),
  whysub:()=>WHYSUB.map(c=>`<div class="gcard ${c.c} reveal"><div class="ci"><svg viewBox="0 0 24 24">${ICONS[c.ic]}</svg></div><h4>${t(c.h)}</h4><p>${t(c.p)}</p></div>`).join(''),
  comparison:()=>{var L=COMPARE.cols[lang];var h='<div class="cmp-wrap"><div class="cmp"><div class="cmp-row cmp-head"><div class="cmp-c crit"></div><div class="cmp-c f">'+L[0]+'</div>'+L.slice(1).map(function(x){return '<div class="cmp-c">'+x+'</div>'}).join('')+'</div>';COMPARE.rows.forEach(function(r){h+='<div class="cmp-row"><div class="cmp-c crit">'+t(r.h)+'</div>'+r.v.map(function(val,i){return '<div class="cmp-c '+(i===0?'f':'')+'">'+mark(val)+'</div>'}).join('')+'</div>'});return h+'</div></div>'},
- servicecats:()=>SERVICECATS.map(c=>`<div class="svccat ${c.tint} reveal"><img class="ic" src="assets/img/ill/${c.img}" alt="${c.h}" loading="lazy"><h3>${c.h}</h3><div class="rule"></div><ul>${c.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join(''),
+ servicecats:()=>SERVICECATS.map(c=>`<div class="svccat ${c.tint} reveal"><img class="ic" src="/assets/img/ill/${c.img}" alt="${c.h}" loading="lazy"><h3>${c.h}</h3><div class="rule"></div><ul>${c.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join(''),
  industries:()=>INDUSTRIES.map((it,i)=>`<div class="ind reveal"><div class="n"><span class="idx">${String(i+1).padStart(2,'0')}</span><span class="name">${t(it.name)}</span></div><div class="tag"><span class="txt">${t(it.tag)}</span><span class="go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></div>`).join(''),
  phases:()=>PHASES.map((p,i)=>`<div class="phase reveal"><div class="big">0${i+1}</div><div><h3>${t(p.t)}</h3><div class="steps">${p.steps[lang].map(s=>`<span>${s}</span>`).join('')}</div><p>${t(p.d)}</p></div></div>`).join(''),
- plans:()=>PLANS.map(planCard).join(''),
  faq:()=>FAQ.map(faqItem).join(''),
  faq3:()=>FAQ.slice(0,3).map(faqItem).join(''),
  faqHome:()=>{var a=FAQ.slice(0,3).map(faqItem).join('');var b=FAQ.slice(3).map(faqItem).join('');return '<div class="faqs">'+a+'<div class="faq-extra" id="faqExtra">'+b+'</div></div><div style="text-align:center;margin-top:22px"><button class="see-more" onclick="toggleFaq(this)">'+(lang==='id'?'Lihat pertanyaan lainnya':'See more questions')+' <span class="ico">↓</span></button></div>'},
@@ -236,26 +241,43 @@ const LIST={
 
 function navHTML(){
  const L=[['/','home','nHome'],['/services','services','nSvc'],['/portfolio','portfolio','nPort'],['/packages','packages','nPkg'],['/about','about','nAbout'],['/contact','contact','nContact']];
- return `<a class="brand" href="/"><img src="/assets/img/logo.svg" alt="Forkumi"><span>Forkumi</span></a>
-  <div class="nav-links">${L.map(x=>`<a href="${x[0]}" data-page="${x[1]}" data-i="${x[2]}">${t(T[x[2]])}</a>`).join('')}</div>
+ const brand=setting('site_name','Forkumi');
+ const logo=safeAsset('logo','/assets/img/logo.svg');
+ const cta=safeHref('headerCtaUrl',WA);
+ return `<a class="brand" href="${localPath('/')}"><img src="${esc(logo)}" alt="${esc(brand)}"><span>${esc(brand)}</span></a>
+  <div class="nav-links">${L.map(x=>`<a href="${localPath(x[0])}" data-page="${x[1]}">${esc(t(T[x[2]]))}</a>`).join('')}</div>
   <div class="nav-right">
     <div class="lang"><button id="lang-id" onclick="setLang('id')">ID</button><button id="lang-en" onclick="setLang('en')">EN</button></div>
-    <a class="talk" href="${WA}" target="_blank" rel="noopener"><span data-i="talk">${t(T.talk)}</span> →</a>
+    <a class="talk" href="${esc(cta)}" target="_blank" rel="noopener"><span>${esc(setting('headerCtaLabel',t(T.talk)))}</span> →</a>
     <button class="burger" aria-label="menu"><span></span><span></span><span></span></button>
   </div>`;
 }
 function footerHTML(){
+ const brand=setting('site_name','Forkumi');
+ const logo=safeAsset('logo','/assets/img/logo.svg');
+ const phoneLabel=setting('contactPhoneLabel','+65 8089 2716');
+ const phoneUrl=safeHref('contactPhoneUrl',PHONE);
+ const whatsappLabel=setting('contactWhatsappLabel','WhatsApp');
+ const whatsappUrl=safeHref('contactWhatsappUrl',WA);
+ const emailLabel=setting('contactEmailLabel','linkforkumi@gmail.com');
+ const emailUrl=safeHref('contactEmailUrl',MAIL);
+ const instagramLabel=setting('contactInstagramLabel','@forkumi.design');
+ const instagramUrl=safeHref('contactInstagramUrl',IG);
+ const workingHours=setting('contactWorkingHours',t(T.hours));
+ const socialInstagramUrl=safeHref('socialInstagramUrl',instagramUrl);
+ const socialWhatsappUrl=safeHref('socialWhatsappUrl',whatsappUrl);
+ const socialEmailUrl=safeHref('socialEmailUrl',emailUrl);
  return `<div class="wrap"><div class="fcols">
-  <div><div class="fbrand"><img src="/assets/img/logo.svg" alt=""><span>Forkumi</span></div><p class="ftag" data-i="fTag">${t(T.fTag)}</p></div>
-  <div><h5 data-i="fExplore">${t(T.fExplore)}</h5>
-    <a href="/services" data-i="nSvc">${t(T.nSvc)}</a><a href="/portfolio" data-i="nPort">${t(T.nPort)}</a><a href="/packages" data-i="nPkg">${t(T.nPkg)}</a><a href="/about" data-i="nAbout">${t(T.nAbout)}</a></div>
-  <div><h5 data-i="fContact">${t(T.fContact)}</h5><a href="${WA}" target="_blank" rel="noopener">+65 8089 2716</a><a href="${MAIL}">linkforkumi@gmail.com</a><a href="${IG}" target="_blank" rel="noopener">@forkumi.design</a></div>
-  <div><h5 data-i="fFollow">${t(T.fFollow)}</h5><div class="fsoc">
-    <a href="${IG}" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24">${ICONS.insta}</svg></a>
-    <a href="${WA}" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24">${ICONS.chat}</svg></a>
-    <a href="${MAIL}" aria-label="Email"><svg viewBox="0 0 24 24">${ICONS.mail}</svg></a></div></div>
+  <div><div class="fbrand"><img src="${esc(logo)}" alt=""><span>${esc(brand)}</span></div><p class="ftag">${esc(setting('footerTagline',t(T.fTag)))}</p></div>
+  <div><h5>${esc(setting('footerExploreHeading',t(T.fExplore)))}</h5>
+    <a href="${localPath('/services')}">${esc(t(T.nSvc))}</a><a href="${localPath('/portfolio')}">${esc(t(T.nPort))}</a><a href="${localPath('/packages')}">${esc(t(T.nPkg))}</a><a href="${localPath('/about')}">${esc(t(T.nAbout))}</a></div>
+  <div><h5>${esc(setting('footerContactHeading',t(T.fContact)))}</h5><a href="${esc(whatsappUrl)}" target="_blank" rel="noopener">${esc(whatsappLabel)}</a><a href="${esc(phoneUrl)}">${esc(phoneLabel)}</a><a href="${esc(emailUrl)}">${esc(emailLabel)}</a><a href="${esc(instagramUrl)}" target="_blank" rel="noopener">${esc(instagramLabel)}</a><p>${esc(workingHours)}</p></div>
+  <div><h5>${esc(setting('footerFollowHeading',t(T.fFollow)))}</h5><div class="fsoc">
+    <a href="${esc(socialInstagramUrl)}" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24">${ICONS.insta}</svg></a>
+    <a href="${esc(socialWhatsappUrl)}" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24">${ICONS.chat}</svg></a>
+    <a href="${esc(socialEmailUrl)}" aria-label="Email"><svg viewBox="0 0 24 24">${ICONS.mail}</svg></a></div></div>
   </div>
-  <div class="fbot"><span>© 2026 Forkumi. <span data-i="fRights">${t(T.fRights)}</span></span><span data-i="fMade">${t(T.fMade)}</span></div></div>`;
+  <div class="fbot"><span>© 2026 ${esc(brand)}. <span>${esc(setting('footerCopyrightText',setting('footerRightsText',t(T.fRights))))}</span></span><span>${esc(setting('footerMadeText',t(T.fMade)))}</span></div></div>`;
 }
 
 function applyI18n(){
@@ -263,15 +285,41 @@ function applyI18n(){
  document.querySelectorAll('[data-head]').forEach(el=>{const k=el.getAttribute('data-head');if(T[k]&&T[k].hl!==undefined)el.innerHTML=headHTML(T[k])});
  document.querySelectorAll('[data-list]').forEach(el=>{const k=el.getAttribute('data-list');if(LIST[k])el.innerHTML=LIST[k]()});
  const ph=document.getElementById('heroH1');if(ph)ph.innerHTML=headHTML(T.heroHead);
+ document.querySelectorAll('a[href^="/"]').forEach(a=>{a.setAttribute('href',localPath(a.getAttribute('href')))});
+}
+
+function applyFrontPageChrome(){
+ const brand=setting('site_name','Forkumi');
+ const logo=safeAsset('logo','/assets/img/logo.svg');
+ document.querySelectorAll('#splash img').forEach(img=>{img.setAttribute('src',logo);img.setAttribute('alt',brand)});
+ document.querySelectorAll('#splash .sname').forEach(el=>{el.textContent=brand});
+
+ const phoneLabel=setting('contactPhoneLabel','+65 8089 2716');
+ const phoneUrl=safeHref('contactPhoneUrl',PHONE);
+ const whatsappLabel=setting('contactWhatsappLabel','WhatsApp');
+ const whatsappUrl=safeHref('contactWhatsappUrl',WA);
+ const emailLabel=setting('contactEmailLabel','linkforkumi@gmail.com');
+ const emailUrl=safeHref('contactEmailUrl',MAIL);
+ const instagramLabel=setting('contactInstagramLabel','@forkumi.design');
+ const instagramUrl=safeHref('contactInstagramUrl',IG);
+ const workingHours=setting('contactWorkingHours',t(T.hours));
+
+ document.querySelectorAll('[data-frontpage-whatsapp]').forEach(a=>{a.setAttribute('href',whatsappUrl)});
+ document.querySelectorAll('[data-frontpage-contact="whatsapp"]').forEach(a=>{a.setAttribute('href',whatsappUrl);var b=a.querySelector('b');var s=a.querySelector('small');if(b)b.textContent=whatsappLabel;if(s)s.textContent=phoneLabel});
+ document.querySelectorAll('[data-frontpage-contact="email"]').forEach(a=>{a.setAttribute('href',emailUrl);var s=a.querySelector('small');if(s)s.textContent=emailLabel});
+ document.querySelectorAll('[data-frontpage-contact="instagram"]').forEach(a=>{a.setAttribute('href',instagramUrl);var s=a.querySelector('small');if(s)s.textContent=instagramLabel});
+ document.querySelectorAll('[data-frontpage-contact="phone"]').forEach(a=>{a.setAttribute('href',phoneUrl);var b=a.querySelector('b');if(b)b.textContent=phoneLabel});
+ document.querySelectorAll('[data-frontpage-working-hours]').forEach(el=>{el.textContent=workingHours});
 }
 
 function renderAll(){
  const nm=document.getElementById('nav-mount');if(nm)nm.innerHTML=navHTML();
  const fm=document.getElementById('footer-mount');if(fm)fm.innerHTML=footerHTML();
  applyI18n();
+ applyFrontPageChrome();
  afterRender();
 }
-function setLang(l){lang=l;localStorage.setItem('forkumi_lang',l);renderAll();
+function setLang(l){if(!LOCALES.includes(l))return;localStorage.setItem('forkumi_lang',l);var target=localePath(l);if(location.pathname+location.search+location.hash!==target){location.href=target;return;}lang=l;renderAll();
  setTimeout(()=>document.querySelectorAll('.reveal').forEach(r=>{if(r.getBoundingClientRect().top<innerHeight*.92)r.classList.add('in')}),20);}
 
 let ro;
@@ -314,6 +362,7 @@ function initSplash(){
 }
 
 export function initForkumiSite(): void {
+ lang=getPathLocale();window.setLang=setLang;window.toggleFaq=toggleFaq;
  renderAll();initCursor();initSplash();onScroll();
  addEventListener('scroll',onScroll,{passive:true});
  const nt=document.querySelector('.nav-toggle'),nm=document.querySelector('.nav-menu'); if(nt&&nm){nt.addEventListener('click',()=>nm.classList.toggle('open')); nm.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nm.classList.remove('open')))}

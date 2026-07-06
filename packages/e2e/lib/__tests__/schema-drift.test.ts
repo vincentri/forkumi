@@ -43,6 +43,13 @@ const EXCLUDED_MODELS = new Set([
   "Restaurant",
   "RestaurantOperationTime",
   "Comment",
+  "MarqueeItem",
+  "WhysubCard",
+  "CompareCategory",
+  "CompareCriterion",
+  "Portfolio",
+  "Plan",
+  "PlanFeature",
 ]);
 
 function loadSchema(path: string): string {
