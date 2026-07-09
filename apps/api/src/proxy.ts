@@ -1,10 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const ALLOWED_ORIGIN = process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000";
 const LOGIN_LIMIT = 10;
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 
 const attempts = new Map<string, { count: number; resetAt: number }>();
+
+function allowedOrigins(): string[] {
+  const raw = process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000";
+  return raw
+    .split(",")
+    .map((value) => value.trim().replace(/\/$/, ""))
+    .filter(Boolean);
+}
 
 function getClientIp(request: NextRequest): string {
   return (
@@ -28,7 +35,9 @@ function isRateLimited(key: string): boolean {
 }
 
 function setCorsHeaders(response: NextResponse, origin: string | null): void {
-  if (origin === ALLOWED_ORIGIN) {
+  if (!origin) return;
+  const allowed = allowedOrigins();
+  if (allowed.includes(origin) || allowed.includes(origin.replace(/\/$/, ""))) {
     response.headers.set("Access-Control-Allow-Origin", origin);
     response.headers.set("Access-Control-Allow-Credentials", "true");
     response.headers.set("Vary", "Origin");

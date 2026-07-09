@@ -91,22 +91,56 @@ export async function POST(req: NextRequest) {
   }
 
   const provider = process.env.STORAGE_PROVIDER ?? "local";
+  const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+
+  // Vercel/serverless has no durable local disk. Force S3 there.
+  if (provider !== "s3" && isServerless) {
+    return NextResponse.json(
+      {
+        error:
+          "Uploads on Vercel require S3. Set STORAGE_PROVIDER=s3, AWS_REGION, AWS_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY (and NEXT_PUBLIC_STORAGE_BASE_URL for public URLs).",
+      },
+      { status: 500 },
+    );
+  }
 
   if (provider === "s3") {
     const region = process.env.AWS_REGION;
     const bucket = process.env.AWS_S3_BUCKET;
     if (!region || !bucket) {
-      return NextResponse.json({ error: "S3 not configured. Set AWS_REGION and AWS_S3_BUCKET." }, { status: 500 });
+      return NextResponse.json(
+        { error: "S3 not configured. Set AWS_REGION and AWS_S3_BUCKET." },
+        { status: 500 },
+      );
     }
-    const s3 = new S3Client({ region });
-    const key = `${subPath}/${filename}`;
-    await s3.send(new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: buffer,
-      ContentType: file.type,
-    }));
-    return NextResponse.json({ url: assetPath });
+    try {
+      const s3 = new S3Client({
+        region,
+        credentials:
+          process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
+            ? {
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+              }
+            : undefined,
+      });
+      const key = `${subPath}/${filename}`;
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          Body: buffer,
+          ContentType: file.type,
+        }),
+      );
+      return NextResponse.json({ url: assetPath });
+    } catch (err) {
+      console.error("[upload] S3 put failed", { region, bucket, err });
+      return NextResponse.json(
+        { error: "Failed to upload file to S3. Check AWS credentials/bucket permissions." },
+        { status: 500 },
+      );
+    }
   }
 
   const publicDir = resolvePublicDir();
@@ -118,7 +152,13 @@ export async function POST(req: NextRequest) {
     await writeFile(filePath, buffer);
   } catch (err) {
     console.error("[upload] write failed", { publicDir, filePath, err });
-    return NextResponse.json({ error: "Failed to save file on server" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error:
+          "Failed to save file on server (local disk). On Vercel use STORAGE_PROVIDER=s3.",
+      },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ url: assetPath });

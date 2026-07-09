@@ -39,14 +39,23 @@ export function ContactForm({
     setState("submitting");
     setError(null);
     try {
-      const response = await fetch("/api/contact", {
+      // Contact API lives on the API app (not the public web origin).
+      const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").replace(
+        /\/$/,
+        "",
+      );
+      const response = await fetch(`${apiBase}/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, pkg, message }),
       });
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        setError(body?.error ?? errorMessage);
+        setError(
+          typeof body?.error === "string" && body.error.trim()
+            ? body.error
+            : errorMessage,
+        );
         setState("error");
         return;
       }

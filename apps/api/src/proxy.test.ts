@@ -42,6 +42,17 @@ describe("proxy", () => {
     expect(response.headers.get("Access-Control-Allow-Methods")).toContain("POST");
   });
 
+  it("accepts comma-separated NEXT_PUBLIC_WEB_URL origins", async () => {
+    vi.stubEnv("NEXT_PUBLIC_WEB_URL", "https://forkumi.co,http://localhost:3000");
+    const { proxy } = await loadProxy();
+
+    const response = proxy(
+      makeRequest({ method: "OPTIONS", origin: "https://forkumi.co" }),
+    );
+
+    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://forkumi.co");
+  });
+
   it("does not set allow-origin for disallowed origins", async () => {
     const { proxy } = await loadProxy();
 
