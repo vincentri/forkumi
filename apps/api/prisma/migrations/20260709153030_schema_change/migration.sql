@@ -1,0 +1,15 @@
+-- CreateTable
+CREATE TABLE "contact_submissions" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "pkg" TEXT,
+    "message" TEXT NOT NULL,
+    "locale" TEXT NOT NULL DEFAULT 'id',
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "contact_submissions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE INDEX "contact_submissions_created_at_idx" ON "contact_submissions"("created_at");

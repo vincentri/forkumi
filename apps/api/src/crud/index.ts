@@ -9,6 +9,13 @@ export { CompareCriterionCRUD } from "./compareCriterion";
 export { PortfolioCRUD } from "./portfolio";
 export { PlanCRUD } from "./plan";
 export { PlanFeatureCRUD } from "./planFeature";
+export { FaqItemCRUD } from "./faq";
+export { IndustryItemCRUD } from "./industry";
+export { SectionCardCRUD } from "./sectionCard";
+export { ProcessPhaseCRUD } from "./processPhase";
+export { ContactSubmissionCRUD } from "./contactSubmission";
+export { ServiceCategoryCRUD } from "./serviceCategory";
+export { PlanOfInterestCRUD } from "./planOfInterest";
 
 import { RoleCRUD } from "./role";
 import { SettingsCRUD } from "./setting";
@@ -21,6 +28,13 @@ import { CompareCriterionCRUD } from "./compareCriterion";
 import { PortfolioCRUD } from "./portfolio";
 import { PlanCRUD } from "./plan";
 import { PlanFeatureCRUD } from "./planFeature";
+import { FaqItemCRUD } from "./faq";
+import { IndustryItemCRUD } from "./industry";
+import { SectionCardCRUD } from "./sectionCard";
+import { ProcessPhaseCRUD } from "./processPhase";
+import { ContactSubmissionCRUD } from "./contactSubmission";
+import { ServiceCategoryCRUD } from "./serviceCategory";
+import { PlanOfInterestCRUD } from "./planOfInterest";
 
 export const CRUDConfigs = {
   user: UserCRUD,
@@ -34,4 +48,11 @@ export const CRUDConfigs = {
   portfolio: PortfolioCRUD,
   plan: PlanCRUD,
   planFeature: PlanFeatureCRUD,
+  faqItem: FaqItemCRUD,
+  industryItem: IndustryItemCRUD,
+  sectionCard: SectionCardCRUD,
+  processPhase: ProcessPhaseCRUD,
+  contactSubmission: ContactSubmissionCRUD,
+  serviceCategory: ServiceCategoryCRUD,
+  planOfInterest: PlanOfInterestCRUD,
 } as const;

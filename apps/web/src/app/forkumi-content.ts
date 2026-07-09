@@ -14,6 +14,7 @@ function getPathLocale(){var p=location.pathname.split('/').filter(Boolean)[0];r
 function localPath(path){if(!path||path[0]!=='/'||path.startsWith('//'))return path;if(/^\/(id|en)(\/|$)/.test(path))return path;return '/'+lang+(path==='/'?'':path)}
 function localePath(nextLang){var parts=location.pathname.split('/').filter(Boolean);if(LOCALES.includes(parts[0]))parts[0]=nextLang;else parts.unshift(nextLang);return '/'+parts.join('/')+location.search+location.hash}
 let lang=getPathLocale();
+let industriesCache: Array<{id:string;name:string;tag:string}> = [];
 function fpSettings(){return window.__FORKUMI_FRONT_PAGE_SETTINGS__||{}}
 function clean(v){return typeof v==='string'&&v.trim()?v.trim():''}
 function setting(key,fallback){return clean(fpSettings()[key])||fallback}
@@ -227,7 +228,7 @@ const LIST={
  whysub:()=>WHYSUB.map(c=>`<div class="gcard ${c.c} reveal"><div class="ci"><svg viewBox="0 0 24 24">${ICONS[c.ic]}</svg></div><h4>${t(c.h)}</h4><p>${t(c.p)}</p></div>`).join(''),
  comparison:()=>{var L=COMPARE.cols[lang];var h='<div class="cmp-wrap"><div class="cmp"><div class="cmp-row cmp-head"><div class="cmp-c crit"></div><div class="cmp-c f">'+L[0]+'</div>'+L.slice(1).map(function(x){return '<div class="cmp-c">'+x+'</div>'}).join('')+'</div>';COMPARE.rows.forEach(function(r){h+='<div class="cmp-row"><div class="cmp-c crit">'+t(r.h)+'</div>'+r.v.map(function(val,i){return '<div class="cmp-c '+(i===0?'f':'')+'">'+mark(val)+'</div>'}).join('')+'</div>'});return h+'</div></div>'},
  servicecats:()=>SERVICECATS.map(c=>`<div class="svccat ${c.tint} reveal"><img class="ic" src="/assets/img/ill/${c.img}" alt="${c.h}" loading="lazy"><h3>${c.h}</h3><div class="rule"></div><ul>${c.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join(''),
- industries:()=>INDUSTRIES.map((it,i)=>`<div class="ind reveal"><div class="n"><span class="idx">${String(i+1).padStart(2,'0')}</span><span class="name">${t(it.name)}</span></div><div class="tag"><span class="txt">${t(it.tag)}</span><span class="go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></div>`).join(''),
+  industries:()=>(industriesCache.length?industriesCache:INDUSTRIES).map((it,i)=>{var nm=industriesCache.length?it.name:t(it.name);var tg=industriesCache.length?it.tag:t(it.tag);return `<div class="ind reveal"><div class="n"><span class="idx">${String(i+1).padStart(2,'0')}</span><span class="name">${esc(nm)}</span></div><div class="tag"><span class="txt">${esc(tg)}</span><span class="go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div></div>`}).join(''),
  phases:()=>PHASES.map((p,i)=>`<div class="phase reveal"><div class="big">0${i+1}</div><div><h3>${t(p.t)}</h3><div class="steps">${p.steps[lang].map(s=>`<span>${s}</span>`).join('')}</div><p>${t(p.d)}</p></div></div>`).join(''),
  faq:()=>FAQ.map(faqItem).join(''),
  faq3:()=>FAQ.slice(0,3).map(faqItem).join(''),
@@ -281,19 +282,14 @@ function footerHTML(){
 }
 
 function applyI18n(){
- document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(T[k]&&!T[k].hl)el.textContent=t(T[k])});
- document.querySelectorAll('[data-head]').forEach(el=>{const k=el.getAttribute('data-head');if(T[k]&&T[k].hl!==undefined)el.innerHTML=headHTML(T[k])});
+ document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');const override=setting(k,'');if(override){el.textContent=override;return}if(T[k]&&!T[k].hl)el.textContent=t(T[k])});
+ document.querySelectorAll('[data-head]').forEach(el=>{const k=el.getAttribute('data-head');const def=T[k];if(!def||def.hl===undefined)return;const l1=setting(k+'Line1','');const l2=setting(k+'Line2','');const hl=Number(setting(k+'HighlightIndex',String(def.hl)));el.innerHTML=headHTML({[lang]:[l1||def[lang][0],l2||def[lang][1]],hl})});
  document.querySelectorAll('[data-list]').forEach(el=>{const k=el.getAttribute('data-list');if(LIST[k])el.innerHTML=LIST[k]()});
  const ph=document.getElementById('heroH1');if(ph)ph.innerHTML=headHTML(T.heroHead);
  document.querySelectorAll('a[href^="/"]').forEach(a=>{a.setAttribute('href',localPath(a.getAttribute('href')))});
 }
 
 function applyFrontPageChrome(){
- const brand=setting('site_name','Forkumi');
- const logo=safeAsset('logo','/assets/img/logo.svg');
- document.querySelectorAll('#splash img').forEach(img=>{img.setAttribute('src',logo);img.setAttribute('alt',brand)});
- document.querySelectorAll('#splash .sname').forEach(el=>{el.textContent=brand});
-
  const phoneLabel=setting('contactPhoneLabel','+65 8089 2716');
  const phoneUrl=safeHref('contactPhoneUrl',PHONE);
  const whatsappLabel=setting('contactWhatsappLabel','WhatsApp');
@@ -305,16 +301,18 @@ function applyFrontPageChrome(){
  const workingHours=setting('contactWorkingHours',t(T.hours));
 
  document.querySelectorAll('[data-frontpage-whatsapp]').forEach(a=>{a.setAttribute('href',whatsappUrl)});
+ document.querySelectorAll('[data-frontpage-cta-primary]').forEach(a=>{a.setAttribute('href',safeHref('ctaBtnPrimaryUrl',WA))});
+ document.querySelectorAll('[data-frontpage-cta-secondary]').forEach(a=>{a.setAttribute('href',safeHref('ctaBtnSecondaryUrl','packages'))});
  document.querySelectorAll('[data-frontpage-contact="whatsapp"]').forEach(a=>{a.setAttribute('href',whatsappUrl);var b=a.querySelector('b');var s=a.querySelector('small');if(b)b.textContent=whatsappLabel;if(s)s.textContent=phoneLabel});
  document.querySelectorAll('[data-frontpage-contact="email"]').forEach(a=>{a.setAttribute('href',emailUrl);var s=a.querySelector('small');if(s)s.textContent=emailLabel});
  document.querySelectorAll('[data-frontpage-contact="instagram"]').forEach(a=>{a.setAttribute('href',instagramUrl);var s=a.querySelector('small');if(s)s.textContent=instagramLabel});
  document.querySelectorAll('[data-frontpage-contact="phone"]').forEach(a=>{a.setAttribute('href',phoneUrl);var b=a.querySelector('b');if(b)b.textContent=phoneLabel});
+ document.querySelectorAll('[data-frontpage-instagram]').forEach(a=>{a.setAttribute('href',safeHref('socialInstagramUrl',IG))});
  document.querySelectorAll('[data-frontpage-working-hours]').forEach(el=>{el.textContent=workingHours});
 }
 
 function renderAll(){
- const nm=document.getElementById('nav-mount');if(nm)nm.innerHTML=navHTML();
- const fm=document.getElementById('footer-mount');if(fm)fm.innerHTML=footerHTML();
+ // nav/footer rendered by React (SiteNav/SiteFooter + next/link) — skip string inject
  applyI18n();
  applyFrontPageChrome();
  afterRender();
@@ -329,42 +327,41 @@ function observeReveal(){
  document.querySelectorAll('.reveal:not(.in)').forEach(el=>ro.observe(el));
 }
 function afterRender(){
- const idb=document.getElementById('lang-id'),enb=document.getElementById('lang-en');
- if(idb)idb.classList.toggle('on',lang==='id');if(enb)enb.classList.toggle('on',lang==='en');
  document.documentElement.lang=lang;
- const page=document.body.dataset.page;
- document.querySelectorAll('.nav-links a[data-page]').forEach(a=>a.classList.toggle('active',a.dataset.page===page));
- const links=document.querySelector('.nav-links'),b=document.querySelector('.burger');
- if(b)b.onclick=()=>links.classList.toggle('open');
- document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>links.classList.remove('open')));
  observeReveal();
 }
 
-/* nav scroll + parallax */
-function onScroll(){const n=document.getElementById('nav-mount');if(n)n.firstElementChild&&document.querySelector('nav')&&document.querySelector('nav').classList.toggle('scrolled',scrollY>40);
- document.querySelectorAll('.sparkle').forEach(s=>{const d=parseFloat(s.dataset.d||.5);s.style.transform=`translateY(${-scrollY*0.05*d}px)`});}
+/* parallax sparkles (nav scrolled handled by SiteNav) */
+function onScroll(){
+ document.querySelectorAll('.sparkle').forEach(s=>{const d=parseFloat(s.dataset.d||.5);s.style.transform=`translateY(${-scrollY*0.05*d}px)`});
+}
 
 /* cursor */
 function initCursor(){
  if(!matchMedia('(hover:hover) and (pointer:fine)').matches)return;
  const cur=document.getElementById('cursor'),dot=document.getElementById('dot');if(!cur)return;
- let mx=0,my=0,cx=0,cy=0;
- document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
- (function loop(){cx+=(mx-cx)*.18;cy+=(my-cy)*.18;cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(loop)})();
+ let mx=0,my=0,cx=0,cy=0,raf=0;
+ function tick(){
+  raf=0;
+  cx+=(mx-cx)*.18;cy+=(my-cy)*.18;
+  cur.style.left=cx+'px';cur.style.top=cy+'px';
+  if(Math.abs(mx-cx)>.1||Math.abs(my-cy)>.1)raf=requestAnimationFrame(tick);
+ }
+ function schedule(){if(!raf)raf=requestAnimationFrame(tick)}
+ document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;if(dot){dot.style.left=mx+'px';dot.style.top=my+'px'}schedule()},{passive:true});
  document.addEventListener('pointerover',e=>{cur.classList.toggle('big',!!e.target.closest('a,button,.ind,.gcard,.plan,.stat,.pthumb,.cbtn'))});
 }
-function initSplash(){
- const s=document.getElementById('splash');if(!s)return;
- if(sessionStorage.getItem('forkumi_seen')){s.classList.add('gone');return;}
- sessionStorage.setItem('forkumi_seen','1');
- setTimeout(()=>s.classList.add('gone'),1500);
- addEventListener('load',()=>setTimeout(()=>s.classList.add('gone'),900));
+export function rehydrateForkumiPage(): void {
+ lang=getPathLocale();
+ renderAll();
+ onScroll();
+ document.querySelectorAll('[data-wa]').forEach(a=>a.href=WAP+encodeURIComponent(a.dataset.wa||''));
 }
 
 export function initForkumiSite(): void {
  lang=getPathLocale();window.setLang=setLang;window.toggleFaq=toggleFaq;
- renderAll();initCursor();initSplash();onScroll();
- addEventListener('scroll',onScroll,{passive:true});
- const nt=document.querySelector('.nav-toggle'),nm=document.querySelector('.nav-menu'); if(nt&&nm){nt.addEventListener('click',()=>nm.classList.toggle('open')); nm.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nm.classList.remove('open')))}
+ renderAll();initCursor();onScroll();
+ let scrollRaf=0;
+ addEventListener('scroll',()=>{if(scrollRaf)return;scrollRaf=requestAnimationFrame(()=>{scrollRaf=0;onScroll()})},{passive:true});
  document.querySelectorAll('[data-wa]').forEach(a=>a.href=WAP+encodeURIComponent(a.dataset.wa||''));
 }

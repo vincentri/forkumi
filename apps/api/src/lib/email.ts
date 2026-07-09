@@ -8,6 +8,7 @@ export interface EmailSettings {
   fromEmail: string;
   fromName: string;
   replyTo: string;
+  notifyTo: string;
   resendApiKeyConfigured: boolean;
 }
 
@@ -35,6 +36,7 @@ export async function getEmailSettings(): Promise<EmailSettings> {
     fromEmail: values.emailFromEmail ?? "",
     fromName: values.emailFromName ?? "",
     replyTo: values.emailReplyTo ?? "",
+    notifyTo: values.emailNotifyTo ?? "",
     resendApiKeyConfigured: isEncryptedSecret(values.emailResendApiKey),
   };
 }

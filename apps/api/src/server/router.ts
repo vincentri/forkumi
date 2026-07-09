@@ -1,11 +1,18 @@
 import {
   CompareCategoryCRUD,
   CompareCriterionCRUD,
+  ContactSubmissionCRUD,
+  FaqItemCRUD,
   FrontPageSettingsCRUD,
+  IndustryItemCRUD,
   MarqueeItemCRUD,
   PlanCRUD,
   PlanFeatureCRUD,
+  PlanOfInterestCRUD,
   PortfolioCRUD,
+  ProcessPhaseCRUD,
+  SectionCardCRUD,
+  ServiceCategoryCRUD,
   SettingsCRUD,
   WhysubCardCRUD,
 } from "~/crud";
@@ -392,6 +399,97 @@ const planFeatureRouter = createCRUDRouter(
   prisma as unknown as Parameters<typeof createCRUDRouter>[3],
 );
 
+const faqItemRouter = createCRUDRouter(
+  FaqItemCRUD,
+  router,
+  {
+    list: permissionProcedure("view", "faqItem"),
+    getById: permissionProcedure("view", "faqItem"),
+    create: permissionProcedure("create", "faqItem"),
+    update: permissionProcedure("update", "faqItem"),
+    delete: permissionProcedure("delete", "faqItem"),
+  },
+  prisma as unknown as Parameters<typeof createCRUDRouter>[3],
+);
+
+const industryItemRouter = createCRUDRouter(
+  IndustryItemCRUD,
+  router,
+  {
+    list: permissionProcedure("view", "industryItem"),
+    getById: permissionProcedure("view", "industryItem"),
+    create: permissionProcedure("create", "industryItem"),
+    update: permissionProcedure("update", "industryItem"),
+    delete: permissionProcedure("delete", "industryItem"),
+  },
+  prisma as unknown as Parameters<typeof createCRUDRouter>[3],
+);
+
+const sectionCardRouter = createCRUDRouter(
+  SectionCardCRUD,
+  router,
+  {
+    list: permissionProcedure("view", "sectionCard"),
+    getById: permissionProcedure("view", "sectionCard"),
+    create: permissionProcedure("create", "sectionCard"),
+    update: permissionProcedure("update", "sectionCard"),
+    delete: permissionProcedure("delete", "sectionCard"),
+  },
+  prisma as unknown as Parameters<typeof createCRUDRouter>[3],
+);
+
+const processPhaseRouter = createCRUDRouter(
+  ProcessPhaseCRUD,
+  router,
+  {
+    list: permissionProcedure("view", "processPhase"),
+    getById: permissionProcedure("view", "processPhase"),
+    create: permissionProcedure("create", "processPhase"),
+    update: permissionProcedure("update", "processPhase"),
+    delete: permissionProcedure("delete", "processPhase"),
+  },
+  prisma as unknown as Parameters<typeof createCRUDRouter>[3],
+);
+
+const contactSubmissionRouter = createCRUDRouter(
+  ContactSubmissionCRUD,
+  router,
+  {
+    list: permissionProcedure("view", "contactSubmission"),
+    getById: permissionProcedure("view", "contactSubmission"),
+    create: permissionProcedure("create", "contactSubmission"),
+    update: permissionProcedure("update", "contactSubmission"),
+    delete: permissionProcedure("delete", "contactSubmission"),
+  },
+  prisma as unknown as Parameters<typeof createCRUDRouter>[3],
+);
+
+const serviceCategoryRouter = createCRUDRouter(
+  ServiceCategoryCRUD,
+  router,
+  {
+    list: permissionProcedure("view", "serviceCategory"),
+    getById: permissionProcedure("view", "serviceCategory"),
+    create: permissionProcedure("create", "serviceCategory"),
+    update: permissionProcedure("update", "serviceCategory"),
+    delete: permissionProcedure("delete", "serviceCategory"),
+  },
+  prisma as unknown as Parameters<typeof createCRUDRouter>[3],
+);
+
+const planOfInterestRouter = createCRUDRouter(
+  PlanOfInterestCRUD,
+  router,
+  {
+    list: permissionProcedure("view", "planOfInterest"),
+    getById: permissionProcedure("view", "planOfInterest"),
+    create: permissionProcedure("create", "planOfInterest"),
+    update: permissionProcedure("update", "planOfInterest"),
+    delete: permissionProcedure("delete", "planOfInterest"),
+  },
+  prisma as unknown as Parameters<typeof createCRUDRouter>[3],
+);
+
 const publicMarqueeRouter = router({
   list: publicProcedure
     .input(localeInput)
@@ -523,6 +621,132 @@ const publicPlanRouter = router({
     }),
 });
 
+const publicFaqRouter = router({
+  list: publicProcedure
+    .input(localeInput)
+    .query(async ({ input }) => {
+      const locale = input?.locale ?? "id";
+      const rows = await prisma.faqItem.findMany({
+        where: { active: true, locale },
+        orderBy: { position: "asc" },
+        select: { id: true, question: true, answer: true },
+      });
+      return rows.map((row) => ({
+        id: row.id,
+        question: row.question,
+        answer: row.answer,
+      }));
+    }),
+});
+
+const publicIndustryRouter = router({
+  list: publicProcedure
+    .input(localeInput)
+    .query(async ({ input }) => {
+      const locale = input?.locale ?? "id";
+      const rows = await prisma.industryItem.findMany({
+        where: { active: true, locale },
+        orderBy: { position: "asc" },
+        select: { id: true, name: true, tag: true },
+      });
+      return rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        tag: row.tag,
+      }));
+    }),
+});
+
+const publicSectionCardRouter = router({
+  list: publicProcedure
+    .input(
+      z
+        .object({
+          locale: z.enum(["id", "en"]).optional(),
+          section: z.enum(["included", "terms", "payment", "trust"]).optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ input }) => {
+      const locale = input?.locale ?? "id";
+      const section = input?.section;
+      const rows = await prisma.sectionCard.findMany({
+        where: {
+          active: true,
+          locale,
+          ...(section ? { section } : {}),
+        },
+        orderBy: { position: "asc" },
+        select: { id: true, section: true, color: true, heading: true, paragraph: true },
+      });
+      return rows.map((row) => ({
+        id: row.id,
+        section: row.section,
+        color: row.color,
+        heading: row.heading,
+        paragraph: row.paragraph,
+      }));
+    }),
+});
+
+const publicProcessPhaseRouter = router({
+  list: publicProcedure
+    .input(localeInput)
+    .query(async ({ input }) => {
+      const locale = input?.locale ?? "id";
+      const rows = await prisma.processPhase.findMany({
+        where: { active: true, locale },
+        orderBy: { position: "asc" },
+        select: { id: true, title: true, steps: true, description: true },
+      });
+      return rows.map((row) => ({
+        id: row.id,
+        title: row.title,
+        steps: row.steps
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean),
+        description: row.description,
+      }));
+    }),
+});
+
+const publicServiceCategoryRouter = router({
+  list: publicProcedure
+    .input(localeInput)
+    .query(async ({ input }) => {
+      const locale = input?.locale ?? "id";
+      const rows = await prisma.serviceCategory.findMany({
+        where: { active: true, locale },
+        orderBy: { position: "asc" },
+        select: { id: true, name: true, items: true, tint: true },
+      });
+      return rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        tint: row.tint,
+        items: row.items
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean),
+      }));
+    }),
+});
+
+const publicPlanOfInterestRouter = router({
+  list: publicProcedure
+    .input(localeInput)
+    .query(async ({ input }) => {
+      const locale = input?.locale ?? "id";
+      const rows = await prisma.planOfInterest.findMany({
+        where: { active: true, locale },
+        orderBy: { position: "asc" },
+        select: { id: true, name: true },
+      });
+      return rows.map((row) => ({ id: row.id, name: row.name }));
+    }),
+});
+
 export const appRouter = router({
   // The admin UI (CRUDResourceClient, CrudResourceView, modals) accesses every
   // admin resource as `api.admin.<model>.<procedure>`. Keep them nested under
@@ -530,13 +754,20 @@ export const appRouter = router({
   admin: router({
     compareCategory: compareCategoryRouter,
     compareCriterion: compareCriterionRouter,
+    contactSubmission: contactSubmissionRouter,
     emailSettings: emailSettingsRouter,
+    faqItem: faqItemRouter,
     frontPageSettings: frontPageSettingsRouter,
+    industryItem: industryItemRouter,
     marqueeItem: marqueeItemRouter,
     plan: planRouter,
     planFeature: planFeatureRouter,
+    planOfInterest: planOfInterestRouter,
     portfolio: portfolioRouter,
+    processPhase: processPhaseRouter,
     role: roleRouter,
+    sectionCard: sectionCardRouter,
+    serviceCategory: serviceCategoryRouter,
     settings: settingsRouter,
     user: userRouter,
     whysubCard: whysubCardRouter,
@@ -545,11 +776,17 @@ export const appRouter = router({
   public: router({
     acceptInvitation: acceptInvitationProcedure,
     compare: publicCompareRouter,
+    faq: publicFaqRouter,
     frontPageSettings: publicFrontPageSettingsRouter,
     getInvitation: getInvitationProcedure,
+    industry: publicIndustryRouter,
     marquee: publicMarqueeRouter,
     plan: publicPlanRouter,
+    planOfInterest: publicPlanOfInterestRouter,
     portfolio: publicPortfolioRouter,
+    processPhase: publicProcessPhaseRouter,
+    sectionCard: publicSectionCardRouter,
+    serviceCategory: publicServiceCategoryRouter,
     whysub: publicWhysubRouter,
   }),
 });

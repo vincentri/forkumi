@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactElement, ReactNode } from "react";
 
-import { ForkumiEffects } from "./forkumi-effects";
-
 import "../styles/forkumi.css";
 
 export const metadata: Metadata = {
@@ -22,10 +20,7 @@ export default function RootLayout({
 }): ReactElement {
   return (
     <html lang="id">
-      <body>
-        <ForkumiEffects />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

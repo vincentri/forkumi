@@ -31,6 +31,7 @@ describe("getEmailSettings", () => {
     expect(settings.fromEmail).toBe("");
     expect(settings.fromName).toBe("");
     expect(settings.replyTo).toBe("");
+    expect(settings.notifyTo).toBe("");
     expect(settings.resendApiKeyConfigured).toBe(false);
   });
 
@@ -40,6 +41,7 @@ describe("getEmailSettings", () => {
       { key: "emailFromEmail", value: "hi@test.com" },
       { key: "emailFromName", value: "Test" },
       { key: "emailReplyTo", value: "reply@test.com" },
+      { key: "emailNotifyTo", value: "ops@test.com" },
       { key: "emailResendApiKey", value: "encrypted:v1:xxx" },
     ]);
     const settings = await getEmailSettings();
@@ -47,6 +49,7 @@ describe("getEmailSettings", () => {
     expect(settings.fromEmail).toBe("hi@test.com");
     expect(settings.fromName).toBe("Test");
     expect(settings.replyTo).toBe("reply@test.com");
+    expect(settings.notifyTo).toBe("ops@test.com");
     expect(settings.resendApiKeyConfigured).toBe(true);
   });
 });

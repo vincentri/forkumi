@@ -103,9 +103,15 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent, mo
     return (
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
+          <TabsList className="flex h-auto w-full flex-wrap items-start justify-start gap-1">
             {tabs.map((t) => (
-              <TabsTrigger key={t} value={t}>{t}</TabsTrigger>
+              <TabsTrigger
+                key={t}
+                value={t}
+                className="h-auto max-w-full whitespace-normal break-words text-left"
+              >
+                {t}
+              </TabsTrigger>
             ))}
           </TabsList>
           {tabs.map((t) => (

@@ -8,6 +8,10 @@ const settingsInput = z.object({
   fromEmail: z.string().trim(),
   fromName: z.string().trim(),
   replyTo: z.string().trim(),
+  notifyTo: z.string().trim().refine(
+    (value) => value === "" || z.string().email().safeParse(value).success,
+    "Enter a valid notification email or leave blank.",
+  ),
 });
 
 const resendApiKeyInput = z.object({
@@ -26,6 +30,7 @@ describe("settingsInput schema", () => {
       fromEmail: "noreply@example.com",
       fromName: "My App",
       replyTo: "support@example.com",
+      notifyTo: "ops@example.com",
     });
     expect(result.success).toBe(true);
   });
@@ -37,6 +42,7 @@ describe("settingsInput schema", () => {
       fromEmail: "",
       fromName: "",
       replyTo: "",
+      notifyTo: "",
     });
     expect(result.success).toBe(true);
   });
@@ -48,6 +54,7 @@ describe("settingsInput schema", () => {
       fromEmail: "test@example.com",
       fromName: "Test",
       replyTo: "",
+      notifyTo: "",
     });
     expect(result.success).toBe(false);
   });
@@ -59,6 +66,19 @@ describe("settingsInput schema", () => {
       fromEmail: "",
       fromName: "",
       replyTo: "",
+      notifyTo: "",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects malformed notifyTo", () => {
+    const result = settingsInput.safeParse({
+      enabled: true,
+      provider: "resend",
+      fromEmail: "noreply@example.com",
+      fromName: "My App",
+      replyTo: "",
+      notifyTo: "not-an-email",
     });
     expect(result.success).toBe(false);
   });
@@ -70,12 +90,14 @@ describe("settingsInput schema", () => {
       fromEmail: "  test@example.com  ",
       fromName: "  App  ",
       replyTo: "  reply@example.com  ",
+      notifyTo: "  ops@example.com  ",
     });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.fromEmail).toBe("test@example.com");
       expect(result.data.fromName).toBe("App");
       expect(result.data.replyTo).toBe("reply@example.com");
+      expect(result.data.notifyTo).toBe("ops@example.com");
     }
   });
 });

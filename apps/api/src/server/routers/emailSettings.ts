@@ -12,6 +12,10 @@ const settingsInput = z.object({
   fromEmail: z.string().trim(),
   fromName: z.string().trim(),
   replyTo: z.string().trim(),
+  notifyTo: z.string().trim().refine(
+    (value) => value === "" || z.string().email().safeParse(value).success,
+    "Enter a valid notification email or leave blank.",
+  ),
 });
 
 const resendApiKeyInput = z.object({
@@ -66,6 +70,7 @@ export const emailSettingsRouter = router({
         upsertEmailSetting("emailFromEmail", input.fromEmail),
         upsertEmailSetting("emailFromName", input.fromName),
         upsertEmailSetting("emailReplyTo", input.replyTo),
+        upsertEmailSetting("emailNotifyTo", input.notifyTo),
       ]);
 
       return getEmailSettings();

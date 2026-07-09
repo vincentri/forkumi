@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import type { ReactElement, ReactNode } from "react";
 
+import { ForkumiEffects } from "../forkumi-effects";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_TITLE,
@@ -10,6 +11,12 @@ import {
   normalizeLocale,
   resolveAssetUrl,
 } from "../front-page-settings";
+import { ExternalHtmlScripts } from "./_components/ExternalHtmlScripts";
+import { FrontPageSettingsBoot } from "./_components/FrontPageSettingsBoot";
+import { SiteFooter } from "./_components/SiteFooter";
+import { SiteNav } from "./_components/SiteNav";
+import { SiteSplash } from "./_components/SiteSplash";
+import { SoftNavInterceptor } from "./_components/SoftNavInterceptor";
 
 const SUPPORTED_LOCALES = ["id", "en"] as const;
 
@@ -46,35 +53,27 @@ export default async function LocaleLayout({
   children,
   params,
 }: LocaleLayoutProps): Promise<ReactElement> {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = normalizeLocale(rawLocale);
 
-  if (!SUPPORTED_LOCALES.includes(locale as (typeof SUPPORTED_LOCALES)[number])) {
+  if (!SUPPORTED_LOCALES.includes(rawLocale as (typeof SUPPORTED_LOCALES)[number])) {
     notFound();
   }
 
-  const settings = await getFrontPageSettings(normalizeLocale(locale));
-  const settingsJson = JSON.stringify(settings).replace(/</g, "\\u003c");
+  const settings = await getFrontPageSettings(locale);
 
   return (
     <>
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `window.__FORKUMI_FRONT_PAGE_SETTINGS__=${settingsJson};`,
-        }}
-      />
-      {settings.headerScript ? (
-        <div
-          hidden
-          dangerouslySetInnerHTML={{ __html: settings.headerScript }}
-        />
-      ) : null}
+      <FrontPageSettingsBoot settings={settings} />
+      <SoftNavInterceptor locale={locale} />
+      <ForkumiEffects />
+      <ExternalHtmlScripts id="header" html={settings.headerScript} />
+      <SiteSplash settings={settings} />
+      <div id="cursor" /><div id="dot" />
+      <SiteNav locale={locale} settings={settings} />
       {children}
-      {settings.footerScript ? (
-        <div
-          hidden
-          dangerouslySetInnerHTML={{ __html: settings.footerScript }}
-        />
-      ) : null}
+      <SiteFooter locale={locale} settings={settings} />
+      <ExternalHtmlScripts id="footer" html={settings.footerScript} />
     </>
   );
 }

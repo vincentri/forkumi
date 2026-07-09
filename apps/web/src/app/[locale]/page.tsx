@@ -11,7 +11,10 @@ import {
 import { getMarqueeItems } from "../marquee";
 import { WhySubscribeSection } from "./_components/WhySubscribeSection";
 import { PlansSection } from "./_components/PlansSection";
+import { FaqCollapse } from "./_components/FaqCollapse";
+import { FaqItem } from "./_components/FaqItem";
 import { getPortfolios, type PortfolioItem } from "../portfolio";
+import { getFaqItems } from "../faq";
 import { resolveAssetUrl } from "../front-page-settings";
 
 type HomePageProps = {
@@ -103,8 +106,73 @@ const WORK_DEFAULTS: Record<"id" | "en", {
 };
 
 const WORK_HIGHLIGHT_INDEX_DEFAULT = "1";
+const FEATURED_DEFAULTS: Record<"id" | "en", {
+  badgeFeatured: string;
+  badgeOther: string;
+  ctaVisit: string;
+  ctaDiscuss: string;
+  ctaSeeAll: string;
+}> = {
+  en: {
+    badgeFeatured: "Latest Client",
+    badgeOther: "Client",
+    ctaVisit: "Visit Website",
+    ctaDiscuss: "Discuss a Project",
+    ctaSeeAll: "See all",
+  },
+  id: {
+    badgeFeatured: "Klien Terbaru",
+    badgeOther: "Klien",
+    ctaVisit: "Kunjungi Website",
+    ctaDiscuss: "Diskusi Proyek",
+    ctaSeeAll: "Lihat semua",
+  },
+};
 const PKG_HIGHLIGHT_INDEX_DEFAULT = "1";
-const WHATSAPP_FALLBACK_URL = "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.";
+
+const CTA_BAND_DEFAULTS: Record<"id" | "en", {
+  eye: string;
+  headLine1: string;
+  headLine2: string;
+  sub: string;
+  btnPrimary: string;
+  btnSecondary: string;
+  btnPrimaryUrl: string;
+  btnSecondaryUrl: string;
+}> = {
+  en: {
+    eye: "Let's build",
+    headLine1: "Got a project",
+    headLine2: "in mind?",
+    sub: "Free consult & fast replies. Flexible & no lock-in, start this week.",
+    btnPrimary: "Let's talk",
+    btnSecondary: "View Packages",
+    btnPrimaryUrl: "https://wa.me/6580892716?text=Hi%20Forkumi!%20I%20have%20a%20design%20project.",
+    btnSecondaryUrl: "packages",
+  },
+  id: {
+    eye: "Ayo mulai",
+    headLine1: "Punya proyek",
+    headLine2: "desain?",
+    sub: "Konsultasi gratis & respons cepat. Fleksibel & bebas ikatan, bisa mulai minggu ini.",
+    btnPrimary: "Ngobrol yuk",
+    btnSecondary: "Lihat Paket",
+    btnPrimaryUrl: "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.",
+    btnSecondaryUrl: "packages",
+  },
+};
+const CTA_BAND_HEAD_HIGHLIGHT_DEFAULT = "1";
+const WHATSAPP_FALLBACK_URL_DEFAULT = "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.";
+
+const FAQ_HOME_DEFAULTS: Record<"id" | "en", {
+  eye: string;
+  headLine1: string;
+  headLine2: string;
+}> = {
+  en: { eye: "FAQ", headLine1: "Still", headLine2: "unsure?" },
+  id: { eye: "FAQ", headLine1: "Masih", headLine2: "ragu?" },
+};
+const FAQ_HOME_HEAD_HIGHLIGHT_DEFAULT = "1";
 
 const PKG_DEFAULTS: Record<"id" | "en", {
   eye: string;
@@ -208,10 +276,69 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
     10,
   );
   const pkgIntro = firstValue(settings.pkgIntro, pkgDefaults.intro) ?? pkgDefaults.intro;
+
+  const featuredDefaults = FEATURED_DEFAULTS[locale];
+  const featuredBadge =
+    firstValue(settings.featuredBadgeFeatured, featuredDefaults.badgeFeatured) ??
+    featuredDefaults.badgeFeatured;
+  const featuredBadgeOther =
+    firstValue(settings.featuredBadgeOther, featuredDefaults.badgeOther) ?? featuredDefaults.badgeOther;
+  const featuredCtaVisit =
+    firstValue(settings.featuredCtaVisit, featuredDefaults.ctaVisit) ?? featuredDefaults.ctaVisit;
+  const featuredCtaDiscuss =
+    firstValue(settings.featuredCtaDiscuss, featuredDefaults.ctaDiscuss) ??
+    featuredDefaults.ctaDiscuss;
+  const featuredCtaSeeAll =
+    firstValue(settings.featuredCtaSeeAll, featuredDefaults.ctaSeeAll) ??
+    featuredDefaults.ctaSeeAll;
+
+  const ctaDefaults = CTA_BAND_DEFAULTS[locale];
+  const ctaEye = firstValue(settings.ctaEye, ctaDefaults.eye) ?? ctaDefaults.eye;
+  const ctaHeadLine1 =
+    firstValue(settings.ctaHeadLine1, ctaDefaults.headLine1) ?? ctaDefaults.headLine1;
+  const ctaHeadLine2 =
+    firstValue(settings.ctaHeadLine2, ctaDefaults.headLine2) ?? ctaDefaults.headLine2;
+  const ctaHeadHighlightIndex = Number.parseInt(
+    settings.ctaHeadHighlightIndex ?? CTA_BAND_HEAD_HIGHLIGHT_DEFAULT,
+    10,
+  );
+  const ctaSub = firstValue(settings.ctaSub, ctaDefaults.sub) ?? ctaDefaults.sub;
+  const ctaBtnPrimary =
+    firstValue(settings.ctaBtnPrimaryLabel, ctaDefaults.btnPrimary) ??
+    ctaDefaults.btnPrimary;
+  const ctaBtnSecondary =
+    firstValue(settings.ctaBtnSecondaryLabel, ctaDefaults.btnSecondary) ??
+    ctaDefaults.btnSecondary;
+  const ctaBtnPrimaryUrl = settings.ctaBtnPrimaryUrl || ctaDefaults.btnPrimaryUrl;
+  const ctaBtnSecondaryUrl = settings.ctaBtnSecondaryUrl || ctaDefaults.btnSecondaryUrl;
+
+  const featuredWhatsappFallback =
+    settings.featuredWhatsappFallback || WHATSAPP_FALLBACK_URL_DEFAULT;
+
+  const faqHomeDefaults = FAQ_HOME_DEFAULTS[locale];
+  const faqHomeEye =
+    firstValue(settings.faqHomeEye, faqHomeDefaults.eye) ?? faqHomeDefaults.eye;
+  const faqHomeHeadLine1 =
+    firstValue(settings.faqHomeHeadLine1, faqHomeDefaults.headLine1) ??
+    faqHomeDefaults.headLine1;
+  const faqHomeHeadLine2 =
+    firstValue(settings.faqHomeHeadLine2, faqHomeDefaults.headLine2) ??
+    faqHomeDefaults.headLine2;
+  const faqHomeHeadHighlightIndex = Number.parseInt(
+    settings.faqHomeHeadHighlightIndex ?? FAQ_HOME_HEAD_HIGHLIGHT_DEFAULT,
+    10,
+  );
+
   const pkgNote = firstValue(settings.pkgNote, pkgDefaults.note) ?? pkgDefaults.note;
 
   const allPortfolios = await getPortfolios(locale);
   const featuredPortfolios = pickFeatured(allPortfolios, settings.homeFeaturedPortfolioId);
+
+  const faqItems = await getFaqItems(locale);
+  const faqVisible = faqItems.slice(0, 3);
+  const faqHidden = faqItems.slice(3);
+  const faqSeeMoreLabel = locale === "id" ? "Lihat pertanyaan lainnya" : "See more questions";
+  const faqSeeLessLabel = locale === "id" ? "Tutup" : "Show less";
 
   const whyDefaults = WHY_FORKUMI_DEFAULTS[locale];
   const whyEye = firstValue(settings.whyForkumiEye, whyDefaults.eye) ?? whyDefaults.eye;
@@ -231,10 +358,6 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
 
   return (
     <>
-      <div id="cursor"></div><div id="dot"></div>
-      <div id="splash"><img src="/assets/img/logo.svg" alt="Forkumi" /><div className="sname">Forkumi</div><div className="bar"><i></i></div></div>
-      <nav id="nav-mount"></nav>
-
       <header className="hero" id="top">
         <img className="sparkle" src="/assets/img/sparkle_purple.png" style={{ top: "17%", left: "43%", width: "42px" }} data-d="0.5" alt="" />
         <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ bottom: "26%", left: "30%", width: "32px" }} data-d="0.8" alt="" />
@@ -301,9 +424,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
             <p className="intro reveal d1">{workIntro}</p>
           </div>
           {featuredPortfolios.map((item, i) => {
-            const badge = i === 0
-              ? (locale === "id" ? "Klien Terbaru" : "Latest Client")
-              : (locale === "id" ? "Klien" : "Client");
+            const badge = i === 0 ? featuredBadge : featuredBadgeOther;
             const isLogo = !!item.logoBg;
             const resolvedImage = resolveAssetUrl(item.image);
             const imageBlock = isLogo ? (
@@ -325,11 +446,11 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
             );
             const primaryCta = item.url ? (
               <a className="btn primary sm" href={item.url} target="_blank" rel="noopener">
-                {locale === "id" ? "Kunjungi Website" : "Visit Website"} <span className="ar">➔</span>
+                {featuredCtaVisit} <span className="ar">➔</span>
               </a>
             ) : (
-              <a className="btn primary sm" href={WHATSAPP_FALLBACK_URL} target="_blank" rel="noopener">
-                {locale === "id" ? "Diskusi Proyek" : "Discuss a Project"} <span className="ar">➔</span>
+              <a className="btn primary sm" href={featuredWhatsappFallback} target="_blank" rel="noopener">
+                {featuredCtaDiscuss} <span className="ar">➔</span>
               </a>
             );
             return (
@@ -349,7 +470,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
                   <div className="port-btns">
                     {primaryCta}
                     <a className="btn ghost sm" href="/portfolio">
-                      {locale === "id" ? "Lihat semua" : "See all"}
+                      {featuredCtaSeeAll}
                     </a>
                   </div>
                 </div>
@@ -379,8 +500,28 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
       
       <section className="sec g-lav" id="faq">
         <div className="wrap">
-          <div className="sec-top"><div><span className="eyebrow reveal" data-i="faqEye"></span><h2 className="sec-head reveal" data-head="faqHead"></h2></div></div>
-          <div data-list="faqHome"></div>
+          <div className="sec-top">
+            <div>
+              <span className="eyebrow reveal">{faqHomeEye}</span>
+              <h2 className="sec-head reveal">
+                <span className={faqHomeHeadHighlightIndex === 0 ? "hl" : undefined}>{faqHomeHeadLine1}</span>
+                <br />
+                <span className={faqHomeHeadHighlightIndex === 1 ? "hl" : undefined}>{faqHomeHeadLine2}</span>
+              </h2>
+            </div>
+          </div>
+          {faqItems.length > 0 ? (
+            <div className="faqs">
+              {faqVisible.map((item) => (
+                <FaqItem key={item.id} question={item.question} answer={item.answer} />
+              ))}
+              <FaqCollapse
+                hidden={faqHidden}
+                seeMoreLabel={faqSeeMoreLabel}
+                seeLessLabel={faqSeeLessLabel}
+              />
+            </div>
+          ) : null}
         </div>
       </section>
       
@@ -388,17 +529,22 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
         <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ top: "20%", left: "14%", width: "44px" }} data-d="0.6" alt="" />
         <img className="sparkle" src="/assets/img/sparkle_rose.png" style={{ bottom: "18%", right: "16%", width: "52px" }} data-d="0.7" alt="" />
         <div className="wrap">
-          <span className="eyebrow center" style={{ color: "var(--gold)", justifyContent: "center", width: "100%" }} data-i="ctaEye"></span>
-          <h2 className="reveal" data-head="ctaHead" style={{ margin: "14px 0 0" }}></h2>
-          <p className="sub reveal d1" data-i="ctaSub"></p>
+          <span className="eyebrow center reveal" style={{ color: "var(--gold)", justifyContent: "center", width: "100%" }}>{ctaEye}</span>
+          <h2 className="reveal" style={{ margin: "14px 0 0" }}>
+            <span className={ctaHeadHighlightIndex === 0 ? "hl" : undefined}>{ctaHeadLine1}</span>
+            <br />
+            <span className={ctaHeadHighlightIndex === 1 ? "hl" : undefined}>{ctaHeadLine2}</span>
+          </h2>
+          <p className="sub reveal d1">{ctaSub}</p>
           <div className="cta reveal d2">
-            <a className="btn primary" href="https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain." target="_blank" rel="noopener" data-frontpage-whatsapp><span data-i="ctaBtn"></span> <span className="ar">➔</span></a>
-            <a className="btn ghost" href="packages"><span data-i="ctaBtn2"></span></a>
+            <a className="btn primary" href={ctaBtnPrimaryUrl} target="_blank" rel="noopener">
+              {ctaBtnPrimary} <span className="ar">➔</span>
+            </a>
+            <a className="btn ghost" href={ctaBtnSecondaryUrl}>{ctaBtnSecondary}</a>
           </div>
         </div>
       </section>
       
-      <footer id="footer-mount"></footer>
       <a className="fab" href="https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan." target="_blank" rel="noopener" title="WhatsApp" data-frontpage-whatsapp><span className="icon-dot" aria-hidden="true" /></a>
     </>
   );

@@ -176,3 +176,103 @@ model PlanFeature {
   @@index([planId, locale, position])
   @@map("plan_features")
 }
+
+model FaqItem {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  locale    String   @default("en")
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([locale, position])
+  @@map("faqs")
+}
+
+model IndustryItem {
+  id        String   @id @default(cuid())
+  name      String
+  tag       String
+  locale    String   @default("en")
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([locale, position])
+  @@map("industries")
+}
+
+model SectionCard {
+  id        String   @id @default(cuid())
+  section   String
+  color     String   @default("purple")
+  heading   String
+  paragraph String
+  locale    String   @default("en")
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([section, locale, position])
+  @@map("section_cards")
+}
+
+model ProcessPhase {
+  id          String   @id @default(cuid())
+  title       String
+  steps       String
+  description String
+  locale      String   @default("en")
+  position    Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([locale, position])
+  @@map("process_phases")
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  pkg       String?
+  message   String
+  locale    String   @default("id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("contact_submissions")
+}
+
+model ServiceCategory {
+  id        String   @id @default(cuid())
+  name      String
+  items     String
+  tint      String   @default("purple")
+  locale    String   @default("en")
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([locale, position])
+  @@map("service_categories")
+}
+
+model PlanOfInterest {
+  id        String   @id @default(cuid())
+  name      String
+  locale    String   @default("en")
+  position  Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([locale, position])
+  @@map("plan_of_interest")
+}
