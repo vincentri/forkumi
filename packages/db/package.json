@@ -18,8 +18,8 @@
     "db:reset": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma migrate reset --force && prisma generate'",
     "db:seed": "dotenv -e ../../.env -- tsx src/seed.ts",
     "db:studio": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma studio'",
-    "db:generate": "dotenv -e ../../.env -- prisma generate --schema ../../apps/api/prisma/schema.prisma",
-    "postinstall": "dotenv -e ../../.env -- sh -c 'PRISMA_GENERATE_SKIP_AUTOINSTALL=true prisma generate --schema ../../apps/api/prisma/schema.prisma'",
+    "db:generate": "prisma generate --schema ../../apps/api/prisma/schema.prisma",
+    "postinstall": "PRISMA_GENERATE_SKIP_AUTOINSTALL=true prisma generate --schema ../../apps/api/prisma/schema.prisma",
     "test": "vitest run"
   },
   "dependencies": {
