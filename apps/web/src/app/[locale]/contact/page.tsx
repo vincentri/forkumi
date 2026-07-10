@@ -61,8 +61,6 @@ const CONTACT_DEFAULTS: Record<"id" | "en", ContactText> = {
 
 const PKG_PLACEHOLDER_EN = "—";
 const PKG_PLACEHOLDER_ID = "—";
-const SUCCESS_FALLBACK = "Thanks! We'll get back to you soon.";
-const ERROR_FALLBACK = "Could not send — try again later.";
 
 export default async function ContactPage({ params }: ContactPageProps): Promise<ReactElement> {
   const { locale: rawLocale } = await params;
@@ -91,6 +89,10 @@ export default async function ContactPage({ params }: ContactPageProps): Promise
     firstValue(settings.contactFieldMessage, defaults.fieldMessage) ?? defaults.fieldMessage;
   const fieldSubmit =
     firstValue(settings.contactFieldSubmit, defaults.fieldSubmit) ?? defaults.fieldSubmit;
+  const successMessage =
+    firstValue(settings.contactSuccessMessage, defaults.successMessage) ?? defaults.successMessage;
+  const errorMessage =
+    firstValue(settings.contactErrorMessage, defaults.errorMessage) ?? defaults.errorMessage;
 
   const whatsappUrl = safeHref(settings.contactWhatsappUrl, WHATSAPP_FALLBACK);
   const whatsappLabel = firstValue(settings.contactWhatsappLabel) ?? "WhatsApp";
@@ -142,8 +144,8 @@ export default async function ContactPage({ params }: ContactPageProps): Promise
                 pkgPlaceholder={locale === "id" ? PKG_PLACEHOLDER_ID : PKG_PLACEHOLDER_EN}
                 messageLabel={fieldMessage}
                 submitLabel={fieldSubmit}
-                successMessage={SUCCESS_FALLBACK}
-                errorMessage={ERROR_FALLBACK}
+                successMessage={successMessage}
+                errorMessage={errorMessage}
               />
             </div>
           </div>

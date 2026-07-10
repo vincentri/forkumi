@@ -189,6 +189,22 @@ export const FrontPageSettingsCRUD = defineCRUD({
       tab: "Contact",
     },
     {
+      namespace: "contact",
+      name: "contactSuccessMessage",
+      type: "text",
+      label: "Success Message",
+      tab: "Contact",
+      note: "Shown after a successful contact submission.",
+    },
+    {
+      namespace: "contact",
+      name: "contactErrorMessage",
+      type: "text",
+      label: "Error Message",
+      tab: "Contact",
+      note: "Shown when the contact submission fails. Per-locale fallback is built in.",
+    },
+    {
       namespace: "social",
       name: "socialInstagramUrl",
       type: "text",
