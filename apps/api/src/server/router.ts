@@ -196,25 +196,35 @@ function prismaModelKey(model: string): string {
       .input(z.object({ data: z.record(z.string(), z.string().nullable()), locale: z.string().optional() }))
       .mutation(async ({ input }) => {
         const locale = input.locale ?? defaultLocale;
-        await prisma.$transaction(
-          Object.entries(input.data).flatMap(([key, value]) =>
-            (fieldMeta[key]?.localized === false ? supportedLocales : [locale]).map((targetLocale) =>
+        // Full form save can be 100+ upserts (× locales for shared keys).
+        // Sequential interactive tx times out on remote Postgres (~5s default).
+        const ops = Object.entries(input.data).flatMap(([key, value]) =>
+          (fieldMeta[key]?.localized === false ? supportedLocales : [locale]).map((targetLocale) => ({
+            key,
+            locale: targetLocale,
+            namespace: fieldMeta[key]?.namespace ?? null,
+            value,
+          })),
+        );
+        const CHUNK = 25;
+        for (let i = 0; i < ops.length; i += CHUNK) {
+          const chunk = ops.slice(i, i + CHUNK);
+          await prisma.$transaction(
+            chunk.map((op) =>
               prisma.frontPageSettings.upsert({
-                where: { key_locale: { key, locale: targetLocale } },
-                update: {
-                  namespace: fieldMeta[key]?.namespace ?? null,
-                  value,
-                },
+                where: { key_locale: { key: op.key, locale: op.locale } },
+                update: { namespace: op.namespace, value: op.value },
                 create: {
-                  key,
-                  locale: targetLocale,
-                  namespace: fieldMeta[key]?.namespace ?? null,
-                  value,
+                  key: op.key,
+                  locale: op.locale,
+                  namespace: op.namespace,
+                  value: op.value,
                 },
               }),
             ),
-          ),
-        );
+            { timeout: 20_000 },
+          );
+        }
 
         return { success: true };
       }),
@@ -245,22 +255,28 @@ const settingsRouter = router({
   update: permissionProcedure("update", "settings")
     .input(z.object({ data: z.record(z.string(), z.string().nullable()) }))
     .mutation(async ({ input }) => {
-      await prisma.$transaction(
-        Object.entries(input.data).map(([key, value]) =>
-          prisma.settings.upsert({
-            where: { key },
-            update: {
-              namespace: settingsFieldMeta[key]?.namespace ?? null,
-              value,
-            },
-            create: {
-              key,
-              namespace: settingsFieldMeta[key]?.namespace ?? null,
-              value,
-            },
-          }),
-        ),
-      );
+      const entries = Object.entries(input.data);
+      const CHUNK = 25;
+      for (let i = 0; i < entries.length; i += CHUNK) {
+        const chunk = entries.slice(i, i + CHUNK);
+        await prisma.$transaction(
+          chunk.map(([key, value]) =>
+            prisma.settings.upsert({
+              where: { key },
+              update: {
+                namespace: settingsFieldMeta[key]?.namespace ?? null,
+                value,
+              },
+              create: {
+                key,
+                namespace: settingsFieldMeta[key]?.namespace ?? null,
+                value,
+              },
+            }),
+          ),
+          { timeout: 20_000 },
+        );
+      }
 
       return { success: true };
     }),
