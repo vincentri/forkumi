@@ -4,7 +4,6 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { writeFile, mkdir } from "fs/promises";
 import { join, extname } from "path";
 import { randomBytes } from "crypto";
-import DOMPurify from "isomorphic-dompurify";
 import { resolvePublicDir } from "~/lib/public-files";
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB — images
@@ -14,15 +13,24 @@ const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp", ".
 const ALLOWED_VIDEO_MIME = new Set(["video/mp4", "video/webm", "video/quicktime"]);
 const ALLOWED_VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov"]);
 
+// Lightweight SVG scrub — no jsdom/DOMPurify (breaks on Vercel/Turbopack ESM).
+// Strips scripts, foreignObject, and inline event handlers / javascript: URLs.
 function sanitizeSvg(buffer: Buffer): Buffer | null {
   const raw = buffer.toString("utf8").trim();
   if (!/<svg[\s>]/i.test(raw)) return null;
-  const clean = DOMPurify.sanitize(raw, {
-    USE_PROFILES: { svg: true, svgFilters: true },
-    FORBID_TAGS: ["script", "foreignObject"],
-    FORBID_ATTR: ["onload", "onclick", "onerror", "onmouseover", "onfocus", "onblur", "onabort"],
-  });
-  if (typeof clean !== "string" || !clean.includes("<svg")) return null;
+
+  let clean = raw
+    // Remove script / foreignObject blocks (and any nested content)
+    .replace(/<\s*(script|foreignObject)\b[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, "")
+    // Self-closing variants
+    .replace(/<\s*(script|foreignObject)\b[^>]*\/\s*>/gi, "")
+    // Inline event handlers: onload=, onclick=, etc.
+    .replace(/\s+on[a-z]+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi, "")
+    // javascript: URLs in href/xlink:href/src/etc.
+    .replace(/(\s(?:href|xlink:href|src|action)\s*=\s*)(["'])\s*javascript:[^"']*\2/gi, "$1$2$2")
+    .replace(/(\s(?:href|xlink:href|src|action)\s*=\s*)javascript:[^\s>]+/gi, "$1\"\"");
+
+  if (!/<svg[\s>]/i.test(clean)) return null;
   return Buffer.from(clean, "utf8") as Buffer;
 }
 
