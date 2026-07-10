@@ -6,6 +6,7 @@ export type ServiceCategoryData = {
   id: string;
   name: string;
   tint: string;
+  image: string | null;
   items: string[];
 };
 

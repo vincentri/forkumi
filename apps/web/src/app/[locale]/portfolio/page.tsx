@@ -106,7 +106,7 @@ export default async function PortfolioPage({ params }: PortfolioPageProps): Pro
   const igParagraph = firstValue(settings.portfolioIgParagraph, igDef.paragraph) ?? igDef.paragraph;
   const igUrl = safeHref(settings.socialInstagramUrl, INSTAGRAM_FALLBACK);
 
-  const fabHref = firstValue(settings.contactWhatsappUrl) ?? WHATSAPP_FALLBACK;
+  const fabHref = safeHref(settings.contactWhatsappUrl, WHATSAPP_FALLBACK);
 
   return (
     <>

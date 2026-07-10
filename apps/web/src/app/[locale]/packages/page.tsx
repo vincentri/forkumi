@@ -4,6 +4,7 @@ import {
   firstValue,
   getFrontPageSettings,
   normalizeLocale,
+  safeHref,
   WHATSAPP_FALLBACK,
 } from "../../front-page-settings";
 import { getFaqItems } from "../../faq";
@@ -123,7 +124,7 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
   const faqL2 = firstValue(settings.faqHomeHeadLine2, faqDef.headLine2) ?? faqDef.headLine2;
   const faqHl = Number.parseInt(settings.faqHomeHeadHighlightIndex ?? "1", 10);
 
-  const fabHref = firstValue(settings.contactWhatsappUrl) ?? WHATSAPP_FALLBACK;
+  const fabHref = safeHref(settings.contactWhatsappUrl, WHATSAPP_FALLBACK);
 
   return (
     <>

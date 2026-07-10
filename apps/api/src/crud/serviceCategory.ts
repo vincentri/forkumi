@@ -36,6 +36,13 @@ export const ServiceCategoryCRUD = defineCRUD({
       options: TINT_OPTIONS,
     },
     {
+      name: "image",
+      type: "image",
+      label: "Image",
+      uploadUrl: "/api/upload?path=uploads/service-categories",
+      note: "Shown above the name on the /services page. Square ~84×84px works best.",
+    },
+    {
       name: "locale",
       type: "select",
       label: "Locale",

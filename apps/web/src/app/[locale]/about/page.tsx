@@ -4,6 +4,7 @@ import {
   firstValue,
   getFrontPageSettings,
   normalizeLocale,
+  safeHref,
   WHATSAPP_FALLBACK,
 } from "../../front-page-settings";
 import { getProcessPhases } from "../../processPhase";
@@ -126,7 +127,7 @@ export default async function AboutPage({ params }: AboutPageProps): Promise<Rea
   const procL2 = firstValue(settings.processSectionHeadLine2, procDef.headLine2) ?? procDef.headLine2;
   const procHl = Number.parseInt(settings.processSectionHeadHighlightIndex ?? "1", 10);
 
-  const fabHref = firstValue(settings.contactWhatsappUrl) ?? WHATSAPP_FALLBACK;
+  const fabHref = safeHref(settings.contactWhatsappUrl, WHATSAPP_FALLBACK);
 
   return (
     <>

@@ -722,12 +722,13 @@ const publicServiceCategoryRouter = router({
       const rows = await prisma.serviceCategory.findMany({
         where: { active: true, locale },
         orderBy: { position: "asc" },
-        select: { id: true, name: true, items: true, tint: true },
+        select: { id: true, name: true, items: true, tint: true, image: true },
       });
       return rows.map((row) => ({
         id: row.id,
         name: row.name,
         tint: row.tint,
+        image: row.image,
         items: row.items
           .split("\n")
           .map((line) => line.trim())

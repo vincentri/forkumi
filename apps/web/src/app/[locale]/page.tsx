@@ -7,6 +7,8 @@ import {
   firstValue,
   getFrontPageSettings,
   normalizeLocale,
+  resolveAssetUrl,
+  safeHref,
 } from "../front-page-settings";
 import { getMarqueeItems } from "../marquee";
 import { WhySubscribeSection } from "./_components/WhySubscribeSection";
@@ -15,7 +17,6 @@ import { FaqCollapse } from "./_components/FaqCollapse";
 import { FaqItem } from "./_components/FaqItem";
 import { getPortfolios, type PortfolioItem } from "../portfolio";
 import { getFaqItems } from "../faq";
-import { resolveAssetUrl } from "../front-page-settings";
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
@@ -233,7 +234,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
   const settings = await getFrontPageSettings(locale);
   const defaults = HERO_DEFAULTS[locale];
 
-  const whatsappUrl = firstValue(settings.contactWhatsappUrl) ?? HERO_WHATSAPP_FALLBACK;
+  const whatsappUrl = safeHref(settings.contactWhatsappUrl, HERO_WHATSAPP_FALLBACK);
 
   const stamp = firstValue(settings.heroStamp, defaults.stamp) ?? defaults.stamp;
   const titleLines = [

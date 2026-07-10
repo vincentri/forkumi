@@ -7,6 +7,9 @@ export function ForkumiEffects(): null {
   const pathname = usePathname();
 
   useEffect(() => {
+    const pathLocale = pathname.split("/").filter(Boolean)[0];
+    document.documentElement.lang = pathLocale === "en" ? "en" : "id";
+
     const isFinePointer = matchMedia("(hover:hover) and (pointer:fine)").matches;
 
     // Reveal: IntersectionObserver toggles .in on .reveal (CSS keeps them hidden until then).

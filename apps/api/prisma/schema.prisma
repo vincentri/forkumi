@@ -254,6 +254,7 @@ model ServiceCategory {
   name      String
   items     String
   tint      String   @default("purple")
+  image     String?
   locale    String   @default("en")
   position  Int      @default(0)
   active    Boolean  @default(true)

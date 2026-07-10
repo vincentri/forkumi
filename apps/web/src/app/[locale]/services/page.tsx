@@ -4,6 +4,8 @@ import {
   firstValue,
   getFrontPageSettings,
   normalizeLocale,
+  resolveAssetUrl,
+  safeHref,
   WHATSAPP_FALLBACK,
 } from "../../front-page-settings";
 import { getIndustryItems } from "../../industry";
@@ -100,7 +102,7 @@ export default async function ServicesPage({ params }: ServicesPageProps): Promi
   const indHl = Number.parseInt(settings.servicesIndustriesHeadHighlightIndex ?? "1", 10);
   const indIntro = firstValue(settings.servicesIndustriesIntro, indDef.intro) ?? indDef.intro;
 
-  const fabHref = firstValue(settings.contactWhatsappUrl) ?? WHATSAPP_FALLBACK;
+  const fabHref = safeHref(settings.contactWhatsappUrl, WHATSAPP_FALLBACK);
 
   return (
     <>
@@ -132,17 +134,21 @@ export default async function ServicesPage({ params }: ServicesPageProps): Promi
           </div>
           {categories.length > 0 ? (
             <div className="svccats">
-              {categories.map((card) => (
-                <div key={card.id} className={`svccat ${card.tint} reveal`}>
-                  <h3>{card.name}</h3>
-                  <div className="rule"></div>
-                  <ul>
-                    {card.items.map((item, i) => (
-                      <li key={i}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+              {categories.map((card) => {
+                const iconSrc = resolveAssetUrl(card.image);
+                return (
+                  <div key={card.id} className={`svccat ${card.tint} reveal`}>
+                    {iconSrc ? <img className="ic" src={iconSrc} alt="" loading="lazy" /> : null}
+                    <h3>{card.name}</h3>
+                    <div className="rule"></div>
+                    <ul>
+                      {card.items.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
             </div>
           ) : null}
         </div>
