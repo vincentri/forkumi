@@ -17,7 +17,7 @@ export async function getServiceCategories(
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
     const response = await fetch(
       `${apiOrigin()}/api/trpc/public.serviceCategory.list?input=${input}`,
-      { cache: "no-store" },
+      { next: { revalidate: 60, tags: ["public:serviceCategory"] } },
     );
     if (!response.ok) {
       return [];

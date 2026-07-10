@@ -14,7 +14,7 @@ export async function getProcessPhases(locale: "id" | "en"): Promise<ProcessPhas
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
     const response = await fetch(
       `${apiOrigin()}/api/trpc/public.processPhase.list?input=${input}`,
-      { cache: "no-store" },
+      { next: { revalidate: 60, tags: ["public:processPhase"] } },
     );
     if (!response.ok) {
       return [];

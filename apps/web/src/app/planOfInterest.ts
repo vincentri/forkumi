@@ -14,7 +14,7 @@ export async function getPlanOfInterestOptions(
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
     const response = await fetch(
       `${apiOrigin()}/api/trpc/public.planOfInterest.list?input=${input}`,
-      { cache: "no-store" },
+      { next: { revalidate: 60, tags: ["public:planOfInterest"] } },
     );
     if (!response.ok) {
       return [];

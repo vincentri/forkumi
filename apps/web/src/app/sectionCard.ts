@@ -22,7 +22,7 @@ export async function getSectionCards(
     );
     const response = await fetch(
       `${apiOrigin()}/api/trpc/public.sectionCard.list?input=${input}`,
-      { cache: "no-store" },
+      { next: { revalidate: 60, tags: ["public:sectionCard"] } },
     );
     if (!response.ok) {
       return [];

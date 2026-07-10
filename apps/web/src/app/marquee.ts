@@ -6,7 +6,7 @@ export async function getMarqueeItems(locale: "id" | "en"): Promise<string[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
     const response = await fetch(`${apiOrigin()}/api/trpc/public.marquee.list?input=${input}`, {
-      cache: "no-store",
+      next: { revalidate: 60, tags: ["public:marquee"] },
     });
     if (!response.ok) {
       return [];

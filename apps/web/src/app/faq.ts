@@ -12,7 +12,7 @@ export async function getFaqItems(locale: "id" | "en"): Promise<FaqItemData[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
     const response = await fetch(`${apiOrigin()}/api/trpc/public.faq.list?input=${input}`, {
-      cache: "no-store",
+      next: { revalidate: 60, tags: ["public:faq"] },
     });
     if (!response.ok) {
       return [];

@@ -13,7 +13,7 @@ export async function getWhysubCards(locale: "id" | "en"): Promise<WhysubCardDat
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
     const response = await fetch(`${apiOrigin()}/api/trpc/public.whysub.list?input=${input}`, {
-      cache: "no-store",
+      next: { revalidate: 60, tags: ["public:whysub"] },
     });
     if (!response.ok) {
       return [];

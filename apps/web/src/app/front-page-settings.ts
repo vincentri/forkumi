@@ -60,7 +60,7 @@ export async function getFrontPageSettings(locale: "id" | "en"): Promise<FrontPa
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
     const response = await fetch(`${apiOrigin()}/api/trpc/public.frontPageSettings.get?input=${input}`, {
-      cache: "no-store",
+      next: { revalidate: 60, tags: ["public:frontPageSettings"] },
     });
 
     if (!response.ok) {
