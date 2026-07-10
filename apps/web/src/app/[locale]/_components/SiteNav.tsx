@@ -34,7 +34,6 @@ export function SiteNav({ locale, settings }: SiteNavProps): ReactElement {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const brand = settings.site_name?.trim() || "Forkumi";
   const logo = resolveAssetUrl(settings.logo) ?? "/assets/img/logo.svg";
   const ctaLabel = settings.headerCtaLabel?.trim() || TALK[locale];
   const ctaUrl = settings.headerCtaUrl?.trim() || WA_FALLBACK;
@@ -65,8 +64,7 @@ export function SiteNav({ locale, settings }: SiteNavProps): ReactElement {
   return (
     <nav className={scrolled ? "scrolled" : undefined} id="nav-mount">
       <Link className="brand" href={localeHref(locale, "")}>
-        <img src={logo} alt={brand} />
-        <span>{brand}</span>
+        <img src={logo} alt="Logo" />
       </Link>
       <div className={`nav-links${open ? " open" : ""}`}>
         {NAV.map((item) => {
