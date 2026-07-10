@@ -45,6 +45,8 @@ function setCorsHeaders(response: NextResponse, origin: string | null): void {
     response.headers.set("Access-Control-Allow-Origin", origin);
     response.headers.set("Access-Control-Allow-Credentials", "true");
     response.headers.set("Vary", "Origin");
+  } else {
+    response.headers.set("Access-Control-Allow-Origin", "*");
   }
 }
 

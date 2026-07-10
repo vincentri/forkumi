@@ -39,6 +39,8 @@ function withCors(request: Request, response: NextResponse): NextResponse {
     response.headers.set("Access-Control-Allow-Origin", origin);
     response.headers.set("Access-Control-Allow-Credentials", "true");
     response.headers.set("Vary", "Origin");
+  } else {
+    response.headers.set("Access-Control-Allow-Origin", "*");
   }
   return response;
 }
