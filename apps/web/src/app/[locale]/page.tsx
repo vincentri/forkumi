@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { ReactElement } from "react";
+import { Fragment, type ReactElement } from "react";
 
 import {
   DEFAULT_DESCRIPTION,
@@ -233,6 +233,8 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
   const settings = await getFrontPageSettings(locale);
   const defaults = HERO_DEFAULTS[locale];
 
+  const whatsappUrl = firstValue(settings.contactWhatsappUrl) ?? HERO_WHATSAPP_FALLBACK;
+
   const stamp = firstValue(settings.heroStamp, defaults.stamp) ?? defaults.stamp;
   const titleLines = [
     firstValue(settings.heroTitleLine1, defaults.titleLine1) ?? defaults.titleLine1,
@@ -367,14 +369,15 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
           <div className="hero-left">
             <h1>
               {titleLines.map((line, i) => (
-                <span key={i} className={i === highlightIndex ? "hl" : undefined}>
-                  {i > 0 ? <><br />{line}</> : line}
-                </span>
+                <Fragment key={i}>
+                  {i > 0 ? <br /> : null}
+                  <span className={i === highlightIndex ? "hl" : undefined}>{line}</span>
+                </Fragment>
               ))}
             </h1>
             <p className="sub">{subtitle}</p>
             <div className="cta">
-              <a className="btn primary" href={HERO_WHATSAPP_FALLBACK} target="_blank" rel="noopener" data-frontpage-whatsapp>
+              <a className="btn primary" href={whatsappUrl} target="_blank" rel="noopener">
                 {primaryLabel} <span className="ar">➔</span>
               </a>
               <a className="btn ghost" href={secondaryUrl}>{secondaryLabel}</a>
@@ -545,7 +548,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
         </div>
       </section>
       
-      <a className="fab" href="https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan." target="_blank" rel="noopener" title="WhatsApp" data-frontpage-whatsapp><span className="icon-dot" aria-hidden="true" /></a>
+      <a className="fab" href={whatsappUrl} target="_blank" rel="noopener" title="WhatsApp"><span className="icon-dot" aria-hidden="true" /></a>
     </>
   );
 }

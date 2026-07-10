@@ -6,8 +6,7 @@ type PlansSectionProps = {
   locale: "id" | "en";
 };
 
-// ponytail: mirrors the legacy planCard() markup in forkumi-content.ts exactly,
-// so the home visual stays pixel-identical after this swap.
+// ponytail: plan card markup kept inline for pixel control.
 function renderPlanCard(plan: PlanItem, locale: "id" | "en"): ReactElement {
   const pickLabel = locale === "id" ? "Pilih Paket" : "Choose Plan";
   const tcNote = locale === "id" ? "*S&K berlaku" : "*T&C applied";

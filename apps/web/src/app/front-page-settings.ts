@@ -22,6 +22,22 @@ export function firstValue(...values: Array<string | null | undefined>): string 
   return values.find((value) => typeof value === "string" && value.trim().length > 0)?.trim();
 }
 
+export const WHATSAPP_FALLBACK =
+  "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan.";
+
+export const INSTAGRAM_FALLBACK = "https://www.instagram.com/forkumi.design/";
+export const PHONE_FALLBACK = "tel:+6580892716";
+export const EMAIL_FALLBACK = "mailto:linkforkumi@gmail.com";
+
+function isHref(value: string): boolean {
+  return /^(https?:|mailto:|tel:)/.test(value);
+}
+
+export function safeHref(value: string | null | undefined, fallback: string): string {
+  const v = firstValue(value);
+  return v && isHref(v) ? v : fallback;
+}
+
 export function resolveAssetUrl(value: string | null | undefined): string | undefined {
   const asset = firstValue(value);
   if (!asset) {

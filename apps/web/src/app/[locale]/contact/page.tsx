@@ -1,12 +1,19 @@
 import type { ReactElement } from "react";
 
 import {
+  EMAIL_FALLBACK,
+  INSTAGRAM_FALLBACK,
+  PHONE_FALLBACK,
+  WHATSAPP_FALLBACK,
   firstValue,
   getFrontPageSettings,
   normalizeLocale,
+  safeHref,
 } from "../../front-page-settings";
 import { getPlanOfInterestOptions } from "../../planOfInterest";
 import { ContactForm } from "../_components/ContactForm";
+import { Breadcrumb } from "../_components/Breadcrumb";
+import { Fab } from "../_components/Fab";
 
 type ContactPageProps = {
   params: Promise<{ locale: string }>;
@@ -85,12 +92,25 @@ export default async function ContactPage({ params }: ContactPageProps): Promise
   const fieldSubmit =
     firstValue(settings.contactFieldSubmit, defaults.fieldSubmit) ?? defaults.fieldSubmit;
 
+  const whatsappUrl = safeHref(settings.contactWhatsappUrl, WHATSAPP_FALLBACK);
+  const whatsappLabel = firstValue(settings.contactWhatsappLabel) ?? "WhatsApp";
+  const phoneUrl = safeHref(settings.contactPhoneUrl, PHONE_FALLBACK);
+  const phoneLabel = firstValue(settings.contactPhoneLabel) ?? "+65 8089 2716";
+  const emailUrl = safeHref(settings.contactEmailUrl, EMAIL_FALLBACK);
+  const emailLabel = firstValue(settings.contactEmailLabel) ?? "linkforkumi@gmail.com";
+  const instagramUrl = safeHref(settings.contactInstagramUrl, INSTAGRAM_FALLBACK);
+  const instagramLabel = firstValue(settings.contactInstagramLabel) ?? "@forkumi.design";
+  const workingHours =
+    firstValue(settings.contactWorkingHours) ??
+    (locale === "id" ? "Senin – Jumat · 09.00 – 18.00 WIB" : "Mon – Fri · 09:00 – 18:00 GMT+7");
+  const PAGE_LABEL: Record<"id" | "en", string> = { id: "Kontak", en: "Contact" };
+
   return (
     <>
       <section className="page-hero">
         <img className="sparkle" src="/assets/img/sparkle_rose.png" style={{ top: "42%", right: "10%", width: "46px" }} data-d="0.5" alt="" />
         <div className="wrap">
-          <span className="crumb"><a href="../" data-i="nHome"></a> / <span data-i="nContact"></span></span>
+          <Breadcrumb locale={locale} current={PAGE_LABEL[locale]} />
           <h1>
             <span className={hl === 0 ? "hl" : undefined}>{h1Line1}</span>
             <br />
@@ -105,11 +125,11 @@ export default async function ContactPage({ params }: ContactPageProps): Promise
           <div className="contact-grid">
             <div className="reveal">
               <div className="cbtns">
-                <a className="cbtn wa" href="https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan." target="_blank" rel="noopener" data-frontpage-contact="whatsapp"><span className="ci"><span className="icon-dot" aria-hidden="true" /></span><div><b>WhatsApp</b><small>+65 8089 2716</small></div></a>
-                <a className="cbtn mail" href="mailto:linkforkumi@gmail.com" data-frontpage-contact="email"><span className="ci"><span className="icon-dot" aria-hidden="true" /></span><div><b>Email</b><small>linkforkumi@gmail.com</small></div></a>
-                <a className="cbtn ig" href="https://www.instagram.com/forkumi.design/" target="_blank" rel="noopener" data-frontpage-contact="instagram"><span className="ci"><span className="icon-dot" aria-hidden="true" /></span><div><b>Instagram</b><small>@forkumi.design</small></div></a>
-                <a className="cbtn ph" href="tel:+6580892716" data-frontpage-contact="phone"><span className="ci"><span className="icon-dot" aria-hidden="true" /></span><div><b>+65 8089 2716</b><small>Singapore</small></div></a>
-                <div className="cbtn" style={{ cursor: "default" }}><span className="ci" style={{ background: "var(--gold)" }}><span className="icon-dot" aria-hidden="true" /></span><div><b>{hoursHeading}</b><small data-frontpage-working-hours></small></div></div>
+                <a className="cbtn wa" href={whatsappUrl} target="_blank" rel="noopener"><span className="ci"><span className="icon-dot" aria-hidden="true" /></span><div><b>{whatsappLabel}</b><small>{phoneLabel}</small></div></a>
+                <a className="cbtn mail" href={emailUrl}><span className="ci"><span className="icon-dot" aria-hidden="true" /></span><div><b>Email</b><small>{emailLabel}</small></div></a>
+                <a className="cbtn ig" href={instagramUrl} target="_blank" rel="noopener"><span className="ci"><span className="icon-dot" aria-hidden="true" /></span><div><b>Instagram</b><small>{instagramLabel}</small></div></a>
+                <a className="cbtn ph" href={phoneUrl}><span className="ci"><span className="icon-dot" aria-hidden="true" /></span><div><b>{phoneLabel}</b><small>Singapore</small></div></a>
+                <div className="cbtn" style={{ cursor: "default" }}><span className="ci" style={{ background: "var(--gold)" }}><span className="icon-dot" aria-hidden="true" /></span><div><b>{hoursHeading}</b><small>{workingHours}</small></div></div>
               </div>
             </div>
             <div className="reveal d1">
@@ -130,7 +150,7 @@ export default async function ContactPage({ params }: ContactPageProps): Promise
         </div>
       </section>
 
-      <a className="fab" href="https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan." target="_blank" rel="noopener" title="WhatsApp" data-frontpage-whatsapp><span className="icon-dot" aria-hidden="true" /></a>
+      <Fab href={whatsappUrl} />
     </>
   );
 }

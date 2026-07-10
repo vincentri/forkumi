@@ -1,23 +1,106 @@
 import type { ReactElement } from "react";
 
+import {
+  firstValue,
+  getFrontPageSettings,
+  normalizeLocale,
+  WHATSAPP_FALLBACK,
+} from "../../front-page-settings";
 import { getIndustryItems } from "../../industry";
 import { getServiceCategories } from "../../serviceCategory";
+import { Breadcrumb } from "../_components/Breadcrumb";
+import { CtaBand } from "../_components/CtaBand";
+import { Fab } from "../_components/Fab";
 
 type ServicesPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-function normalizeLocale(locale: string): "id" | "en" {
-  return locale === "en" ? "en" : "id";
-}
+const SVC_DEFAULTS: Record<"id" | "en", {
+  h1Line1: string;
+  h1Line2: string;
+  lead: string;
+}> = {
+  en: {
+    h1Line1: "What we",
+    h1Line2: "deliver",
+    lead: "Every design service you need in one subscription.",
+  },
+  id: {
+    h1Line1: "Yang bisa",
+    h1Line2: "kami kerjakan",
+    lead: "Semua layanan desain yang kamu butuhkan dalam satu langganan.",
+  },
+};
+
+const CATALOG_DEFAULTS: Record<"id" | "en", {
+  eye: string;
+  headLine1: string;
+  headLine2: string;
+}> = {
+  en: {
+    eye: "Full Services",
+    headLine1: "Every design need,",
+    headLine2: "one team",
+  },
+  id: {
+    eye: "Layanan Lengkap",
+    headLine1: "Semua kebutuhan",
+    headLine2: "desainmu, satu tim",
+  },
+};
+
+const IND_DEFAULTS: Record<"id" | "en", {
+  eye: string;
+  headLine1: string;
+  headLine2: string;
+  intro: string;
+}> = {
+  en: {
+    eye: "Industries",
+    headLine1: "Industries",
+    headLine2: "we serve",
+    intro: "From tech startups to local SMEs — Forkumi fits every sector.",
+  },
+  id: {
+    eye: "Industri",
+    headLine1: "Industri yang",
+    headLine2: "kami layani",
+    intro: "Dari startup teknologi sampai UMKM lokal — desain Forkumi cocok untuk semua bidang.",
+  },
+};
+
+const PAGE_LABEL: Record<"id" | "en", string> = { id: "Layanan", en: "Services" };
 
 export default async function ServicesPage({ params }: ServicesPageProps): Promise<ReactElement> {
   const { locale: rawLocale } = await params;
   const locale = normalizeLocale(rawLocale);
-  const [categories, industries] = await Promise.all([
+  const [settings, categories, industries] = await Promise.all([
+    getFrontPageSettings(locale),
     getServiceCategories(locale),
     getIndustryItems(locale),
   ]);
+
+  const svcDef = SVC_DEFAULTS[locale];
+  const h1L1 = firstValue(settings.servicesH1Line1, svcDef.h1Line1) ?? svcDef.h1Line1;
+  const h1L2 = firstValue(settings.servicesH1Line2, svcDef.h1Line2) ?? svcDef.h1Line2;
+  const h1Hl = Number.parseInt(settings.servicesH1HighlightIndex ?? "1", 10);
+  const lead = firstValue(settings.servicesPageLead, svcDef.lead) ?? svcDef.lead;
+
+  const catDef = CATALOG_DEFAULTS[locale];
+  const catEye = firstValue(settings.servicesCatalogEye, catDef.eye) ?? catDef.eye;
+  const catL1 = firstValue(settings.servicesCatalogHeadLine1, catDef.headLine1) ?? catDef.headLine1;
+  const catL2 = firstValue(settings.servicesCatalogHeadLine2, catDef.headLine2) ?? catDef.headLine2;
+  const catHl = Number.parseInt(settings.servicesCatalogHeadHighlightIndex ?? "1", 10);
+
+  const indDef = IND_DEFAULTS[locale];
+  const indEye = firstValue(settings.servicesIndustriesEye, indDef.eye) ?? indDef.eye;
+  const indL1 = firstValue(settings.servicesIndustriesHeadLine1, indDef.headLine1) ?? indDef.headLine1;
+  const indL2 = firstValue(settings.servicesIndustriesHeadLine2, indDef.headLine2) ?? indDef.headLine2;
+  const indHl = Number.parseInt(settings.servicesIndustriesHeadHighlightIndex ?? "1", 10);
+  const indIntro = firstValue(settings.servicesIndustriesIntro, indDef.intro) ?? indDef.intro;
+
+  const fabHref = firstValue(settings.contactWhatsappUrl) ?? WHATSAPP_FALLBACK;
 
   return (
     <>
@@ -25,15 +108,28 @@ export default async function ServicesPage({ params }: ServicesPageProps): Promi
         <img className="sparkle" src="/assets/img/sparkle_purple.png" style={{ top: "40%", right: "8%", width: "46px" }} data-d="0.5" alt="" />
         <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ bottom: "14%", right: "22%", width: "30px" }} data-d="0.8" alt="" />
         <div className="wrap">
-          <span className="crumb"><a href="../" data-i="nHome"></a> / <span data-i="nSvc"></span></span>
-          <h1 data-head="svcHead"></h1>
-          <p data-i="pageSvcLead"></p>
+          <Breadcrumb locale={locale} current={PAGE_LABEL[locale]} />
+          <h1>
+            <span className={h1Hl === 0 ? "hl" : undefined}>{h1L1}</span>
+            <br />
+            <span className={h1Hl === 1 ? "hl" : undefined}>{h1L2}</span>
+          </h1>
+          <p>{lead}</p>
         </div>
       </section>
 
       <section className="sec g-lav">
         <div className="wrap">
-          <div className="sec-top"><div><span className="eyebrow reveal" data-i="svcCatEye"></span><h2 className="sec-head reveal" data-head="svcCatHead"></h2></div></div>
+          <div className="sec-top">
+            <div>
+              <span className="eyebrow reveal">{catEye}</span>
+              <h2 className="sec-head reveal">
+                <span className={catHl === 0 ? "hl" : undefined}>{catL1}</span>
+                <br />
+                <span className={catHl === 1 ? "hl" : undefined}>{catL2}</span>
+              </h2>
+            </div>
+          </div>
           {categories.length > 0 ? (
             <div className="svccats">
               {categories.map((card) => (
@@ -54,7 +150,17 @@ export default async function ServicesPage({ params }: ServicesPageProps): Promi
 
       <section className="sec g-pink" id="industries">
         <div className="wrap">
-          <div className="sec-top"><div><span className="eyebrow reveal" data-i="indEye"></span><h2 className="sec-head reveal" data-head="indHead"></h2></div><p className="intro reveal d1" data-i="indIntro"></p></div>
+          <div className="sec-top">
+            <div>
+              <span className="eyebrow reveal">{indEye}</span>
+              <h2 className="sec-head reveal">
+                <span className={indHl === 0 ? "hl" : undefined}>{indL1}</span>
+                <br />
+                <span className={indHl === 1 ? "hl" : undefined}>{indL2}</span>
+              </h2>
+            </div>
+            <p className="intro reveal d1">{indIntro}</p>
+          </div>
           {industries.length > 0 ? (
             <div>
               {industries.map((item, i) => (
@@ -76,21 +182,8 @@ export default async function ServicesPage({ params }: ServicesPageProps): Promi
         </div>
       </section>
 
-      <section className="cta-sec">
-        <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ top: "20%", left: "14%", width: "44px" }} data-d="0.6" alt="" />
-        <img className="sparkle" src="/assets/img/sparkle_rose.png" style={{ bottom: "18%", right: "16%", width: "52px" }} data-d="0.7" alt="" />
-        <div className="wrap">
-          <span className="eyebrow center" style={{ color: "var(--gold)", justifyContent: "center", width: "100%" }} data-i="ctaEye"></span>
-          <h2 className="reveal" data-head="ctaHead" style={{ margin: "14px 0 0" }}></h2>
-          <p className="sub reveal d1" data-i="ctaSub"></p>
-          <div className="cta reveal d2">
-            <a className="btn primary" href="#" target="_blank" rel="noopener" data-frontpage-cta-primary><span data-i="ctaBtn"></span> <span className="ar">➔</span></a>
-            <a className="btn ghost" href="#" data-frontpage-cta-secondary><span data-i="ctaBtn2"></span></a>
-          </div>
-        </div>
-      </section>
-
-      <a className="fab" href="https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan." target="_blank" rel="noopener" title="WhatsApp" data-frontpage-whatsapp><span className="icon-dot" aria-hidden="true" /></a>
+      <CtaBand locale={locale} settings={settings} />
+      <Fab href={fabHref} />
     </>
   );
 }

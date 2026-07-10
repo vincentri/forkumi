@@ -12,7 +12,6 @@ import {
   resolveAssetUrl,
 } from "../front-page-settings";
 import { ExternalHtmlScripts } from "./_components/ExternalHtmlScripts";
-import { FrontPageSettingsBoot } from "./_components/FrontPageSettingsBoot";
 import { SiteFooter } from "./_components/SiteFooter";
 import { SiteNav } from "./_components/SiteNav";
 import { SiteSplash } from "./_components/SiteSplash";
@@ -64,7 +63,6 @@ export default async function LocaleLayout({
 
   return (
     <>
-      <FrontPageSettingsBoot settings={settings} />
       <SoftNavInterceptor locale={locale} />
       <ForkumiEffects />
       <ExternalHtmlScripts id="header" html={settings.headerScript} />
