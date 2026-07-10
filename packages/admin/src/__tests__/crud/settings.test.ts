@@ -11,8 +11,8 @@ describe("SettingsCRUD", () => {
     expect(SettingsCRUD.mode).toBe("keyValue");
   });
 
-  it("has 10 fields", () => {
-    expect(SettingsCRUD.fields).toHaveLength(10);
+  it("has 11 fields", () => {
+    expect(SettingsCRUD.fields).toHaveLength(11);
   });
 
   it("all fields have tab and namespace", () => {

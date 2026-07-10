@@ -94,5 +94,14 @@ export const SettingsCRUD = defineCRUD({
       visibleWhen: { field: "emailEnabled", equals: true },
       note: "Optional. Replies go to this address instead of the from address.",
     },
+    {
+      name: "emailNotifyTo",
+      type: "email",
+      label: "Notify-to Email",
+      tab: "Email",
+      namespace: "email",
+      visibleWhen: { field: "emailEnabled", equals: true },
+      note: "Contact form submissions and admin notifications are sent here.",
+    },
   ],
 });
