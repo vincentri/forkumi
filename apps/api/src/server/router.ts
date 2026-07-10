@@ -33,6 +33,8 @@ import {
 } from "./routers/invitation";
 import { roleRouter } from "./routers/role";
 import { userRouter } from "./routers/user";
+import { clearLoginAttempts } from "../proxy";
+import { clearPublicDirCache } from "../lib/public-files";
 
 function createFrontPageSettingsRouter(config: CRUDConfig) {
   const fieldMeta = Object.fromEntries(
@@ -221,6 +223,11 @@ function prismaModelKey(model: string): string {
 
         return { success: true };
       }),
+    clearCache: permissionProcedure("update", config.model).mutation(async () => {
+      clearLoginAttempts();
+      clearPublicDirCache();
+      return { success: true };
+    }),
   });
 }
 

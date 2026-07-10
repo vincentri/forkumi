@@ -30,6 +30,10 @@ export function resolvePublicDir(): string {
   return cachedPublicDir;
 }
 
+export function clearPublicDirCache(): void {
+  cachedPublicDir = null;
+}
+
 export function resolvePublicFile(subPath: string, ...segments: string[]): string {
   const root = resolve(/* turbopackIgnore: true */ resolvePublicDir(), subPath);
   const filePath = resolve(/* turbopackIgnore: true */ root, ...segments);

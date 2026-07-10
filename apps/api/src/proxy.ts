@@ -34,6 +34,10 @@ function isRateLimited(key: string): boolean {
   return existing.count > LOGIN_LIMIT;
 }
 
+export function clearLoginAttempts(): void {
+  attempts.clear();
+}
+
 function setCorsHeaders(response: NextResponse, origin: string | null): void {
   if (!origin) return;
   const allowed = allowedOrigins();

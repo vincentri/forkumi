@@ -5,6 +5,7 @@ import { KeyValuePage, type CRUDConfig } from "@repo/crud";
 import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, toast } from "@repo/ui";
 import { getErrorMessage } from "../lib/getErrorMessage";
 import { SettingsEmailSecretPanel } from "./SettingsEmailSecretPanel";
+import { ClearCachePanel } from "./ClearCachePanel";
 import { useDynamicOptions } from "./useDynamicOptions";
 import type { CRUDRouter } from "./types";
 
@@ -72,14 +73,22 @@ export function KeyValueResourceView({ config, m, permissions, isProtectedRole }
         modelApi={m}
         locale={locale}
         saving={updateMutation.isPending}
-        extraTabContent={config.model === "settings" ? {
-          Email: (values) => (
-            <SettingsEmailSecretPanel
-              canUpdate={canUpdate}
-              enabled={values.emailEnabled}
-            />
-          ),
-        } : undefined}
+        extraTabContent={
+          config.model === "settings"
+            ? {
+                Email: (values) => (
+                  <SettingsEmailSecretPanel
+                    canUpdate={canUpdate}
+                    enabled={values.emailEnabled}
+                  />
+                ),
+              }
+            : config.model === "frontPageSettings"
+              ? {
+                  General: () => <ClearCachePanel canUpdate={canUpdate} />,
+                }
+              : undefined
+        }
         onSave={async (values, savedLocale) => {
           try {
             await updateMutation.mutateAsync({
