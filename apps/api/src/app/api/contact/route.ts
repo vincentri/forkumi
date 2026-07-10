@@ -110,6 +110,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         to: emailSettings.notifyTo,
         subject: `New contact submission — ${name}`,
         html: `
+          <p>New inquiry coming for forkumi</p>
           <p><strong>Name:</strong> ${safeName}</p>
           <p><strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>
           <p><strong>Plan of interest:</strong> ${safePkg}</p>
@@ -118,6 +119,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           <p>${safeMessage}</p>
         `.trim(),
         text: [
+          `New inquiry coming for forkumi`,
           `Name: ${name}`,
           `Email: ${email}`,
           `Plan: ${pkg ?? "—"}`,
