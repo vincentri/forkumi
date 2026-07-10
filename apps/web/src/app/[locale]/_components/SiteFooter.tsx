@@ -43,8 +43,7 @@ function safeHref(value: string, fallback: string): string {
 }
 
 export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement {
-  const brand = pick(settings, "site_name", "Forkumi");
-  const logo = resolveAssetUrl(settings.logo) ?? "/assets/img/logo.svg";
+  const logoFooter = resolveAssetUrl(settings.logoFooter) ?? "/assets/img/logo.svg";
   const phoneLabel = pick(settings, "contactPhoneLabel", "+65 8089 2716");
   const phoneUrl = safeHref(pick(settings, "contactPhoneUrl", PHONE), PHONE);
   const whatsappLabel = pick(settings, "contactWhatsappLabel", "WhatsApp");
@@ -64,8 +63,7 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
         <div className="fcols">
           <div>
             <div className="fbrand">
-              <img src={logo} alt="" />
-              <span>{brand}</span>
+              <img src={logoFooter} alt="Logo" />
             </div>
             <p className="ftag">{pick(settings, "footerTagline", LABELS.tag[locale])}</p>
           </div>
@@ -101,7 +99,7 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
         </div>
         <div className="fbot">
           <span>
-            © {new Date().getFullYear()} {brand}.{" "}
+            © {new Date().getFullYear()}.{" "}
             <span>{pick(settings, "footerCopyrightText", pick(settings, "footerRightsText", LABELS.rights[locale]))}</span>
           </span>
           <span>{pick(settings, "footerMadeText", LABELS.made[locale])}</span>

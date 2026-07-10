@@ -21,6 +21,16 @@ export const FrontPageSettingsCRUD = defineCRUD({
     },
     {
       namespace: "general",
+      name: "logoFooter",
+      type: "image",
+      label: "Logo (Footer)",
+      tab: "General",
+      uploadUrl: "/api/upload?path=uploads/logo-footer",
+      width: "half",
+      localized: false,
+    },
+    {
+      namespace: "general",
       name: "favicon",
       type: "image",
       label: "Favicon",
