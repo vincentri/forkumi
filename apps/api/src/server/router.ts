@@ -587,34 +587,31 @@ const publicPortfolioRouter = router({
     }),
 });
 
-// ponytail: features are per-locale rows. Fetch requested locale first; for plans
-// with no matching features, fall back to "en" so the public site still shows content.
+// ponytail: Plan is per-locale (like FaqItem). Fetch plans WHERE locale; their features
+// come via planId. Fall back to "en" plans if the requested locale has none, so the
+// public site still shows content while admins roll out a new locale.
 const publicPlanRouter = router({
   list: publicProcedure
     .input(localeInput)
     .query(async ({ input }) => {
       const locale = input?.locale ?? "id";
-      const plans = await prisma.plan.findMany({
-        where: { active: true },
+      let plans = await prisma.plan.findMany({
+        where: { active: true, locale },
         orderBy: { position: "asc" },
       });
+      if (plans.length === 0 && locale !== "en") {
+        plans = await prisma.plan.findMany({
+          where: { active: true, locale: "en" },
+          orderBy: { position: "asc" },
+        });
+      }
       const planIds = plans.map((p) => p.id);
-      const localeFeatures = await prisma.planFeature.findMany({
-        where: { locale, planId: { in: planIds } },
+      const features = await prisma.planFeature.findMany({
+        where: { planId: { in: planIds } },
         orderBy: { position: "asc" },
       });
-      const plansMissingLocale = planIds.filter(
-        (id) => !localeFeatures.some((f) => f.planId === id),
-      );
-      const fallbackFeatures =
-        locale === "id" && plansMissingLocale.length
-          ? await prisma.planFeature.findMany({
-              where: { locale: "en", planId: { in: plansMissingLocale } },
-              orderBy: { position: "asc" },
-            })
-          : [];
       const featuresByPlan = new Map<string, string[]>();
-      for (const f of [...localeFeatures, ...fallbackFeatures]) {
+      for (const f of features) {
         if (!featuresByPlan.has(f.planId)) featuresByPlan.set(f.planId, []);
         featuresByPlan.get(f.planId)!.push(f.text);
       }

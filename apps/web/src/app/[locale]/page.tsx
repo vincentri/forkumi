@@ -64,19 +64,22 @@ const HERO_WHATSAPP_FALLBACK =
 
 const WHY_FORKUMI_DEFAULTS: Record<"id" | "en", {
   eye: string;
-  head: string;
+  headLine1: string;
+  headLine2: string;
   labels: [string, string, string, string];
   units: [string, string, string, string];
 }> = {
   en: {
     eye: "Why Forkumi",
-    head: "Real results, zero drama",
+    headLine1: "Real results,",
+    headLine2: "zero drama",
     labels: ["First design", "Unlimited revisions", "Long-term lock-in", "Files are yours"],
     units: ["H", "", "", ""],
   },
   id: {
     eye: "Kenapa Forkumi",
-    head: "Hasil nyata, tanpa drama",
+    headLine1: "Hasil nyata,",
+    headLine2: "tanpa drama",
     labels: ["Desain pertama", "Revisi sepuasnya", "Ikatan jangka panjang", "File jadi milikmu"],
     units: ["JAM", "", "", ""],
   },
@@ -345,12 +348,12 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
 
   const whyDefaults = WHY_FORKUMI_DEFAULTS[locale];
   const whyEye = firstValue(settings.whyForkumiEye, whyDefaults.eye) ?? whyDefaults.eye;
-  const whyHead = firstValue(settings.whyForkumiHead, whyDefaults.head) ?? whyDefaults.head;
-  // ponytail: split heading on first ", " → two lines, highlight line 2 (matches statsHead hl:1 in temp/index.html).
-  const whyHeadSplit = whyHead.split(", ");
-  const whyHeadLine1 = whyHeadSplit.length > 1 ? `${whyHeadSplit[0]},` : whyHeadSplit[0];
-  const whyHeadLine2 = whyHeadSplit.slice(1).join(", ");
-  const whyHeadHighlightIndex: number = 1;
+  const whyHeadLine1 = firstValue(settings.whyForkumiHeadLine1, whyDefaults.headLine1) ?? whyDefaults.headLine1;
+  const whyHeadLine2 = firstValue(settings.whyForkumiHeadLine2, whyDefaults.headLine2) ?? whyDefaults.headLine2;
+  const whyHeadHighlightIndex: number = Number.parseInt(
+    settings.whyForkumiHeadHighlightIndex ?? "1",
+    10,
+  );
   const whyStats = WHY_FORKUMI_NUMS.map((defaultNum, i) => {
     const slot = i + 1;
     return {

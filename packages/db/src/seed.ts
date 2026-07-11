@@ -674,16 +674,37 @@ async function seedServiceCategories(prisma: PrismaClient): Promise<void> {
 type SeededPlan = {
   name: string;
   color: string;
-  price: string;
-  normalPrice: string;
+  price: Record<SeededLocale, string>;
+  normalPrice: Record<SeededLocale, string>;
   best: boolean;
   position: number;
 };
 
 const SEED_PLANS: SeededPlan[] = [
-  { name: "Basic", color: "rose", price: "Rp 1.500k", normalPrice: "Rp 2.500k", best: false, position: 0 },
-  { name: "Standard", color: "purple", price: "Rp 3.000k", normalPrice: "Rp 4.500k", best: true, position: 1 },
-  { name: "Premium", color: "gold", price: "Rp 6.000k", normalPrice: "Rp 9.000k", best: false, position: 2 },
+  {
+    name: "Basic",
+    color: "rose",
+    price: { en: "Rp 1.500k", id: "Rp 1.500k" },
+    normalPrice: { en: "Rp 2.500k", id: "Rp 2.500k" },
+    best: false,
+    position: 0,
+  },
+  {
+    name: "Standard",
+    color: "purple",
+    price: { en: "Rp 3.000k", id: "Rp 3.000k" },
+    normalPrice: { en: "Rp 4.500k", id: "Rp 4.500k" },
+    best: true,
+    position: 1,
+  },
+  {
+    name: "Premium",
+    color: "gold",
+    price: { en: "Rp 6.000k", id: "Rp 6.000k" },
+    normalPrice: { en: "Rp 9.000k", id: "Rp 9.000k" },
+    best: false,
+    position: 2,
+  },
 ];
 
 const SEED_PLAN_FEATURES: Record<string, Record<SeededLocale, string[]>> = {
@@ -750,20 +771,20 @@ async function seedPlans(prisma: PrismaClient): Promise<void> {
   }
   let featuresInserted = 0;
   for (const p of SEED_PLANS) {
-    const plan = await prisma.plan.create({
-      data: {
-        name: p.name,
-        color: p.color,
-        price: p.price,
-        normalPrice: p.normalPrice,
-        best: p.best,
-        position: p.position,
-        active: true,
-      },
-    });
-    const featuresByLocale = SEED_PLAN_FEATURES[p.name];
     for (const locale of ["id", "en"] as const) {
-      const texts = featuresByLocale[locale];
+      const plan = await prisma.plan.create({
+        data: {
+          name: p.name,
+          color: p.color,
+          price: p.price[locale],
+          normalPrice: p.normalPrice[locale],
+          best: p.best,
+          locale,
+          position: p.position,
+          active: true,
+        },
+      });
+      const texts = SEED_PLAN_FEATURES[p.name][locale];
       for (let i = 0; i < texts.length; i += 1) {
         await prisma.planFeature.create({
           data: {
@@ -777,7 +798,7 @@ async function seedPlans(prisma: PrismaClient): Promise<void> {
       }
     }
   }
-  console.log(`Seeded ${SEED_PLANS.length} plans and ${featuresInserted} plan features.`);
+  console.log(`Seeded ${SEED_PLANS.length * 2} plans (en+id) and ${featuresInserted} plan features.`);
 }
 
 const SEED_PLAN_OF_INTEREST: Record<SeededLocale, string[]> = {

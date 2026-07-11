@@ -153,13 +153,14 @@ model Plan {
   normalPrice String        @map("normal_price")
   best        Boolean       @default(false)
   ctaUrl      String?       @map("cta_url")
+  locale      String        @default("en")
   position    Int           @default(0)
   active      Boolean       @default(true)
   features    PlanFeature[]
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 
-  @@index([position])
+  @@index([locale, position])
   @@map("plans")
 }
 

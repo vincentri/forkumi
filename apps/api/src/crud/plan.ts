@@ -56,6 +56,17 @@ export const PlanCRUD = defineCRUD({
       note: "Full URL for the Pilih Paket button (e.g. https://wa.me/.../?text=...).",
     },
     {
+      name: "locale",
+      type: "select",
+      label: "Locale",
+      required: true,
+      default: "en",
+      options: [
+        { label: "English", value: "en" },
+        { label: "Indonesian", value: "id" },
+      ],
+    },
+    {
       name: "position",
       type: "number",
       label: "Position",
