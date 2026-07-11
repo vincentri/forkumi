@@ -346,6 +346,11 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
   const whyDefaults = WHY_FORKUMI_DEFAULTS[locale];
   const whyEye = firstValue(settings.whyForkumiEye, whyDefaults.eye) ?? whyDefaults.eye;
   const whyHead = firstValue(settings.whyForkumiHead, whyDefaults.head) ?? whyDefaults.head;
+  // ponytail: split heading on first ", " → two lines, highlight line 2 (matches statsHead hl:1 in temp/index.html).
+  const whyHeadSplit = whyHead.split(", ");
+  const whyHeadLine1 = whyHeadSplit.length > 1 ? `${whyHeadSplit[0]},` : whyHeadSplit[0];
+  const whyHeadLine2 = whyHeadSplit.slice(1).join(", ");
+  const whyHeadHighlightIndex: number = 1;
   const whyStats = WHY_FORKUMI_NUMS.map((defaultNum, i) => {
     const slot = i + 1;
     return {
@@ -400,7 +405,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
       
       <section className="sec g-lav" id="stats">
         <div className="wrap">
-          <div className="sec-top"><div><span className="eyebrow reveal">{whyEye}</span><h2 className="sec-head reveal">{whyHead}</h2></div></div>
+          <div className="sec-top"><div><span className="eyebrow reveal">{whyEye}</span><h2 className="sec-head reveal"><span className={whyHeadHighlightIndex === 0 ? "hl" : undefined}>{whyHeadLine1}</span>{whyHeadLine2 ? <><br /><span className={whyHeadHighlightIndex === 1 ? "hl" : undefined}>{whyHeadLine2}</span></> : null}</h2></div></div>
           <div className="stats">
             {whyStats.map((stat, i) => (
               <div key={i} className="stat reveal" style={{ background: stat.bgColor }}>
