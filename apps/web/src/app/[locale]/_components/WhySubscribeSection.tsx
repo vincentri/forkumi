@@ -121,6 +121,7 @@ export async function WhySubscribeSection({
                       {cell === "y" ? <span className="mk yes">✓</span>
                         : cell === "n" ? <span className="mk no">✕</span>
                         : cell === "l" ? <span className="mk lim">–</span>
+                        : cell === "?" ? <span className="mk lim">?</span>
                         : null}
                     </div>
                   ))}

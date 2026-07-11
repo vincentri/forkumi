@@ -17,10 +17,10 @@ export const CompareCriterionCRUD = defineCRUD({
     {
       name: "cells",
       type: "text",
-      label: "Cells (y/n/l comma-separated)",
+      label: "Cells (y/n/l/? comma-separated)",
       required: true,
       default: "y,n,l",
-      note: "Order matches compare categories position. Use y (yes), n (no), l (limited), or empty.",
+      note: "Order matches compare categories position. Use y (yes), n (no), l (limited), ? (unknown), or empty.",
     },
     {
       name: "locale",
