@@ -67,6 +67,7 @@ async function main() {
   await seedSectionCards(prisma);
   await seedProcessPhases(prisma);
   await seedServiceCategories(prisma);
+  await seedPlans(prisma);
   await seedPlanOfInterest(prisma);
 
   console.log("Seed complete.");
@@ -668,6 +669,115 @@ async function seedServiceCategories(prisma: PrismaClient): Promise<void> {
   if (inserted > 0) {
     console.log(`Seeded ${inserted} Service Category rows.`);
   }
+}
+
+type SeededPlan = {
+  name: string;
+  color: string;
+  price: string;
+  normalPrice: string;
+  best: boolean;
+  position: number;
+};
+
+const SEED_PLANS: SeededPlan[] = [
+  { name: "Basic", color: "rose", price: "Rp 1.500k", normalPrice: "Rp 2.500k", best: false, position: 0 },
+  { name: "Standard", color: "purple", price: "Rp 3.000k", normalPrice: "Rp 4.500k", best: true, position: 1 },
+  { name: "Premium", color: "gold", price: "Rp 6.000k", normalPrice: "Rp 9.000k", best: false, position: 2 },
+];
+
+const SEED_PLAN_FEATURES: Record<string, Record<SeededLocale, string[]>> = {
+  Basic: {
+    en: [
+      "1 active request at a time",
+      "Branding & graphic design",
+      "Max 24h turnaround",
+      "Unlimited revisions",
+      "Email support",
+    ],
+    id: [
+      "1 request aktif pada satu waktu",
+      "Branding & desain grafis",
+      "Kelar maks 24 jam",
+      "Revisi sepuasnya",
+      "Dukungan email",
+    ],
+  },
+  Standard: {
+    en: [
+      "2 active requests at a time",
+      "All Basic services + Website & App",
+      "Max 24h turnaround",
+      "Unlimited revisions",
+      "Priority support",
+      "Monthly strategy call",
+    ],
+    id: [
+      "2 request aktif pada satu waktu",
+      "Semua layanan Basic + Website & App",
+      "Kelar maks 24 jam",
+      "Revisi sepuasnya",
+      "Dukungan prioritas",
+      "Strategy call bulanan",
+    ],
+  },
+  Premium: {
+    en: [
+      "3 active requests at a time",
+      "All Standard services",
+      "Max 24h turnaround",
+      "Unlimited revisions",
+      "Dedicated manager",
+      "Weekly strategy call",
+      "Quarterly report",
+    ],
+    id: [
+      "3 request aktif pada satu waktu",
+      "Semua layanan Standard",
+      "Kelar maks 24 jam",
+      "Revisi sepuasnya",
+      "Manajer khusus",
+      "Strategy call mingguan",
+      "Laporan kuartalan",
+    ],
+  },
+};
+
+async function seedPlans(prisma: PrismaClient): Promise<void> {
+  const existing = await prisma.plan.count();
+  if (existing > 0) {
+    return;
+  }
+  let featuresInserted = 0;
+  for (const p of SEED_PLANS) {
+    const plan = await prisma.plan.create({
+      data: {
+        name: p.name,
+        color: p.color,
+        price: p.price,
+        normalPrice: p.normalPrice,
+        best: p.best,
+        position: p.position,
+        active: true,
+      },
+    });
+    const featuresByLocale = SEED_PLAN_FEATURES[p.name];
+    for (const locale of ["id", "en"] as const) {
+      const texts = featuresByLocale[locale];
+      for (let i = 0; i < texts.length; i += 1) {
+        await prisma.planFeature.create({
+          data: {
+            planId: plan.id,
+            text: texts[i],
+            locale,
+            position: i,
+          },
+        });
+        featuresInserted += 1;
+      }
+    }
+  }
+  console.log(`Seeded ${SEED_PLANS.length} plans and ${featuresInserted} plan features.`);
 }
 
 const SEED_PLAN_OF_INTEREST: Record<SeededLocale, string[]> = {
