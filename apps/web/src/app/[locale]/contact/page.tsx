@@ -135,8 +135,8 @@ export default async function ContactPage({ params }: ContactPageProps): Promise
               </div>
             </div>
             <div className="reveal d1">
-              <div style={{ fontWeight: "800", fontSize: "20px", marginBottom: "4px" }}>{formHeading}</div>
               <ContactForm
+                formHeading={formHeading}
                 nameLabel={fieldName}
                 emailLabel={fieldEmail}
                 pkgLabel={fieldPkg}

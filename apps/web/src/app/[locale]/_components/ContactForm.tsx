@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactElement } from "react";
 
 type ContactFormProps = {
+  formHeading: string;
   nameLabel: string;
   emailLabel: string;
   pkgLabel: string;
@@ -17,6 +18,7 @@ type ContactFormProps = {
 type FormState = "idle" | "submitting" | "success" | "error";
 
 export function ContactForm({
+  formHeading,
   nameLabel,
   emailLabel,
   pkgLabel,
@@ -73,6 +75,7 @@ export function ContactForm({
   if (state === "success") {
     return (
       <form className="form reveal d1" onSubmit={onSubmit}>
+        <div style={{ fontWeight: 800, fontSize: "20px", marginBottom: "4px" }}>{formHeading}</div>
         <p
           role="status"
           style={{ fontWeight: 800, fontSize: "18px", marginBottom: "16px", color: "var(--purple)" }}
@@ -129,6 +132,7 @@ export function ContactForm({
 
   return (
     <form className="form reveal d1" onSubmit={onSubmit}>
+      <div style={{ fontWeight: 800, fontSize: "20px", marginBottom: "4px" }}>{formHeading}</div>
       <label>
         {nameLabel}
         <input
