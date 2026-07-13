@@ -10,6 +10,7 @@ export type SectionCardData = {
   color: string;
   heading: string;
   paragraph: string;
+  image: string | null;
 };
 
 export async function getSectionCards(

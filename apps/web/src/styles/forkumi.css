@@ -167,6 +167,7 @@ nav .brand img{max-width:125px;height:auto}
 .gcard .ci{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:13px}
 .gcard.purple .ci{background:linear-gradient(150deg,var(--purple),#a98bd8)}.gcard.rose .ci{background:linear-gradient(150deg,var(--rose),#e6a6b2)}.gcard.gold .ci{background:linear-gradient(150deg,var(--gold),#f6d680)}
 .gcard .ci svg{width:23px;height:23px;stroke:#fff;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.gcard .ci img{width:24px;height:24px;object-fit:contain}
 .gcard h4{font-size:16px;font-weight:700;margin-bottom:6px}
 .gcard p{font-size:13px;color:var(--body);line-height:1.45}
 .svc-list{list-style:none;margin-top:4px}

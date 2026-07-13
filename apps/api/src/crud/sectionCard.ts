@@ -48,6 +48,13 @@ export const SectionCardCRUD = defineCRUD({
       options: COLOR_OPTIONS,
     },
     {
+      name: "image",
+      type: "image",
+      label: "Icon Image",
+      uploadUrl: "/api/upload?path=uploads/section-cards",
+      note: "Shown inside the colored icon tile for 'included' cards on /packages. Square ~48×48px works best.",
+    },
+    {
       name: "locale",
       type: "select",
       label: "Locale",

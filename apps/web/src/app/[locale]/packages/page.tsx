@@ -4,6 +4,7 @@ import {
   firstValue,
   getFrontPageSettings,
   normalizeLocale,
+  resolveAssetUrl,
   safeHref,
   WHATSAPP_FALLBACK,
 } from "../../front-page-settings";
@@ -162,12 +163,20 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
           </div>
           {included.length > 0 ? (
             <div className="grid">
-              {included.map((card) => (
-                <div key={card.id} className={`gcard ${card.color} reveal`}>
-                  <h4>{card.heading}</h4>
-                  <p>{card.paragraph}</p>
-                </div>
-              ))}
+              {included.map((card) => {
+                const iconSrc = resolveAssetUrl(card.image);
+                return (
+                  <div key={card.id} className={`gcard ${card.color} reveal`}>
+                    {iconSrc ? (
+                      <div className="ci">
+                        <img src={iconSrc} alt="" loading="lazy" />
+                      </div>
+                    ) : null}
+                    <h4>{card.heading}</h4>
+                    <p>{card.paragraph}</p>
+                  </div>
+                );
+              })}
             </div>
           ) : null}
         </div>
