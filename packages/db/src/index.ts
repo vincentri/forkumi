@@ -10,8 +10,8 @@ const adapter = new PrismaPg(pool);
 
 // Generic, domain-agnostic Prisma client. This package must NOT know about any
 // app model or business rule. App-specific query extensions (e.g. computed
-// fields on write) live app-side — see apps/api/src/lib/db.ts, which wraps the
-// base client returned here with `.$extends`.
+// fields on write) live app-side and wrap the base client returned here
+// with `.$extends`.
 export function createBaseClient() {
   return new PrismaClient({
     adapter,

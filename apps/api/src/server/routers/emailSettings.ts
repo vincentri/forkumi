@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { prisma } from "~/lib/db";
+import { prisma } from "@repo/db";
 import { z } from "@repo/crud";
 import { getEmailSettings, sendEmail } from "~/lib/email";
 import { encryptSecret } from "~/lib/secret-crypto";

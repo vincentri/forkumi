@@ -32,7 +32,7 @@ mocks.prisma.user.findMany.mockResolvedValue([]);
 mocks.prisma.user.count.mockResolvedValue(0);
 mocks.prisma.userInvitation.findMany.mockResolvedValue([]);
 
-vi.mock("~/lib/db", () => ({ prisma: mocks.prisma }));
+vi.mock("@repo/db", () => ({ prisma: mocks.prisma }));
 
 vi.mock("superjson", () => ({
   default: { serialize: (v: unknown) => v, deserialize: (v: unknown) => v },

@@ -1,5 +1,5 @@
 import { createAuthOptions, createGetServerAuthSession } from "@repo/auth";
-import { prisma } from "~/lib/db";
+import { prisma } from "@repo/db";
 import { cache } from "react";
 
 export const authOptions = createAuthOptions({

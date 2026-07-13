@@ -1,4 +1,4 @@
-import { prisma } from "~/lib/db";
+import { prisma } from "@repo/db";
 import bcrypt from "bcryptjs";
 import { createPrismaAdapter } from "@repo/admin/server";
 import { createUserRouter, createInviteRouter } from "@repo/admin/server";

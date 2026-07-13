@@ -1,4 +1,4 @@
-import { prisma } from "~/lib/db";
+import { prisma } from "@repo/db";
 import { createPrismaAdapter } from "@repo/admin/server";
 import { createRoleRouter } from "@repo/admin/server";
 import { router, permissionProcedure } from "../trpc";

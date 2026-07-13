@@ -1,4 +1,4 @@
-import { prisma } from "~/lib/db";
+import { prisma } from "@repo/db";
 import { type EmailMessage } from "@repo/email";
 import { createResendProvider } from "@repo/email/providers/resend";
 import { decryptSecret, isEncryptedSecret } from "./secret-crypto";

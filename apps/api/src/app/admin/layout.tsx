@@ -5,7 +5,6 @@ import { toClientCRUDConfig, type CRUDConfig } from "@repo/crud";
 import { AdminNav, ThemeProvider } from "@repo/admin/ui";
 import { hasPermission } from "@repo/admin";
 import { getPublicSettings } from "~/lib/getPublicSettings";
-import { customLinks } from "~/lib/customLinks";
 
 export default async function AdminLayout({
   children,
@@ -37,10 +36,6 @@ export default async function AdminLayout({
 
   const navItems = [
     ...allConfigs.map(toClientCRUDConfig),
-    ...customLinks.filter((l) => {
-      const guard = (l as { permissions?: string[] }).permissions?.[0];
-      return !guard || isProtectedRole || permissions.includes(guard) || permissions.includes("*:view");
-    }),
   ];
 
   return (

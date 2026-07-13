@@ -1,5 +1,5 @@
 import { DEFAULT_ADMIN_ASSETS } from "@repo/db/default-assets";
-import { prisma } from "~/lib/db";
+import { prisma } from "@repo/db";
 import bcrypt from "bcryptjs";
 
 async function main(): Promise<void> {

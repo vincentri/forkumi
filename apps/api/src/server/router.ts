@@ -16,7 +16,7 @@ import {
   SettingsCRUD,
   WhysubCardCRUD,
 } from "~/crud";
-import { prisma } from "~/lib/db";
+import { prisma } from "@repo/db";
 import { router, permissionProcedure, publicProcedure } from "./trpc";
 import { z } from "zod";
 import {

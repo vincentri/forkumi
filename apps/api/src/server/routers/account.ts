@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
-import { prisma } from "~/lib/db";
+import { prisma } from "@repo/db";
 import { protectedProcedure, router } from "../trpc";
 
 async function getCurrentUser(sessionUser: { id: string; email?: string | null }) {
