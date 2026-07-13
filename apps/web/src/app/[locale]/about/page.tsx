@@ -8,7 +8,7 @@ import {
   WHATSAPP_FALLBACK,
 } from "../../front-page-settings";
 import { getProcessPhases } from "../../processPhase";
-import { getSectionCards } from "../../sectionCard";
+import { getSectionCards, SECTION_CARD_ICONS } from "../../sectionCard";
 import { WhySubscribeSection } from "../_components/WhySubscribeSection";
 import { Breadcrumb } from "../_components/Breadcrumb";
 import { CtaBand } from "../_components/CtaBand";
@@ -171,12 +171,20 @@ export default async function AboutPage({ params }: AboutPageProps): Promise<Rea
           </div>
           {trustCards.length > 0 ? (
             <div className="grid g3">
-              {trustCards.map((card) => (
-                <div key={card.id} className={`gcard ${card.color} reveal`}>
-                  <h4>{card.heading}</h4>
-                  <p>{card.paragraph}</p>
-                </div>
-              ))}
+              {trustCards.map((card) => {
+                const iconPath = card.icon ? SECTION_CARD_ICONS[card.icon] : null;
+                return (
+                  <div key={card.id} className={`gcard ${card.color} reveal`}>
+                    {iconPath ? (
+                      <div className="ci">
+                        <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: iconPath }} />
+                      </div>
+                    ) : null}
+                    <h4>{card.heading}</h4>
+                    <p>{card.paragraph}</p>
+                  </div>
+                );
+              })}
             </div>
           ) : null}
         </div>
