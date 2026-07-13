@@ -24,7 +24,7 @@ const LABELS = {
   nPort: { id: "Portfolio", en: "Portfolio" },
   nPkg: { id: "Paket", en: "Packages" },
   nAbout: { id: "Tentang", en: "About" },
-  hours: { id: "Senin – Jumat · 09.00 – 18.00 WIB", en: "Mon – Fri · 09:00 – 18:00 GMT+7" },
+  hours: { id: "Senin – Jumat · 09.00 – 18.00", en: "Mon – Fri · 09:00 – 18:00" },
 } as const;
 
 const WA =
@@ -46,11 +46,9 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
   const logoFooter = resolveAssetUrl(settings.logoFooter) ?? "/assets/img/logo.svg";
   const phoneLabel = pick(settings, "contactPhoneLabel", "+65 8089 2716");
   const phoneUrl = safeHref(pick(settings, "contactPhoneUrl", PHONE), PHONE);
-  const whatsappLabel = pick(settings, "contactWhatsappLabel", "WhatsApp");
   const whatsappUrl = safeHref(pick(settings, "contactWhatsappUrl", WA), WA);
   const emailLabel = pick(settings, "contactEmailLabel", "linkforkumi@gmail.com");
   const emailUrl = safeHref(pick(settings, "contactEmailUrl", MAIL), MAIL);
-  const instagramLabel = pick(settings, "contactInstagramLabel", "@forkumi.design");
   const instagramUrl = safeHref(pick(settings, "contactInstagramUrl", IG), IG);
   const workingHours = pick(settings, "contactWorkingHours", LABELS.hours[locale]);
   const socialInstagramUrl = safeHref(pick(settings, "socialInstagramUrl", instagramUrl), instagramUrl);
@@ -76,11 +74,16 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
           </div>
           <div>
             <h5>{pick(settings, "footerContactHeading", LABELS.contact[locale])}</h5>
-            <a href={whatsappUrl} target="_blank" rel="noopener">{whatsappLabel}</a>
             <a href={phoneUrl}>{phoneLabel}</a>
             <a href={emailUrl}>{emailLabel}</a>
-            <a href={instagramUrl} target="_blank" rel="noopener">{instagramLabel}</a>
-            <p>{workingHours}</p>
+            <p>
+              {workingHours.split("·").map((line, i) => (
+                <span key={i}>
+                  {i > 0 && <br />}
+                  {line.trim()}
+                </span>
+              ))}
+            </p>
           </div>
           <div>
             <h5>{pick(settings, "footerFollowHeading", LABELS.follow[locale])}</h5>

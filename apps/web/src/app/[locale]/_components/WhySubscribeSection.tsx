@@ -78,7 +78,7 @@ export async function WhySubscribeSection({
   const gridTemplate = `1.9fr repeat(${cols}, 1fr)`;
 
   return (
-    <section className={`sec ${bg}`} id="why">
+    <section className={`sec ${bg}`} id="why" style={{ background: "#2D3F98" }}>
       <div className="wrap">
         <div className="sec-top">
           <div>
@@ -91,19 +91,7 @@ export async function WhySubscribeSection({
           </div>
           <p className="intro reveal d1">{intro}</p>
         </div>
-        {cards.length > 0 ? (
-          <div className="cards-flex reveal">
-            {cards.map((card, i) => (
-              <div key={i} className={`gcard ${card.color} reveal`}>
-                <div className="ci">
-                  <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: WHYSUB_ICONS[card.icon] ?? WHYSUB_ICONS.team }} />
-                </div>
-                <h4>{card.heading}</h4>
-                <p>{card.paragraph}</p>
-              </div>
-            ))}
-          </div>
-        ) : null}
+       
         {cols > 0 && compareData.rows.length > 0 ? (
           <div className="cmp-wrap reveal" style={{ marginTop: "30px" }}>
             <div className="cmp" style={{ gridTemplateColumns: gridTemplate }}>

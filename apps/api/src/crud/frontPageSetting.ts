@@ -165,15 +165,6 @@ export const FrontPageSettingsCRUD = defineCRUD({
     },
     {
       namespace: "contact",
-      name: "contactWhatsappLabel",
-      type: "text",
-      label: "WhatsApp Display Text",
-      tab: "Contact",
-      width: "half",
-      localized: false,
-    },
-    {
-      namespace: "contact",
       name: "contactWhatsappUrl",
       type: "text",
       label: "WhatsApp URL",

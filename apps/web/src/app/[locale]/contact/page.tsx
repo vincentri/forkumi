@@ -95,7 +95,7 @@ export default async function ContactPage({ params }: ContactPageProps): Promise
     firstValue(settings.contactErrorMessage, defaults.errorMessage) ?? defaults.errorMessage;
 
   const whatsappUrl = safeHref(settings.contactWhatsappUrl, WHATSAPP_FALLBACK);
-  const whatsappLabel = firstValue(settings.contactWhatsappLabel) ?? "WhatsApp";
+  const whatsappLabel = "WhatsApp";
   const phoneUrl = safeHref(settings.contactPhoneUrl, PHONE_FALLBACK);
   const phoneLabel = firstValue(settings.contactPhoneLabel) ?? "+65 8089 2716";
   const emailUrl = safeHref(settings.contactEmailUrl, EMAIL_FALLBACK);
