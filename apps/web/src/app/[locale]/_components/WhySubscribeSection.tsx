@@ -78,7 +78,7 @@ export async function WhySubscribeSection({
   const gridTemplate = `1.9fr repeat(${cols}, 1fr)`;
 
   return (
-    <section className={`sec ${bg}`} id="why" style={{ background: "#2D3F98" }}>
+    <section className={`sec dark ${bg}`} id="why" style={{ background: "#2D3F98" }}>
       <div className="wrap">
         <div className="sec-top">
           <div>

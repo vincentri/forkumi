@@ -121,6 +121,7 @@ nav .brand img{max-width:125px;height:auto}
 .sec.g-blue,.sec.g-pink{background:transparent}
 .sec.dark{background:var(--navy);color:#fff}
 .sec.dark .intro,.sec.dark p{color:#d9d4ec}
+#why.dark .eyebrow,#why.dark .whysub-line{color:#fff}
 .sec-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:30px}
 .sec-top p.intro{max-width:430px;color:var(--body);font-size:15px;line-height:1.55}
 
