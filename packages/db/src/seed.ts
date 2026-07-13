@@ -65,6 +65,7 @@ async function main() {
   await seedFaqs(prisma);
   await seedIndustries(prisma);
   await seedSectionCards(prisma);
+  await seedWhysubCards(prisma);
   await seedProcessPhases(prisma);
   await seedServiceCategories(prisma);
   await seedPlans(prisma);
@@ -238,6 +239,7 @@ async function seedIndustries(prisma: PrismaClient): Promise<void> {
 type SeededSectionRow = {
   section: "included" | "terms" | "payment";
   color: string;
+  icon?: string;
   heading: Record<SeededLocale, string>;
   paragraph: Record<SeededLocale, string>;
 };
@@ -246,6 +248,7 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
   {
     section: "included",
     color: "purple",
+    icon: "bolt",
     heading: {
       id: "Pengerjaan ≤24 jam",
       en: "≤24h turnaround",
@@ -258,6 +261,7 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
   {
     section: "included",
     color: "rose",
+    icon: "star",
     heading: {
       id: "Revisi sepuasnya",
       en: "Unlimited revisions",
@@ -270,6 +274,7 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
   {
     section: "included",
     color: "gold",
+    icon: "lock",
     heading: {
       id: "Bebas Ikatan",
       en: "No Lock-In",
@@ -282,6 +287,7 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
   {
     section: "included",
     color: "purple",
+    icon: "file",
     heading: {
       id: "File milikmu",
       en: "You own the files",
@@ -493,6 +499,7 @@ async function seedSectionCards(prisma: PrismaClient): Promise<void> {
           data: {
             section: card.section,
             color: card.color,
+            icon: card.icon ?? null,
             heading: card.heading[locale],
             paragraph: card.paragraph[locale],
             locale,
@@ -507,6 +514,71 @@ async function seedSectionCards(prisma: PrismaClient): Promise<void> {
   }
   if (inserted > 0) {
     console.log(`Seeded ${inserted} Section Card rows.`);
+  }
+}
+
+type SeededWhysubRow = {
+  icon: string;
+  color: string;
+  heading: Record<SeededLocale, string>;
+  paragraph: Record<SeededLocale, string>;
+};
+
+const SEED_WHYSUB_CARDS: SeededWhysubRow[] = [
+  {
+    icon: "team",
+    color: "purple",
+    heading: { id: "Punya desainer in-house?", en: "Hiring in-house?" },
+    paragraph: {
+      id: "Gaji + BPJS + asuransi, izin sakit, butuh pelatihan, beli tools sendiri. Ribet & mahal.",
+      en: "Salary + benefits + insurance, sick days, training, paying for tools. Pricey & messy.",
+    },
+  },
+  {
+    icon: "brand",
+    color: "rose",
+    heading: { id: "Pakai agency lama?", en: "Old-school agency?" },
+    paragraph: {
+      id: "Harga fantastis, sistem ribet, kurang cocok buat startup, gonta-ganti agency.",
+      en: "Sky-high prices, clunky systems, not startup-friendly, agency-hopping.",
+    },
+  },
+  {
+    icon: "bolt",
+    color: "gold",
+    heading: { id: "Mau coba AI sendiri?", en: "Thinking of DIY AI?" },
+    paragraph: {
+      id: "Boleh-boleh aja, tapi langganan tool-nya nggak murah dan harus kamu bayar sendiri. Nulis prompt yang pas juga butuh latihan, dan hasilnya sering belum sreg sama brand — ujungnya waktumu habis, fokus bisnis terganggu.",
+      en: "Totally fair to try — but the tools aren\u2019t cheap and you\u2019d pay for them yourself. Writing the right prompt takes practice, and results often miss your brand — eating your time and pulling focus from your business.",
+    },
+  },
+];
+
+async function seedWhysubCards(prisma: PrismaClient): Promise<void> {
+  let inserted = 0;
+  for (const locale of ["id", "en"] as const) {
+    const alreadyExists = await prisma.whysubCard.count({ where: { locale } });
+    if (alreadyExists > 0) {
+      continue;
+    }
+    let position = 0;
+    for (const card of SEED_WHYSUB_CARDS) {
+      await prisma.whysubCard.create({
+        data: {
+          icon: card.icon,
+          color: card.color,
+          heading: card.heading[locale],
+          paragraph: card.paragraph[locale],
+          locale,
+          position,
+        },
+      });
+      inserted += 1;
+      position += 1;
+    }
+  }
+  if (inserted > 0) {
+    console.log(`Seeded ${inserted} Whysub Card rows.`);
   }
 }
 
