@@ -149,7 +149,7 @@ nav .brand img{max-width:125px;height:auto}
 .ind:hover .n{transform:translateX(20px)}
 .ind:hover .name{color:var(--rose)}
 .ind:nth-child(3n+2):hover .name{color:var(--purple)}
-.ind:nth-child(3n):hover .name{color:#FCFBF6}
+.ind:nth-child(3n):hover .name{color:#5F8FD0}
 .ind:hover .tag{opacity:1;transform:translateX(-6px)}
 .ind:hover .tag .go{background:var(--navy);border-color:var(--navy);transform:rotate(-45deg)}
 .ind:hover .tag .go svg{stroke:#fff}
