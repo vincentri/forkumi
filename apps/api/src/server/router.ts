@@ -684,7 +684,7 @@ const publicSectionCardRouter = router({
           ...(section ? { section } : {}),
         },
         orderBy: { position: "asc" },
-        select: { id: true, section: true, color: true, heading: true, paragraph: true, image: true },
+        select: { id: true, section: true, color: true, heading: true, paragraph: true, icon: true },
       });
       return rows.map((row) => ({
         id: row.id,
@@ -692,7 +692,7 @@ const publicSectionCardRouter = router({
         color: row.color,
         heading: row.heading,
         paragraph: row.paragraph,
-        image: row.image,
+        icon: row.icon,
       }));
     }),
 });

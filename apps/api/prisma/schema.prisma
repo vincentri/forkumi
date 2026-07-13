@@ -212,7 +212,7 @@ model SectionCard {
   color     String   @default("purple")
   heading   String
   paragraph String
-  image     String?
+  icon      String?
   locale    String   @default("en")
   position  Int      @default(0)
   active    Boolean  @default(true)

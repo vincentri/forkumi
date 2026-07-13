@@ -13,6 +13,29 @@ const COLOR_OPTIONS = [
   { label: "Gold", value: "gold" },
 ];
 
+const ICON_OPTIONS = [
+  { label: "Lightning bolt", value: "bolt" },
+  { label: "Star", value: "star" },
+  { label: "Lock", value: "lock" },
+  { label: "File", value: "file" },
+  { label: "Brand", value: "brand" },
+  { label: "Graphic", value: "graphic" },
+  { label: "UI/UX", value: "uiux" },
+  { label: "Social", value: "social" },
+  { label: "Motion", value: "motion" },
+  { label: "Video", value: "video" },
+  { label: "Illustration", value: "illus" },
+  { label: "Web", value: "web" },
+  { label: "Team", value: "team" },
+  { label: "Eye", value: "eye" },
+  { label: "Clock", value: "clock" },
+  { label: "Data", value: "data" },
+  { label: "Chat", value: "chat" },
+  { label: "Mail", value: "mail" },
+  { label: "Phone", value: "phone" },
+  { label: "Instagram", value: "insta" },
+];
+
 export const SectionCardCRUD = defineCRUD({
   model: "sectionCard",
   label: "Section Cards",
@@ -48,11 +71,12 @@ export const SectionCardCRUD = defineCRUD({
       options: COLOR_OPTIONS,
     },
     {
-      name: "image",
-      type: "image",
-      label: "Icon Image",
-      uploadUrl: "/api/upload?path=uploads/section-cards",
-      note: "Shown inside the colored icon tile for 'included' cards on /packages. Square ~48×48px works best.",
+      name: "icon",
+      type: "select",
+      label: "Icon (only used for 'included')",
+      default: "bolt",
+      options: ICON_OPTIONS,
+      note: "Inline SVG icon rendered inside the colored tile on /packages.",
     },
     {
       name: "locale",
