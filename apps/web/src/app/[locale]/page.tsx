@@ -15,6 +15,7 @@ import { WhySubscribeSection } from "./_components/WhySubscribeSection";
 import { PlansSection } from "./_components/PlansSection";
 import { FaqCollapse } from "./_components/FaqCollapse";
 import { FaqItem } from "./_components/FaqItem";
+import { Fab } from "./_components/Fab";
 import { getPortfolios, type PortfolioItem } from "../portfolio";
 import { getFaqItems } from "../faq";
 
@@ -557,7 +558,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
         </div>
       </section>
       
-      <a className="fab" href={whatsappUrl} target="_blank" rel="noopener" title="WhatsApp"><span className="icon-dot" aria-hidden="true" /></a>
+      <Fab href={whatsappUrl} />
     </>
   );
 }
