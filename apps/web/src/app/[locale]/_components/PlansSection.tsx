@@ -4,6 +4,8 @@ import { getPlans, type PlanItem } from "../../plans";
 
 type PlansSectionProps = {
   locale: "id" | "en";
+  promoTag?: string;
+  promoSub?: string;
 };
 
 // ponytail: plan card markup kept inline for pixel control.
@@ -38,16 +40,31 @@ function renderPlanCard(plan: PlanItem, locale: "id" | "en"): ReactElement {
   );
 }
 
-export async function PlansSection({ locale }: PlansSectionProps): Promise<ReactElement> {
+export async function PlansSection({ locale, promoTag, promoSub }: PlansSectionProps): Promise<ReactElement> {
   const plans = await getPlans(locale);
-  if (plans.length === 0) {
+  const hasPromo = (promoTag && promoTag.trim().length > 0) || (promoSub && promoSub.trim().length > 0);
+  if (plans.length === 0 && !hasPromo) {
     return <div className="plans" />;
   }
   return (
-    <div className="plans">
-      {plans.map((plan) => (
-        <Fragment key={plan.id}>{renderPlanCard(plan, locale)}</Fragment>
-      ))}
-    </div>
+    <>
+      {plans.length > 0 ? (
+        <div className="plans">
+          {plans.map((plan) => (
+            <Fragment key={plan.id}>{renderPlanCard(plan, locale)}</Fragment>
+          ))}
+        </div>
+      ) : null}
+      {hasPromo ? (
+        <p className="pnote reveal">
+          {promoTag && promoTag.trim().length > 0 ? (
+            <span className="promo-tag">{promoTag}</span>
+          ) : null}
+          {promoSub && promoSub.trim().length > 0 ? (
+            <span className="promo-sub">{promoSub}</span>
+          ) : null}
+        </p>
+      ) : null}
+    </>
   );
 }

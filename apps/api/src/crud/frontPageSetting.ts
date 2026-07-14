@@ -636,6 +636,14 @@ export const FrontPageSettingsCRUD = defineCRUD({
     },
     {
       namespace: "pkg",
+      name: "pkgPromoTag",
+      type: "text",
+      label: "Promo Tag (italic headline)",
+      tab: "Home",
+      note: "e.g. 'Limited Promo 🎉'. Shown as the italic headline above the promo note.",
+    },
+    {
+      namespace: "pkg",
       name: "pkgNote",
       type: "textarea",
       label: "Promo Note (footer of section)",

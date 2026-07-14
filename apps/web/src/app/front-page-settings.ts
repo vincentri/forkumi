@@ -1,3 +1,5 @@
+import { fetchNextOptions } from "./cache-config";
+
 export type FrontPageSettings = Record<string, string>;
 
 export const DEFAULT_TITLE = "Forkumi";
@@ -59,9 +61,7 @@ export function resolveAssetUrl(value: string | null | undefined): string | unde
 export async function getFrontPageSettings(locale: "id" | "en"): Promise<FrontPageSettings> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.frontPageSettings.get?input=${input}`, {
-      next: { revalidate: 60, tags: ["public:frontPageSettings"] },
-    });
+    const response = await fetch(`${apiOrigin()}/api/trpc/public.frontPageSettings.get?input=${input}`, fetchNextOptions(["public:frontPageSettings"]));
 
     if (!response.ok) {
       return {};

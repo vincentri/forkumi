@@ -1,3 +1,5 @@
+import { fetchNextOptions } from "./cache-config";
+
 function apiOrigin(): string {
   return (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").replace(/\/$/, "");
 }
@@ -12,9 +14,7 @@ export type WhysubCardData = {
 export async function getWhysubCards(locale: "id" | "en"): Promise<WhysubCardData[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.whysub.list?input=${input}`, {
-      next: { revalidate: 60, tags: ["public:whysub"] },
-    });
+    const response = await fetch(`${apiOrigin()}/api/trpc/public.whysub.list?input=${input}`, fetchNextOptions(["public:whysub"]));
     if (!response.ok) {
       return [];
     }

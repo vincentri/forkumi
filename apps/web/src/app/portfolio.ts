@@ -1,3 +1,4 @@
+import { fetchNextOptions } from "./cache-config";
 import { resolveAssetUrl } from "./front-page-settings";
 
 export type PortfolioItem = {
@@ -25,9 +26,7 @@ function apiOrigin(): string {
 export async function getPortfolios(locale: "id" | "en"): Promise<PortfolioItem[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.portfolio.list?input=${input}`, {
-      next: { revalidate: 60, tags: ["public:portfolio"] },
-    });
+    const response = await fetch(`${apiOrigin()}/api/trpc/public.portfolio.list?input=${input}`, fetchNextOptions(["public:portfolio"]));
     if (!response.ok) {
       return [];
     }

@@ -1,3 +1,5 @@
+import { fetchNextOptions } from "./cache-config";
+
 function apiOrigin(): string {
   return (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").replace(/\/$/, "");
 }
@@ -11,9 +13,7 @@ export type IndustryItemData = {
 export async function getIndustryItems(locale: "id" | "en"): Promise<IndustryItemData[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.industry.list?input=${input}`, {
-      next: { revalidate: 60, tags: ["public:industry"] },
-    });
+    const response = await fetch(`${apiOrigin()}/api/trpc/public.industry.list?input=${input}`, fetchNextOptions(["public:industry"]));
     if (!response.ok) {
       return [];
     }

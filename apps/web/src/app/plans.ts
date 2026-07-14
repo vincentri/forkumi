@@ -1,3 +1,5 @@
+import { fetchNextOptions } from "./cache-config";
+
 function apiOrigin(): string {
   return (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").replace(/\/$/, "");
 }
@@ -16,9 +18,7 @@ export type PlanItem = {
 export async function getPlans(locale: "id" | "en"): Promise<PlanItem[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.plan.list?input=${input}`, {
-      next: { revalidate: 60, tags: ["public:plan"] },
-    });
+    const response = await fetch(`${apiOrigin()}/api/trpc/public.plan.list?input=${input}`, fetchNextOptions(["public:plan"]));
     if (!response.ok) {
       return [];
     }

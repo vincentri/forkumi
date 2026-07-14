@@ -31,6 +31,12 @@ const WHY_SUB_DEFAULTS: Record<"id" | "en", {
 
 const WHY_SUB_HIGHLIGHT_INDEX_DEFAULT = "1";
 
+// ponytail: static marketing copy — no backend field. Wire to settings only if it needs editing.
+const CMP_DEFAULTS: Record<"id" | "en", { eye: string; headLine1: string; headLine2: string }> = {
+  en: { eye: "Comparison", headLine1: "Compare for", headLine2: "yourself" },
+  id: { eye: "Perbandingan", headLine1: "Bandingkan", headLine2: "sendiri" },
+};
+
 const WHYSUB_ICONS: Record<string, string> = {
   team: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   brand: '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10"/>',
@@ -74,52 +80,81 @@ export async function WhySubscribeSection({
     getWhysubCards(locale),
   ]);
 
+  const cmp = CMP_DEFAULTS[locale];
   const cols = compareData.categories.length;
   const gridTemplate = `1.9fr repeat(${cols}, 1fr)`;
 
   return (
-    <section className={`sec dark ${bg}`} id="why" style={{ background: "#2D3F98" }}>
-      <div className="wrap">
-        <div className="sec-top">
-          <div>
-            <span className="eyebrow reveal">{eye}</span>
-            <h2 className="sec-head reveal">
-              <span className={highlightIndex === 0 ? "hl" : undefined}>{headLine1}</span>
-              <br />
-              <span className={highlightIndex === 1 ? "hl" : undefined}>{headLine2}</span>
-            </h2>
+    <>
+      <section className={`sec ${bg}`} id="why">
+        <div className="wrap">
+          <div className="sec-top">
+            <div>
+              <span className="eyebrow reveal">{eye}</span>
+              <h2 className="sec-head reveal">
+                <span className={highlightIndex === 0 ? "hl" : undefined}>{headLine1}</span>
+                <br />
+                <span className={highlightIndex === 1 ? "hl" : undefined}>{headLine2}</span>
+              </h2>
+            </div>
+            <p className="intro reveal d1">{intro}</p>
           </div>
-          <p className="intro reveal d1">{intro}</p>
-        </div>
-       
-        {cols > 0 && compareData.rows.length > 0 ? (
-          <div className="cmp-wrap reveal" style={{ marginTop: "30px" }}>
-            <div className="cmp" style={{ gridTemplateColumns: gridTemplate }}>
-              <div className="cmp-row cmp-head" style={{ display: "grid", gridTemplateColumns: gridTemplate }}>
-                <div className="cmp-c crit"></div>
-                {compareData.categories.map((cat, i) => (
-                  <div key={i} className={i === 0 ? "cmp-c f" : "cmp-c"}>{cat}</div>
-                ))}
-              </div>
-              {compareData.rows.map((row, ri) => (
-                <div key={ri} className="cmp-row" style={{ display: "grid", gridTemplateColumns: gridTemplate }}>
-                  <div className="cmp-c crit">{row.label}</div>
-                  {row.cells.map((cell, ci) => (
-                    <div key={ci} className={ci === 0 ? "cmp-c f" : "cmp-c"}>
-                      {cell === "y" ? <span className="mk yes">✓</span>
-                        : cell === "n" ? <span className="mk no">✕</span>
-                        : cell === "l" ? <span className="mk lim">–</span>
-                        : cell === "?" ? <span className="mk lim">?</span>
-                        : null}
-                    </div>
-                  ))}
+          <div className="grid g3">
+            {cards.map((card, i) => (
+              <div key={i} className={`gcard ${card.color} reveal`}>
+                <div className="ci">
+                  <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: WHYSUB_ICONS[card.icon] ?? "" }} />
                 </div>
-              ))}
+                <h4>{card.heading}</h4>
+                <p>{card.paragraph}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="sec dark" id="compare">
+        <div className="wrap">
+          <div className="sec-top">
+            <div>
+              <span className="eyebrow reveal" style={{ color: "var(--gold)" }}>{cmp.eye}</span>
+              <h2 className="sec-head reveal" style={{ color: "#fff" }}>
+                {cmp.headLine1}
+                <br />
+                <span className="hl">{cmp.headLine2}</span>
+              </h2>
             </div>
           </div>
-        ) : null}
-        <p className="whysub-line reveal">{line}</p>
-      </div>
-    </section>
+
+          {cols > 0 && compareData.rows.length > 0 ? (
+            <div className="cmp-wrap reveal" style={{ marginTop: "30px" }}>
+              <div className="cmp" style={{ gridTemplateColumns: gridTemplate }}>
+                <div className="cmp-row cmp-head" style={{ display: "grid", gridTemplateColumns: gridTemplate }}>
+                  <div className="cmp-c crit"></div>
+                  {compareData.categories.map((cat, i) => (
+                    <div key={i} className={i === 0 ? "cmp-c f" : "cmp-c"}>{cat}</div>
+                  ))}
+                </div>
+                {compareData.rows.map((row, ri) => (
+                  <div key={ri} className="cmp-row" style={{ display: "grid", gridTemplateColumns: gridTemplate }}>
+                    <div className="cmp-c crit">{row.label}</div>
+                    {row.cells.map((cell, ci) => (
+                      <div key={ci} className={ci === 0 ? "cmp-c f" : "cmp-c"}>
+                        {cell === "y" ? <span className="mk yes">✓</span>
+                          : cell === "n" ? <span className="mk no">✕</span>
+                          : cell === "l" ? <span className="mk lim">–</span>
+                          : cell === "?" ? <span className="mk lim">?</span>
+                          : null}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          <p className="whysub-line reveal">{line}</p>
+        </div>
+      </section>
+    </>
   );
 }

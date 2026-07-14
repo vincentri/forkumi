@@ -1,3 +1,5 @@
+import { fetchNextOptions } from "./cache-config";
+
 function apiOrigin(): string {
   return (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").replace(/\/$/, "");
 }
@@ -14,7 +16,7 @@ export async function getProcessPhases(locale: "id" | "en"): Promise<ProcessPhas
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
     const response = await fetch(
       `${apiOrigin()}/api/trpc/public.processPhase.list?input=${input}`,
-      { next: { revalidate: 60, tags: ["public:processPhase"] } },
+      fetchNextOptions(["public:processPhase"]),
     );
     if (!response.ok) {
       return [];

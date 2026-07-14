@@ -278,6 +278,8 @@ nav .brand img{max-width:125px;height:auto}
 .plan.best .pick{background:linear-gradient(90deg,var(--purple),var(--rose))}
 .plan .pick:hover{filter:brightness(1.13)}
 .pnote{text-align:center;margin-top:26px;font-weight:600;color:var(--body)}
+.promo-tag{display:block;font-style:italic;font-weight:800;font-size:clamp(20px,2.4vw,26px);letter-spacing:.3px;color:var(--navy);margin-bottom:4px}
+.promo-sub{display:block;font-weight:600;color:var(--body)}
 
 /* faq */
 .faqs{max-width:820px;margin:0 auto}

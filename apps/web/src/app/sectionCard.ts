@@ -1,3 +1,5 @@
+import { fetchNextOptions } from "./cache-config";
+
 function apiOrigin(): string {
   return (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").replace(/\/$/, "");
 }
@@ -46,7 +48,7 @@ export async function getSectionCards(
     );
     const response = await fetch(
       `${apiOrigin()}/api/trpc/public.sectionCard.list?input=${input}`,
-      { next: { revalidate: 60, tags: ["public:sectionCard"] } },
+      fetchNextOptions(["public:sectionCard"]),
     );
     if (!response.ok) {
       return [];

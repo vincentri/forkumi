@@ -42,6 +42,11 @@ const PKG_NOTE_DEFAULTS: Record<"id" | "en", string> = {
   id: "Promo terbatas — harga normal dicoret. Pause / stop kapan aja, tanpa penalti.",
 };
 
+const PKG_PROMO_TAG_DEFAULTS: Record<"id" | "en", string> = {
+  en: "Limited Promo 🎉",
+  id: "Promo Terbatas 🎉",
+};
+
 const INCLUDED_DEFAULTS: Record<"id" | "en", {
   eye: string;
   headLine1: string;
@@ -105,6 +110,7 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
   const h1Hl = Number.parseInt(settings.packagesH1HighlightIndex ?? PKG_H1_HIGHLIGHT_DEFAULT, 10);
   const lead = firstValue(settings.packagesPageLead, pageDef.lead) ?? pageDef.lead;
   const pkgNote = firstValue(settings.pkgNote, PKG_NOTE_DEFAULTS[locale]) ?? PKG_NOTE_DEFAULTS[locale];
+  const pkgPromoTag = firstValue(settings.pkgPromoTag, PKG_PROMO_TAG_DEFAULTS[locale]) ?? PKG_PROMO_TAG_DEFAULTS[locale];
 
   const inclDef = INCLUDED_DEFAULTS[locale];
   const inclEye = firstValue(settings.packagesIncludedEye, inclDef.eye) ?? inclDef.eye;
@@ -143,8 +149,7 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
 
       <section className="sec g-lav">
         <div className="wrap">
-          <PlansSection locale={locale} />
-          <p className="pnote reveal">{pkgNote}</p>
+          <PlansSection locale={locale} promoTag={pkgPromoTag} promoSub={pkgNote} />
         </div>
       </section>
 

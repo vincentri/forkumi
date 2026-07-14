@@ -1,3 +1,5 @@
+import { fetchNextOptions } from "./cache-config";
+
 function apiOrigin(): string {
   return (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").replace(/\/$/, "");
 }
@@ -10,9 +12,7 @@ export type CompareData = {
 export async function getCompareData(locale: "id" | "en"): Promise<CompareData> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.compare.list?input=${input}`, {
-      next: { revalidate: 60, tags: ["public:compare"] },
-    });
+    const response = await fetch(`${apiOrigin()}/api/trpc/public.compare.list?input=${input}`, fetchNextOptions(["public:compare"]));
     if (!response.ok) {
       return { categories: [], rows: [] };
     }

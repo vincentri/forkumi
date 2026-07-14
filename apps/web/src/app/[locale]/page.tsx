@@ -185,6 +185,7 @@ const PKG_DEFAULTS: Record<"id" | "en", {
   headLine2: string;
   intro: string;
   note: string;
+  promoTag: string;
 }> = {
   en: {
     eye: "Packages",
@@ -192,6 +193,7 @@ const PKG_DEFAULTS: Record<"id" | "en", {
     headLine2: "right plan",
     intro: "Flat monthly price, no hidden fees. Pause or cancel anytime.",
     note: "Limited promo — normal price struck through. Pause or cancel anytime, no penalty.",
+    promoTag: "Limited Promo 🎉",
   },
   id: {
     eye: "Paket",
@@ -199,6 +201,7 @@ const PKG_DEFAULTS: Record<"id" | "en", {
     headLine2: "yang pas",
     intro: "Harga tetap bulanan, tanpa biaya tersembunyi. Pause atau stop kapan aja.",
     note: "Promo terbatas — harga normal dicoret. Pause / stop kapan aja, tanpa penalti.",
+    promoTag: "Promo Terbatas 🎉",
   },
 };
 
@@ -337,6 +340,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
   );
 
   const pkgNote = firstValue(settings.pkgNote, pkgDefaults.note) ?? pkgDefaults.note;
+  const pkgPromoTag = firstValue(settings.pkgPromoTag, pkgDefaults.promoTag) ?? pkgDefaults.promoTag;
 
   const allPortfolios = await getPortfolios(locale);
   const featuredPortfolios = pickFeatured(allPortfolios, settings.homeFeaturedPortfolioId);
@@ -506,8 +510,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
             </div>
             <p className="intro reveal d1">{pkgIntro}</p>
           </div>
-          <PlansSection locale={locale} />
-          <p className="pnote reveal">{pkgNote}</p>
+          <PlansSection locale={locale} promoTag={pkgPromoTag} promoSub={pkgNote} />
         </div>
       </section>
       
