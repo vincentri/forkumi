@@ -1,12 +1,11 @@
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
+import { notFound } from "next/navigation";
 import type { ReactElement, ReactNode } from "react";
 
 import { ForkumiEffects } from "../forkumi-effects";
+import { buildOrganizationJsonLd, buildSeoMetadata, serializeJsonLd } from "../seo";
 import {
-  DEFAULT_DESCRIPTION,
-  DEFAULT_TITLE,
-  firstValue,
   getFrontPageSettings,
   normalizeLocale,
   resolveAssetUrl,
@@ -30,16 +29,13 @@ export function generateStaticParams(): Array<{ locale: string }> {
 
 export async function generateMetadata({ params }: Pick<LocaleLayoutProps, "params">): Promise<Metadata> {
   const { locale: rawLocale } = await params;
-  const settings = await getFrontPageSettings(normalizeLocale(rawLocale));
-  const title = firstValue(settings.meta_title, settings.site_name) ?? DEFAULT_TITLE;
-  const description = firstValue(settings.meta_description) ?? DEFAULT_DESCRIPTION;
-  const keywords = firstValue(settings.meta_keywords);
+  const locale = normalizeLocale(rawLocale);
+  const settings = await getFrontPageSettings(locale);
   const favicon = resolveAssetUrl(settings.favicon);
+  const pagePath = (await headers()).get("x-forkumi-page-path") ?? "";
 
   return {
-    title,
-    description,
-    keywords,
+    ...buildSeoMetadata({ locale, pagePath, settings }),
     icons: favicon ? {
       icon: favicon,
       shortcut: favicon,
@@ -60,11 +56,16 @@ export default async function LocaleLayout({
   }
 
   const settings = await getFrontPageSettings(locale);
+  const organizationJsonLd = serializeJsonLd(buildOrganizationJsonLd(settings));
 
   return (
     <>
       <SoftNavInterceptor locale={locale} />
       <ForkumiEffects />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
+      />
       <ExternalHtmlScripts id="header" html={settings.headerScript} />
       <SiteSplash settings={settings} />
       <div id="cursor" /><div id="dot" />

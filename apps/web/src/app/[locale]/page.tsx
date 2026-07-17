@@ -11,6 +11,7 @@ import {
   safeHref,
 } from "../front-page-settings";
 import { getMarqueeItems } from "../marquee";
+import { buildSeoMetadata } from "../seo";
 import { WhySubscribeSection } from "./_components/WhySubscribeSection";
 import { PlansSection } from "./_components/PlansSection";
 import { FaqCollapse } from "./_components/FaqCollapse";
@@ -222,17 +223,14 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
     firstValue(settings.homePageSeoMetaDescription, settings.meta_description) ?? DEFAULT_DESCRIPTION;
   const keywords = firstValue(settings.homePageSeoMetaKeywords, settings.meta_keywords);
 
-  return {
+  return buildSeoMetadata({
+    locale,
+    pagePath: "",
+    settings,
     title,
     description,
     keywords,
-    alternates: {
-      languages: {
-        id: "/id/",
-        en: "/en/",
-      },
-    },
-  };
+  });
 }
 
 export default async function HomePage({ params }: HomePageProps): Promise<ReactElement> {

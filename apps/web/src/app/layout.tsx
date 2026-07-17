@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import { headers } from "next/headers";
 import type { ReactElement, ReactNode } from "react";
 
 import "../styles/forkumi.css";
@@ -12,6 +13,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000"),
   title: "Forkumi",
   description: "Forkumi design subscription website",
   icons: {
@@ -21,13 +23,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: ReactNode;
-}): ReactElement {
+}): Promise<ReactElement> {
+  const locale = (await headers()).get("x-forkumi-locale") === "en" ? "en" : "id";
+
   return (
-    <html lang="id" className={poppins.variable}>
+    <html lang={locale} className={poppins.variable}>
       <body>{children}</body>
     </html>
   );
