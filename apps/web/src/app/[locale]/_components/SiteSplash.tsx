@@ -2,15 +2,12 @@
 
 import { useEffect, useState, type ReactElement } from "react";
 
-import { resolveAssetUrl } from "../../front-page-settings";
-
 type SiteSplashProps = {
   settings: Record<string, string>;
 };
 
 export function SiteSplash({ settings }: SiteSplashProps): ReactElement | null {
   const brand = settings.site_name?.trim() || "Forkumi";
-  const logo = resolveAssetUrl(settings.logo) ?? "/assets/img/logo.svg";
   const [gone, setGone] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -30,7 +27,7 @@ export function SiteSplash({ settings }: SiteSplashProps): ReactElement | null {
 
   return (
     <div id="splash">
-      <img src={logo} alt={brand} />
+      <img src="/assets/img/loading.png" alt={brand} />
       <div className="sname">{brand}</div>
       <div className="bar"><i /></div>
     </div>
