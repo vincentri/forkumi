@@ -13,11 +13,11 @@
     }
   },
   "scripts": {
-    "db:migrate": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma migrate dev --name \"${1:-schema_change}\" && prisma generate'",
-    "db:migrate:deploy": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma migrate deploy'",
-    "db:reset": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma migrate reset --force && prisma generate'",
-    "db:seed": "dotenv -e ../../.env -- tsx src/seed.ts",
-    "db:studio": "dotenv -e ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma studio'",
+    "db:migrate": "dotenv run -f ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma migrate dev --name \"${1:-schema_change}\" && prisma generate'",
+    "db:migrate:deploy": "dotenv run -f ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma migrate deploy'",
+    "db:reset": "dotenv run -f ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma migrate reset --force && prisma generate'",
+    "db:seed": "dotenv run -f ../../.env -- tsx src/seed.ts",
+    "db:studio": "dotenv run -f ../../.env -- sh -c 'cd ../../apps/api/prisma && prisma studio'",
     "db:generate": "prisma generate --schema ../../apps/api/prisma/schema.prisma",
     "postinstall": "PRISMA_GENERATE_SKIP_AUTOINSTALL=true prisma generate --schema ../../apps/api/prisma/schema.prisma",
     "test": "vitest run"

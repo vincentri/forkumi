@@ -61,6 +61,44 @@ packages/
 - Create CRUD resource interactively: `pnpm crud:new`
 - Scaffold CRUD resource from config: `pnpm crud:scaffold <model>`
 
+## Local debug database
+
+Root `.env` points at the remote Supabase database. Never run migrations or seed against it. For local debugging, start the local Postgres container and override both database URLs inline.
+
+```bash
+# 1. Start local Postgres
+docker start pgvector-db
+
+# 2. Create the quantyx database if it is missing
+psql "postgresql://postgres:admin@localhost:5432/postgres" \
+  -tc "select 1 from pg_database where datname='quantyx'" | grep -q 1 \
+  || psql "postgresql://postgres:admin@localhost:5432/postgres" -c "create database quantyx"
+
+# 3. Apply existing migrations. db:migrate creates a new migration; use deploy for an existing DB.
+DATABASE_URL=postgresql://postgres:admin@localhost:5432/quantyx \
+DIRECT_URL=postgresql://postgres:admin@localhost:5432/quantyx \
+pnpm --filter @repo/db db:migrate:deploy
+
+# 4. Seed content, admin roles, and admin@example.com
+DATABASE_URL=postgresql://postgres:admin@localhost:5432/quantyx \
+DIRECT_URL=postgresql://postgres:admin@localhost:5432/quantyx \
+STORAGE_PROVIDER=local \
+pnpm --filter @repo/db db:seed
+
+# 5. Run the API against the local DB
+DATABASE_URL=postgresql://postgres:admin@localhost:5432/quantyx \
+DIRECT_URL=postgresql://postgres:admin@localhost:5432/quantyx \
+STORAGE_PROVIDER=local \
+pnpm dev:api
+```
+
+Open `http://localhost:3001/admin/user` and sign in as `admin@example.com` / `password`.
+
+- Seed is idempotent per locale. It skips tables that already have rows for that locale.
+- `db:seed` creates `super admin` and `viewer`. The optional `pnpm --filter api db:seed` adds the protected `Super Admin` branding records; run it with the same local `DATABASE_URL` and `DIRECT_URL` overrides.
+- Stop the API with `lsof -ti :3001 | xargs kill -9` and the database with `docker stop pgvector-db`.
+- If the container is missing: `docker run -d --name pgvector-db --restart unless-stopped -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=postgres -p 5432:5432 pgvector/pgvector:pg17`.
+
 ## Conventions
 
 - **Package boundaries**: Built-in admin behavior belongs in `packages/admin`; generic CRUD behavior in `packages/crud`; app-specific wiring in `apps/api/src`.
