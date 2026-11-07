@@ -878,7 +878,7 @@ nav .brand img {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.gcard h4 {
+.gcard h3 {
   font-size: 16px;
   font-weight: 700;
   margin-bottom: 6px;
@@ -1288,7 +1288,7 @@ nav .brand img {
   padding: 26px 32px;
   color: #fff;
 }
-.ig-cta h4 {
+.ig-cta h3 {
   font-size: clamp(20px, 2.4vw, 28px);
   font-weight: 800;
 }
@@ -1735,7 +1735,7 @@ footer {
   grid-template-columns: 1.6fr 1fr 1fr 1fr;
   gap: 30px;
 }
-footer h5 {
+footer h2 {
   color: #fff;
   font-size: 13px;
   letter-spacing: 1.4px;

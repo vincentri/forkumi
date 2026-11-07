@@ -1,3 +1,4 @@
+import { jsonError } from "../../../api-error";
 import { LOCALES, PAGE_PATHS, pageMarkdown } from "../../../markdown";
 
 type Params = { params: Promise<{ locale: string; path?: string[] }> };
@@ -11,7 +12,12 @@ export async function GET(request: Request, { params }: Params): Promise<Respons
     !LOCALES.includes(locale as (typeof LOCALES)[number]) ||
     !PAGE_PATHS.includes(pagePath as (typeof PAGE_PATHS)[number])
   ) {
-    return new Response("Not found", { status: 404 });
+    return jsonError(
+      404,
+      "page_not_found",
+      `No markdown version of /${locale}/${pagePath}.`,
+      `Known pages: ${PAGE_PATHS.map((page) => `/${LOCALES[0]}/${page}`).join(", ")} (also under /en/). See /llms.txt.`,
+    );
   }
 
   const markdown = await pageMarkdown(

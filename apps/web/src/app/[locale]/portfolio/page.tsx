@@ -200,7 +200,7 @@ export default async function PortfolioPage({ params }: PortfolioPageProps): Pro
           })}
           <div className="ig-cta reveal">
             <div>
-              <h4>{igHeading}</h4>
+              <h3>{igHeading}</h3>
               <p>{igParagraph}</p>
             </div>
             <a className="btn" href={igUrl} target="_blank" rel="noopener">

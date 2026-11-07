@@ -211,7 +211,7 @@ export default async function AboutPage({ params }: AboutPageProps): Promise<Rea
                         <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: iconPath }} />
                       </div>
                     ) : null}
-                    <h4>{card.heading}</h4>
+                    <h3>{card.heading}</h3>
                     <p>{card.paragraph}</p>
                   </div>
                 );

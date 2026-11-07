@@ -201,7 +201,7 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
                         <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: iconPath }} />
                       </div>
                     ) : null}
-                    <h4>{card.heading}</h4>
+                    <h3>{card.heading}</h3>
                     <p>{card.paragraph}</p>
                   </div>
                 );
@@ -227,7 +227,7 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
             <div className="cards-flex reveal" style={{ marginBottom: "18px" }}>
               {terms.map((card) => (
                 <div key={card.id} className="gcard purple reveal">
-                  <h4>{card.heading}</h4>
+                  <h3>{card.heading}</h3>
                   <p>{card.paragraph}</p>
                 </div>
               ))}
@@ -237,7 +237,7 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
             <div className="cards-flex reveal">
               {payment.map((card) => (
                 <div key={card.id} className="gcard rose reveal">
-                  <h4>{card.heading}</h4>
+                  <h3>{card.heading}</h3>
                   <p>{card.paragraph}</p>
                 </div>
               ))}

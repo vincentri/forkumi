@@ -72,14 +72,14 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
             <p className="ftag">{pick(settings, "footerTagline", LABELS.tag[locale])}</p>
           </div>
           <div>
-            <h5>{pick(settings, "footerExploreHeading", LABELS.explore[locale])}</h5>
+            <h2>{pick(settings, "footerExploreHeading", LABELS.explore[locale])}</h2>
             <Link href={`/${locale}/services`}>{LABELS.nSvc[locale]}</Link>
             <Link href={`/${locale}/portfolio`}>{LABELS.nPort[locale]}</Link>
             <Link href={`/${locale}/packages`}>{LABELS.nPkg[locale]}</Link>
             <Link href={`/${locale}/about`}>{LABELS.nAbout[locale]}</Link>
           </div>
           <div>
-            <h5>{pick(settings, "footerContactHeading", LABELS.contact[locale])}</h5>
+            <h2>{pick(settings, "footerContactHeading", LABELS.contact[locale])}</h2>
             <a href={phoneUrl}>{phoneLabel}</a>
             <a href={emailUrl}>{emailLabel}</a>
             <p>
@@ -92,7 +92,7 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
             </p>
           </div>
           <div>
-            <h5>{pick(settings, "footerFollowHeading", LABELS.follow[locale])}</h5>
+            <h2>{pick(settings, "footerFollowHeading", LABELS.follow[locale])}</h2>
             <div className="fsoc">
               <a href={socialInstagramUrl} target="_blank" rel="noopener" aria-label="Instagram">
                 <svg viewBox="0 0 24 24">

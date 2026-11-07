@@ -109,7 +109,7 @@ export async function WhySubscribeSection({
                     dangerouslySetInnerHTML={{ __html: WHYSUB_ICONS[card.icon] ?? "" }}
                   />
                 </div>
-                <h4>{card.heading}</h4>
+                <h3>{card.heading}</h3>
                 <p>{card.paragraph}</p>
               </div>
             ))}

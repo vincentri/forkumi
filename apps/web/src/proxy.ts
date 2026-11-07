@@ -1,17 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server";
 
+import { markdownRewritePath } from "./negotiate";
+
 export function proxy(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
   const requestHeaders = new Headers(request.headers);
   const [locale, ...segments] = pathname.split("/").filter(Boolean);
 
   // Agents (Claude Code, OpenCode, ...) ask for markdown via Accept; serve the .md version.
-  if (
-    request.headers.get("accept")?.includes("text/markdown") &&
-    /^\/(id|en)(\/|$)/.test(pathname)
-  ) {
+  const markdownPath = markdownRewritePath(pathname, request.headers.get("accept"));
+  if (markdownPath) {
     const url = request.nextUrl.clone();
-    url.pathname = `/md${pathname.replace(/\/$/, "")}`;
+    url.pathname = markdownPath;
     const response = NextResponse.rewrite(url);
     response.headers.set("Vary", "Accept");
     return response;

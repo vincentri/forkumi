@@ -51,6 +51,7 @@ export async function GET(): Promise<Response> {
     `# ${home.title}`,
     `> ${home.description}`,
     `Every page is available as markdown: add \`.md\` to its URL (e.g. \`/en/about.md\`) or send \`Accept: text/markdown\`. All pages in one file: ${full}`,
+    `API description (OpenAPI 3.1): ${new URL("/openapi.json", webBaseUrl()).toString()}`,
     `## Key facts\n\n${facts.join("\n")}`,
     ...sections,
   ].join("\n\n");

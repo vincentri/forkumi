@@ -1,6 +1,7 @@
 import { NodeHtmlMarkdown, type TranslatorConfigFactory } from "node-html-markdown";
 
 import { fetchNextOptions } from "./cache-config";
+import { fallbackMarkdown, selfFetchTarget } from "./self-fetch";
 import { getFrontPageSettings, normalizeLocale } from "./front-page-settings";
 import { buildSeoMetadata } from "./seo";
 
@@ -62,22 +63,37 @@ export async function pageMeta(
   return { title: String(meta.title), description: meta.description ?? "" };
 }
 
+async function renderedMain(origin: string, locale: Locale, pagePath: string): Promise<string> {
+  const target = selfFetchTarget(origin);
+  const response = await fetch(new URL(`/${locale}/${pagePath}`, target.origin), {
+    ...fetchNextOptions(["markdown"]),
+    headers: target.headers,
+    redirect: "follow",
+  });
+  if (!response.ok) {
+    throw new Error(`Fetching /${locale}/${pagePath} failed: ${response.status}`);
+  }
+  return /<main[^>]*>([\s\S]*)<\/main>/.exec(await response.text())?.[1] ?? "";
+}
+
 /** Renders the live HTML page and converts its <main> to markdown. */
 export async function pageMarkdown(
   origin: string,
   locale: Locale,
   pagePath: string,
 ): Promise<string> {
-  const response = await fetch(new URL(`/${locale}/${pagePath}`, origin), {
-    ...fetchNextOptions(["markdown"]),
-    redirect: "follow",
-  });
-  if (!response.ok) {
-    throw new Error(`Fetching /${locale}/${pagePath} failed: ${response.status}`);
-  }
-  const html = await response.text();
-  const main = /<main[^>]*>([\s\S]*)<\/main>/.exec(html)?.[1] ?? "";
+  const { title, description } = await pageMeta(locale, pagePath);
   const url = pageUrl(locale, pagePath);
+  const frontMatter = `---\ntitle: ${JSON.stringify(title)}\ndescription: ${JSON.stringify(description)}\nurl: ${url}\n---`;
+
+  let main: string;
+  try {
+    main = await renderedMain(origin, locale, pagePath);
+  } catch (error) {
+    // Agents still get a nonempty markdown answer (title, summary, links) instead of a 500.
+    console.error(error);
+    return `${frontMatter}\n\n${fallbackMarkdown(url, title, description, locale, new URL("/llms.txt", webBaseUrl()).toString())}\n`;
+  }
   const body = converter
     .translate(main)
     // Absolute links so the file still works when read outside the site.
@@ -88,7 +104,5 @@ export async function pageMarkdown(
     })
     // Inline-flex button rows render as adjacent links; separate them.
     .replace(/\)\[/g, ") [");
-  const { title, description } = await pageMeta(locale, pagePath);
-
-  return `---\ntitle: ${JSON.stringify(title)}\ndescription: ${JSON.stringify(description)}\nurl: ${url}\n---\n\n${body}\n`;
+  return `${frontMatter}\n\n${body}\n`;
 }
