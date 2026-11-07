@@ -13,7 +13,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.9.2",
+    "@hookform/resolvers": "^7.0.3",
     "@repo/ui": "workspace:*",
     "@tanstack/react-table": "^8.21.3",
     "@trpc/server": "^11.25.0",
