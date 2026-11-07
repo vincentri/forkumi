@@ -1,6 +1,8 @@
 import { Fragment, type ReactElement } from "react";
 
 import { getPlans, type PlanItem } from "../../plans";
+import { buildPlansJsonLd } from "../../seo";
+import { JsonLd } from "./JsonLd";
 
 type PlansSectionProps = {
   locale: "id" | "en";
@@ -55,6 +57,7 @@ export async function PlansSection({
     <>
       {plans.length > 0 ? (
         <div className="plans">
+          <JsonLd data={buildPlansJsonLd(locale, plans)} />
           {plans.map((plan) => (
             <Fragment key={plan.id}>{renderPlanCard(plan, locale)}</Fragment>
           ))}

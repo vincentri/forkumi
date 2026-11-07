@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const LOCALES = ["id", "en"] as const;
-const PAGE_PATHS = ["", "about/", "services/", "portfolio/", "packages/", "contact/"] as const;
+import { LOCALES, PAGE_PATHS } from "./markdown";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = new URL(process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000");

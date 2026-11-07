@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 
-import { firstValue } from "../../front-page-settings";
+import { firstValue, localeHref } from "../../front-page-settings";
 
 type CtaBandProps = {
   locale: "id" | "en";
@@ -59,7 +59,10 @@ export function CtaBand({ locale, settings }: CtaBandProps): ReactElement {
   const btnPrimary = firstValue(settings.ctaBtnPrimaryLabel, d.btnPrimary) ?? d.btnPrimary;
   const btnSecondary = firstValue(settings.ctaBtnSecondaryLabel, d.btnSecondary) ?? d.btnSecondary;
   const btnPrimaryUrl = safeHref(settings.ctaBtnPrimaryUrl, d.btnPrimaryUrl);
-  const btnSecondaryUrl = settings.ctaBtnSecondaryUrl?.trim() || d.btnSecondaryUrl;
+  const btnSecondaryUrl = localeHref(
+    locale,
+    settings.ctaBtnSecondaryUrl?.trim() || d.btnSecondaryUrl,
+  );
 
   return (
     <section className="cta-sec">

@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import type { ReactElement, ReactNode } from "react";
 
 import { ForkumiEffects } from "../forkumi-effects";
-import { buildOrganizationJsonLd, buildSeoMetadata, serializeJsonLd } from "../seo";
+import { buildOrganizationJsonLd, buildSeoMetadata, buildWebsiteJsonLd } from "../seo";
+import { JsonLd } from "./_components/JsonLd";
 import { getFrontPageSettings, normalizeLocale, resolveAssetUrl } from "../front-page-settings";
 import { ExternalHtmlScripts } from "./_components/ExternalHtmlScripts";
 import { SiteFooter } from "./_components/SiteFooter";
@@ -56,19 +57,18 @@ export default async function LocaleLayout({
   }
 
   const settings = await getFrontPageSettings(locale);
-  const organizationJsonLd = serializeJsonLd(buildOrganizationJsonLd(settings));
 
   return (
     <>
       <SoftNavInterceptor locale={locale} />
       <ForkumiEffects />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: organizationJsonLd }} />
+      <JsonLd data={[buildOrganizationJsonLd(settings), buildWebsiteJsonLd(settings)]} />
       <ExternalHtmlScripts id="header" html={settings.headerScript} />
       <SiteSplash settings={settings} />
       <div id="cursor" />
       <div id="dot" />
       <SiteNav locale={locale} settings={settings} />
-      {children}
+      <main>{children}</main>
       <SiteFooter locale={locale} settings={settings} />
       <ExternalHtmlScripts id="footer" html={settings.footerScript} />
     </>

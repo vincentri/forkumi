@@ -40,6 +40,18 @@ export function safeHref(value: string | null | undefined, fallback: string): st
   return v && isHref(v) ? v : fallback;
 }
 
+/**
+ * CMS hrefs like "packages" are meant relative to the locale root. Browsers resolve
+ * them against the current page (/en/packages/ + "packages" = /en/packages/packages/),
+ * and crawlers don't run SoftNavInterceptor, so make them absolute paths up front.
+ */
+export function localeHref(locale: "id" | "en", href: string): string {
+  if (/^([a-z][a-z\d+.-]*:|\/|#)/i.test(href)) return href;
+  const [path, rest = ""] = href.replace(/^(\.\.?\/)+/, "").split(/(?=[?#])/);
+  const slug = path.replace(/^\.\.?$/, "").replace(/\/$/, "");
+  return `/${locale}/${slug ? `${slug}/` : ""}${rest}`;
+}
+
 export function resolveAssetUrl(value: string | null | undefined): string | undefined {
   const asset = firstValue(value);
   if (!asset) {

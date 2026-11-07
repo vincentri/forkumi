@@ -42,6 +42,11 @@ const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@repo/auth"],
   trailingSlash: true,
+  // Markdown versions for agents: /id.md, /en/about.md
+  rewrites: async () => [
+    { source: "/:locale(id|en).md", destination: "/md/:locale" },
+    { source: "/:locale(id|en)/:page.md", destination: "/md/:locale/:page" },
+  ],
   images: {
     unoptimized: true,
     remotePatterns: [{ protocol: apiProtocol, hostname: apiHost, pathname: "/**" }],

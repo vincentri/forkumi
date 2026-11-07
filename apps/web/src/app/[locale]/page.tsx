@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import { Fragment, type ReactElement } from "react";
 
 import {
-  DEFAULT_DESCRIPTION,
-  DEFAULT_TITLE,
   firstValue,
   getFrontPageSettings,
+  localeHref,
   normalizeLocale,
   resolveAssetUrl,
   safeHref,
 } from "../front-page-settings";
 import { getMarqueeItems } from "../marquee";
-import { buildSeoMetadata } from "../seo";
+import { buildFaqJsonLd, buildSeoMetadata } from "../seo";
+import { JsonLd } from "./_components/JsonLd";
 import { WhySubscribeSection } from "./_components/WhySubscribeSection";
 import { PlansSection } from "./_components/PlansSection";
 import { FaqCollapse } from "./_components/FaqCollapse";
@@ -251,20 +251,8 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
   const { locale: rawLocale } = await params;
   const locale = normalizeLocale(rawLocale);
   const settings = await getFrontPageSettings(locale);
-  const title = firstValue(settings.homePageSeoMetaTitle, settings.meta_title) ?? DEFAULT_TITLE;
-  const description =
-    firstValue(settings.homePageSeoMetaDescription, settings.meta_description) ??
-    DEFAULT_DESCRIPTION;
-  const keywords = firstValue(settings.homePageSeoMetaKeywords, settings.meta_keywords);
 
-  return buildSeoMetadata({
-    locale,
-    pagePath: "",
-    settings,
-    title,
-    description,
-    keywords,
-  });
+  return buildSeoMetadata({ locale, pagePath: "", settings });
 }
 
 export default async function HomePage({ params }: HomePageProps): Promise<ReactElement> {
@@ -290,7 +278,10 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
     firstValue(settings.heroCtaPrimaryLabel, defaults.primaryLabel) ?? defaults.primaryLabel;
   const secondaryLabel =
     firstValue(settings.heroCtaSecondaryLabel, defaults.secondaryLabel) ?? defaults.secondaryLabel;
-  const secondaryUrl = settings.heroCtaSecondaryUrl || HERO_SECONDARY_URL_DEFAULT;
+  const secondaryUrl = localeHref(
+    locale,
+    settings.heroCtaSecondaryUrl || HERO_SECONDARY_URL_DEFAULT,
+  );
   const mascotSrc = resolveAssetUrl(settings.heroImage) ?? HERO_MASCOT_FALLBACK;
   const scrollText =
     firstValue(settings.heroScrollText, defaults.scrollText) ?? defaults.scrollText;
@@ -352,7 +343,10 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
   const ctaBtnSecondary =
     firstValue(settings.ctaBtnSecondaryLabel, ctaDefaults.btnSecondary) ?? ctaDefaults.btnSecondary;
   const ctaBtnPrimaryUrl = settings.ctaBtnPrimaryUrl || ctaDefaults.btnPrimaryUrl;
-  const ctaBtnSecondaryUrl = settings.ctaBtnSecondaryUrl || ctaDefaults.btnSecondaryUrl;
+  const ctaBtnSecondaryUrl = localeHref(
+    locale,
+    settings.ctaBtnSecondaryUrl || ctaDefaults.btnSecondaryUrl,
+  );
 
   const featuredWhatsappFallback =
     settings.featuredWhatsappFallback || WHATSAPP_FALLBACK_URL_DEFAULT;
@@ -573,7 +567,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
                   <p>{item.blurb}</p>
                   <div className="port-btns">
                     {primaryCta}
-                    <a className="btn ghost sm" href="/portfolio">
+                    <a className="btn ghost sm" href={`/${locale}/portfolio/`}>
                       {featuredCtaSeeAll}
                     </a>
                   </div>
@@ -602,6 +596,8 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
       </section>
 
       <section className="sec g-lav" id="faq">
+        {/* FAQ repeats on /packages; Google wants one marked-up instance, so only here. */}
+        {faqItems.length > 0 ? <JsonLd data={buildFaqJsonLd(faqItems)} /> : null}
         <div className="wrap">
           <div className="sec-top">
             <div>

@@ -11,6 +11,7 @@ import {
   resolveAssetUrl,
   type FrontPageSettings,
 } from "./front-page-settings";
+import { parsePrice } from "./price";
 
 type Locale = "id" | "en";
 
@@ -111,15 +112,28 @@ export function buildSeoMetadata({
   const normalizedPagePath = pagePath.replace(/^\/+|\/+$/g, "");
   const pageSeo = PAGE_SEO[normalizedPagePath as keyof typeof PAGE_SEO];
   const pageCopy = pageSeo?.[locale];
-  const title = firstValue(providedTitle, pageCopy?.title, settings.meta_title) ?? DEFAULT_TITLE;
+  // Home has its own CMS SEO fields; other pages use PAGE_SEO.
+  const home = normalizedPagePath === "";
+  const title =
+    firstValue(
+      providedTitle,
+      pageCopy?.title,
+      home ? settings.homePageSeoMetaTitle : undefined,
+      settings.meta_title,
+    ) ?? DEFAULT_TITLE;
   const description =
     firstValue(
       providedDescription,
       pageSeo ? settings[pageSeo.descriptionSetting] : undefined,
+      home ? settings.homePageSeoMetaDescription : undefined,
       pageCopy?.description,
       settings.meta_description,
     ) ?? DEFAULT_DESCRIPTION;
-  const keywords = firstValue(providedKeywords, settings.meta_keywords);
+  const keywords = firstValue(
+    providedKeywords,
+    home ? settings.homePageSeoMetaKeywords : undefined,
+    settings.meta_keywords,
+  );
   const localizedPath = (targetLocale: Locale): string =>
     normalizedPagePath ? `/${targetLocale}/${normalizedPagePath}/` : `/${targetLocale}/`;
 
@@ -133,6 +147,11 @@ export function buildSeoMetadata({
         id: localizedPath("id"),
         en: localizedPath("en"),
         "x-default": localizedPath("id"),
+      },
+      types: {
+        "text/markdown": normalizedPagePath
+          ? `/${locale}/${normalizedPagePath}.md`
+          : `/${locale}.md`,
       },
     },
     openGraph: {
@@ -201,4 +220,84 @@ export function buildOrganizationJsonLd(settings: FrontPageSettings): Record<str
 
 export function serializeJsonLd(value: unknown): string {
   return JSON.stringify(value).replace(/</g, "\\u003c");
+}
+
+export function buildWebsiteJsonLd(settings: FrontPageSettings): Record<string, unknown> {
+  const baseUrl = new URL(process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000");
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": new URL("#website", baseUrl).toString(),
+    name: firstValue(settings.site_name) ?? DEFAULT_TITLE,
+    url: baseUrl.toString(),
+    inLanguage: ["id-ID", "en-US"],
+    publisher: { "@id": new URL("#organization", baseUrl).toString() },
+  };
+}
+
+export function buildFaqJsonLd(
+  items: Array<{ question: string; answer: string }>,
+): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  };
+}
+
+export function buildPlansJsonLd(
+  locale: Locale,
+  plans: Array<{ name: string; price: string; features: string[] }>,
+): Record<string, unknown> {
+  const baseUrl = new URL(process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000");
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: locale === "id" ? "Langganan desain grafis" : "Graphic design subscription",
+    serviceType: "Design subscription",
+    provider: { "@id": new URL("#organization", baseUrl).toString() },
+    areaServed: "Worldwide",
+    offers: plans.map((plan) => {
+      const parsed = parsePrice(plan.price);
+      return {
+        "@type": "Offer",
+        name: plan.name,
+        description: plan.features.join(", "),
+        url: new URL(`/${locale}/packages/`, baseUrl).toString(),
+        ...(parsed
+          ? {
+              priceSpecification: {
+                "@type": "UnitPriceSpecification",
+                price: parsed.price,
+                priceCurrency: parsed.currency,
+                unitCode: "MON",
+                referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" },
+              },
+            }
+          : {}),
+      };
+    }),
+  };
+}
+
+export function buildBreadcrumbJsonLd(locale: Locale, current: string): Record<string, unknown> {
+  const baseUrl = new URL(process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000");
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: locale === "id" ? "Beranda" : "Home",
+        item: new URL(`/${locale}/`, baseUrl).toString(),
+      },
+      // Last crumb is the current page; schema.org lets it omit `item`.
+      { "@type": "ListItem", position: 2, name: current },
+    ],
+  };
 }
