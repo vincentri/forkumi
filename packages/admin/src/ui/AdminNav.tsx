@@ -186,7 +186,7 @@ function NavContent({
   const logoUrl =
     mounted && theme === "dark" ? (logoDarkUrl ?? logoLightUrl) : (logoLightUrl ?? logoDarkUrl);
 
-  // Build ordered group structure — group order follows first appearance in navItems
+  // Build ordered group structure; group order follows first appearance in navItems
   type NavSection =
     | { type: "ungrouped"; item: CRUDConfig | AdminNavLink }
     | { type: "group"; label: string; icon?: string; items: (CRUDConfig | AdminNavLink)[] };

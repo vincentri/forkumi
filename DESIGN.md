@@ -1,4 +1,4 @@
-# Design System
+# Design system
 
 Admin panel design reference. Start here when customizing for a new project.
 
@@ -8,9 +8,9 @@ Admin panel design reference. Start here when customizing for a new project.
 
 Three things to check before going live:
 
-1. **Brand name** — Admin → Settings → Branding → App Name. The value is read in `apps/api/src/app/admin/layout.tsx` and rendered by `packages/admin/src/ui/AdminNav.tsx`.
-2. **Primary color** — `apps/api/src/app/globals.css:13` — change `--primary: 221.2 83.2% 53.3%` (currently blue) to your brand color in HSL. Also update the dark-mode `--primary` if needed.
-3. **App title** — `apps/api/src/app/layout.tsx` — update the root metadata/title defaults.
+1. **Brand name.** Open Admin, then Settings, then Branding, then App name. The value is read in `apps/api/src/app/admin/layout.tsx` and rendered by `packages/admin/src/ui/AdminNav.tsx`.
+2. **Primary color.** In `apps/api/src/app/globals.css:13`, change `--primary: 221.2 83.2% 53.3%` (currently blue) to your brand color in HSL. Also update the dark-mode `--primary` if needed.
+3. **App title.** In `apps/api/src/app/layout.tsx`, update the root metadata and title defaults.
 
 That's it. Everything else inherits from these three.
 
@@ -20,22 +20,22 @@ That's it. Everything else inherits from these three.
 
 All colors are CSS custom properties defined in `apps/api/src/app/globals.css`. Light and dark variants both live there.
 
-| Token                  | Usage                                                                 |
-| ---------------------- | --------------------------------------------------------------------- |
-| `--background`         | Page background                                                       |
-| `--foreground`         | Default text                                                          |
-| `--card`               | Card/panel background                                                 |
-| `--primary`            | Buttons, active nav links, focus rings — **change this for branding** |
-| `--primary-foreground` | Text on primary-colored backgrounds                                   |
-| `--secondary`          | Secondary buttons, chips                                              |
-| `--muted`              | Subtle backgrounds (table header, input fill)                         |
-| `--muted-foreground`   | Placeholder text, secondary labels                                    |
-| `--accent`             | Hover states on nav items                                             |
-| `--destructive`        | Error states, delete buttons                                          |
-| `--border`             | Dividers, input outlines                                              |
-| `--input`              | Input border color                                                    |
-| `--ring`               | Focus ring                                                            |
-| `--radius`             | Global border radius (default `0.5rem`)                               |
+| Token                  | Usage                                                             |
+| ---------------------- | ----------------------------------------------------------------- |
+| `--background`         | Page background                                                   |
+| `--foreground`         | Default text                                                      |
+| `--card`               | Card/panel background                                             |
+| `--primary`            | Buttons, active nav links, focus rings. Change this for branding. |
+| `--primary-foreground` | Text on primary-colored backgrounds                               |
+| `--secondary`          | Secondary buttons, chips                                          |
+| `--muted`              | Subtle backgrounds (table header, input fill)                     |
+| `--muted-foreground`   | Placeholder text, secondary labels                                |
+| `--accent`             | Hover states on nav items                                         |
+| `--destructive`        | Error states, delete buttons                                      |
+| `--border`             | Dividers, input outlines                                          |
+| `--input`              | Input border color                                                |
+| `--ring`               | Focus ring                                                        |
+| `--radius`             | Global border radius (default `0.5rem`)                           |
 
 Dark mode is automatic. The `ThemeProvider` in `apps/api/src/app/admin/layout.tsx` reads `localStorage.getItem('theme')` and applies `.dark` to `<html>`. The inline script prevents the white flash on first load.
 
@@ -53,7 +53,7 @@ To switch to a custom font (e.g. Inter from Google Fonts):
 
 1. Add `<link>` in `apps/api/src/app/layout.tsx`
 2. Replace the `font-family` in `globals.css`
-3. Or use Next.js `next/font` — drop-in with no FOUT
+3. Or use Next.js `next/font`, which avoids FOUT
 
 Scale uses Tailwind defaults: `text-xs` (12px) for secondary labels, `text-sm` (14px) for table content, `text-base` (16px) for body, `text-2xl` (24px) for page headings.
 
@@ -132,11 +132,11 @@ Each admin resource page follows the same layout:
 │ value     │ value     │ value     │ [Edit] [Delete]   │
 └──────────────────────────────────────────────────────┘
 
-[← Prev]   Page 1 of N                       [Next →]
+[Prev]     Page 1 of N                       [Next]
 ```
 
 Error state: inline destructive banner replaces the table when `isError` is true.
-Empty state: centered message with optional CTA — customize via `emptyState` prop in `CRUDResourceClient.tsx`.
+Empty state: centered message with an optional CTA. Customize it via the `emptyState` prop in `CRUDResourceClient.tsx`.
 
 ---
 
@@ -144,7 +144,7 @@ Empty state: centered message with optional CTA — customize via `emptyState` p
 
 ```bash
 # 1. Write the config (or use interactive mode)
-pnpm crud:new                          # interactive — asks for model name + fields
+pnpm crud:new                          # interactive; asks for model name and fields
 # OR
 # Write apps/api/src/crud/<model>.ts manually (see example.ts)
 

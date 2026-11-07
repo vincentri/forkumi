@@ -10,7 +10,7 @@ test.describe("Settings (keyValue)", () => {
   });
 
   test.afterEach(async ({ page }) => {
-    // Always navigate back to Branding tab first — some tests switch to
+    // Always navigate back to Branding tab first; some tests switch to
     // Email which hides the App Name field.
     await switchTab(page, "Branding");
     const current = await page.getByLabel("App Name").inputValue();
@@ -42,7 +42,7 @@ test.describe("Settings (keyValue)", () => {
     const appNameInput = page.getByLabel("App Name");
     await appNameInput.clear();
     await saveKeyValuePage(page);
-    // The form accepts empty values — verify the page is still functional
+    // The form accepts empty values; verify the page is still functional
     // (heading still visible, no crash)
     await expect(page.getByRole("heading", { name: /settings/i })).toBeVisible();
   });

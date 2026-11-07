@@ -106,7 +106,7 @@ export function createRoleRouter(db: AdminDbAdapter, trpc: RouterDeps) {
         if (assignedCount > 0) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: `Cannot delete role — ${assignedCount} user${assignedCount === 1 ? "" : "s"} assigned. Reassign users first.`,
+            message: `Cannot delete role. ${assignedCount} user${assignedCount === 1 ? " is" : "s are"} assigned. Reassign users first.`,
           });
         }
         return await db.role.delete({ where: { id: input.id } });

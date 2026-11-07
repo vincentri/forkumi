@@ -10,7 +10,7 @@
  *   4. Runs pnpm --filter @repo/db db:migrate to apply schema changes
  *
  * Permissions are auto-derived at runtime via derivePermissionOptions()
- * from @repo/admin/server — no manual PERMISSION_OPTIONS step needed.
+ * from @repo/admin/server; no manual PERMISSION_OPTIONS step needed.
  */
 
 import { readFileSync, writeFileSync } from "fs";
@@ -71,15 +71,15 @@ function toSnakePlural(str: string): string {
 
 function singularizeFieldName(name: string): string {
   if (name.endsWith("ies")) return name.slice(0, -3) + "y";
-  // Only strip "es" after a sibilant stem (boxes→box, dishes→dish); words like
-  // "images"/"times"/"names" end in a silent "e" and must keep it (→ image/time/name).
+  // Only strip "es" after a sibilant stem (boxes to box, dishes to dish); words like
+  // "images"/"times"/"names" end in a silent "e" and must keep it (image/time/name).
   if (/(s|x|z|ch|sh)es$/.test(name)) return name.slice(0, -2);
   if (name.endsWith("ss")) return name;
   if (name.endsWith("s")) return name.slice(0, -1);
   return name;
 }
 
-/** Derive the relation accessor name from a FK field name, e.g. "blogCategoryId" → "blogCategory" */
+/** Derive the relation accessor name from a FK field name, e.g. "blogCategoryId" to "blogCategory" */
 function fkFieldToRelationName(fieldName: string): string {
   return fieldName.replace(/Id$/, "");
 }
@@ -190,7 +190,7 @@ function buildGalleryChildModel(config: CRUDConfig, field: CRUDFieldGallery): st
   const snakeFk = toSnakeCase(fkField);
   const parentAccessor = parentCamel;
   // Table name uses the (already-plural) field name directly, not singular+"s",
-  // so "media" → "..._media" (not "..._medias") and "images" → "..._images".
+  // so "media" becomes "..._media" (not "..._medias") and "images" becomes "..._images".
   const tableName = `${toSnakeCase(toSnakePlural(parentModelName))}_${toSnakeCase(field.name)}`;
 
   const pad = (name: string) => name + " ".repeat(Math.max(2, 12 - name.length));
@@ -255,7 +255,7 @@ function buildPrismaModel(config: CRUDConfig): string {
           const padding = " ".repeat(Math.max(1, 10 - joinAccessor.length));
           lines.push(`  ${joinAccessor}${padding}${joinModelName}[]`);
         } else {
-          // Implicit m2m (not recommended — use through for explicit table)
+          // Implicit m2m (not recommended; use through for explicit table)
           const relModel = toPascalCase(sel.relation.model);
           const relField = sel.relation.field;
           const padding = " ".repeat(Math.max(1, 10 - relField.length));
@@ -432,7 +432,7 @@ async function main() {
           `✓  Added join model ${joinModelName} (@@map("${toSnakePlural(sel.relation!.through)}")) to schema.prisma`,
         );
       } else {
-        console.log(`⚠  Join model ${joinModelName} already in schema.prisma — skipping.`);
+        console.log(`⚠  Join model ${joinModelName} already in schema.prisma; skipping.`);
       }
 
       // 2. Inject back-relation on target model (e.g. blogTags BlogTag[] on Tag)
@@ -440,7 +440,7 @@ async function main() {
       const targetModelRegex = new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*\\}`, "ms");
       if (!targetModelRegex.test(updatedSchema)) {
         console.warn(
-          `⚠  Target model ${targetModelName} not found in schema.prisma — add back-relation ${joinAccessor} ${joinModelName}[] manually.`,
+          `⚠  Target model ${targetModelName} not found in schema.prisma; add back-relation ${joinAccessor} ${joinModelName}[] manually.`,
         );
         continue;
       }
@@ -450,7 +450,7 @@ async function main() {
         )
       ) {
         console.log(
-          `⚠  Back-relation ${joinAccessor} ${joinModelName}[] already in model ${targetModelName} — skipping.`,
+          `⚠  Back-relation ${joinAccessor} ${joinModelName}[] already in model ${targetModelName}; skipping.`,
         );
         continue;
       }
@@ -473,7 +473,7 @@ async function main() {
       const targetModelRegex = new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*\\}`, "ms");
       if (!targetModelRegex.test(updatedSchema)) {
         console.warn(
-          `⚠  Target model ${targetModelName} not found in schema.prisma — add back-relation ${backRelField} ${sourceModelName}[] manually.`,
+          `⚠  Target model ${targetModelName} not found in schema.prisma; add back-relation ${backRelField} ${sourceModelName}[] manually.`,
         );
         continue;
       }
@@ -484,7 +484,7 @@ async function main() {
         )
       ) {
         console.log(
-          `⚠  Back-relation ${backRelField} ${sourceModelName}[] already in model ${targetModelName} — skipping.`,
+          `⚠  Back-relation ${backRelField} ${sourceModelName}[] already in model ${targetModelName}; skipping.`,
         );
         continue;
       }
@@ -515,7 +515,7 @@ async function main() {
     const targetModelRegex = new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*\\}`, "ms");
     if (!targetModelRegex.test(updatedSchema)) {
       console.warn(
-        `⚠  Target model ${targetModelName} not found in schema.prisma — add back-relation ${backRelField} ${sourceModelName}[] manually.`,
+        `⚠  Target model ${targetModelName} not found in schema.prisma; add back-relation ${backRelField} ${sourceModelName}[] manually.`,
       );
       continue;
     }
@@ -525,7 +525,7 @@ async function main() {
       )
     ) {
       console.log(
-        `⚠  Back-relation ${backRelField} ${sourceModelName}[] already in model ${targetModelName} — skipping.`,
+        `⚠  Back-relation ${backRelField} ${sourceModelName}[] already in model ${targetModelName}; skipping.`,
       );
       continue;
     }
@@ -545,7 +545,7 @@ async function main() {
     updatedSchema = readFileSync(schemaPath, "utf-8");
     const childModelRegex = new RegExp(`model\\s+${childModelName}\\s*\\{`, "ms");
     if (childModelRegex.test(updatedSchema)) {
-      console.log(`⚠  Child model ${childModelName} already in schema.prisma — skipping.`);
+      console.log(`⚠  Child model ${childModelName} already in schema.prisma; skipping.`);
       continue;
     }
     const childBlock = buildScheduleChildModel(config, sched);
@@ -561,7 +561,7 @@ async function main() {
     updatedSchema = readFileSync(schemaPath, "utf-8");
     const childModelRegex = new RegExp(`model\\s+${childModelName}\\s*\\{`, "ms");
     if (childModelRegex.test(updatedSchema)) {
-      console.log(`⚠  Child model ${childModelName} already in schema.prisma — skipping.`);
+      console.log(`⚠  Child model ${childModelName} already in schema.prisma; skipping.`);
       continue;
     }
     const childBlock = buildGalleryChildModel(config, gal);
@@ -575,7 +575,7 @@ async function main() {
   const exportLine = `export { ${exportName} } from "./${model}";`;
 
   if (barrel.includes(exportLine)) {
-    console.log(`⚠  ${exportName} already exported in crud/index.ts — skipping barrel update.`);
+    console.log(`⚠  ${exportName} already exported in crud/index.ts; skipping barrel update.`);
   } else {
     const updated = barrel.trimEnd() + "\n" + exportLine + "\n";
     writeFileSync(barrelPath, updated, "utf-8");

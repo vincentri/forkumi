@@ -38,7 +38,7 @@ export function ExternalHtmlScripts({ html, id }: ExternalHtmlScriptsProps): Rea
       }
     }
 
-    // Bare JS (no wrapping tags) — treat whole string as script body
+    // Bare JS (no wrapping tags); treat the whole string as the script body
     if (injected.length === 0 && !host.querySelector("script") && html.trim()) {
       const script = document.createElement("script");
       script.setAttribute("data-forkumi-script", id);

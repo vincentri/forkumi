@@ -32,11 +32,11 @@ export interface MigrateAndSeedOpts {
 /**
  * Apply every migration from zero against the fresh DB, then seed. Running
  * `migrate deploy` (not `dev`) validates the committed migration files apply
- * cleanly on an empty database — the "db creation migration" assertion.
+ * cleanly on an empty database; the "db creation migration" assertion.
  *
  * `prismaDir` selects which migration chain to apply:
- *   - apps/api/prisma  → full prod history (used by `pnpm e2e`)
- *   - packages/e2e/prisma → trimmed e2e schema + generated baseline (used by `pnpm e2e:core`)
+ *   - apps/api/prisma: full prod history (used by `pnpm e2e`)
+ *   - packages/e2e/prisma: trimmed e2e schema + generated baseline (used by `pnpm e2e:core`)
  */
 export async function migrateAndSeed(opts: MigrateAndSeedOpts): Promise<void> {
   const env = { DATABASE_URL: opts.databaseUrl, DIRECT_URL: opts.databaseUrl };
@@ -44,7 +44,7 @@ export async function migrateAndSeed(opts: MigrateAndSeedOpts): Promise<void> {
   console.log(`[e2e] Applying migrations from ${opts.prismaDir}...`);
   await run(PRISMA_BIN, ["migrate", "deploy"], { cwd: opts.prismaDir, env });
 
-  // prisma generate MUST point at the prod schema — the API server's runtime
+  // prisma generate MUST point at the prod schema; the API server's runtime
   // client (@prisma/client, consumed via packages/db) must match what
   // apps/api imports. Pointing this at the e2e schema would silently desync
   // the API from its own client types.

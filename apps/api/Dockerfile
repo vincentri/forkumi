@@ -76,12 +76,12 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# COPY follows symlinks automatically — pnpm vstore structure (.pnpm/) is preserved intact
+# COPY follows symlinks automatically; pnpm vstore structure (.pnpm/) is preserved intact
 COPY --from=builder /app/apps/api/.next/standalone ./
 COPY --from=builder /app/apps/api/.next/static ./apps/api/.next/static
 RUN mkdir -p apps/api/public && chown -R nextjs:nodejs apps/api/public
 
-# Self-contained startup toolchain (prisma, tsx, bcryptjs — cached stage)
+# Self-contained startup toolchain (prisma, tsx, bcryptjs; cached stage)
 COPY --from=tools /tools/node_modules /tools/node_modules
 COPY --from=tools /tools/prisma /tools/prisma
 

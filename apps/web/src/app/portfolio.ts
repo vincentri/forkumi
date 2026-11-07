@@ -14,9 +14,9 @@ export type PortfolioItem = {
 };
 
 // ponytail: image URLs come from three sources:
-//  - absolute (external CDNs like api.jajanpedia.com) → use as-is
-//  - `/uploads/...` (admin uploads, lives on API or S3 in prod) → prepend storage origin
-//  - `/assets/...` (web public, also pushed to S3 in prod) → prepend storage origin
+//  - absolute (external CDNs like api.jajanpedia.com): use as-is
+//  - `/uploads/...` (admin uploads, lives on API or S3 in prod): prepend storage origin
+//  - `/assets/...` (web public, also pushed to S3 in prod): prepend storage origin
 // `resolveAssetUrl` covers both managed paths and falls back to API origin in local dev.
 // In local dev with S3 .env, set `NEXT_PUBLIC_STORAGE_BASE_URL` to the CDN/bucket URL.
 function apiOrigin(): string {

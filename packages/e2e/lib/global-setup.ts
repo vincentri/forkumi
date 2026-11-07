@@ -10,7 +10,7 @@ import { startServer, stopServer } from "./server";
  * Each invocation:
  *   1. starts an ephemeral postgres (testcontainers)
  *   2. applies the prisma migrate deploy chain from `prismaDir` against it
- *   3. regenerates the Prisma client from the PROD schema (apps/api) — the
+ *   3. regenerates the Prisma client from the PROD schema (apps/api); the
  *      API server's runtime client must never diverge from apps/api imports
  *   4. seeds (admin@example.com / password, super admin + viewer roles,
  *      default branding + front-page settings)

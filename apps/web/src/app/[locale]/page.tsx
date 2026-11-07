@@ -43,9 +43,9 @@ const HERO_DEFAULTS: Record<
     titleLine2: "design",
     titleLine3: "for brands on the rise",
     subtitle:
-      "Your design subscription for startups & SMEs. One monthly price, unlimited requests, premium-quality design — zero drama.",
-    primaryLabel: "Get Started",
-    secondaryLabel: "View Packages",
+      "Your design subscription for startups and SMEs. One monthly price, unlimited requests, premium-quality design, zero drama.",
+    primaryLabel: "Get started",
+    secondaryLabel: "View packages",
     scrollText: "Scroll",
   },
   id: {
@@ -54,9 +54,9 @@ const HERO_DEFAULTS: Record<
     titleLine2: "tanpa batas",
     titleLine3: "buat brand yang naik kelas",
     subtitle:
-      "Partner desain langganan buat startup & UMKM. Satu harga bulanan, request sepuasnya, kualitas desain premium — tanpa drama.",
-    primaryLabel: "Mulai Sekarang",
-    secondaryLabel: "Lihat Paket",
+      "Partner desain langganan buat startup dan UMKM. Satu harga bulanan, request sepuasnya, kualitas desain premium, tanpa drama.",
+    primaryLabel: "Mulai sekarang",
+    secondaryLabel: "Lihat paket",
     scrollText: "Gas scroll",
   },
 };
@@ -120,13 +120,13 @@ const WORK_DEFAULTS: Record<
     eye: "Portfolio",
     headLine1: "Our latest",
     headLine2: "work",
-    intro: "Our latest client — plus plenty more on Instagram.",
+    intro: "Our latest client. See more on Instagram.",
   },
   id: {
     eye: "Portfolio",
     headLine1: "Karya",
     headLine2: "terbaru kami",
-    intro: "Klien terbaru kami — dan masih banyak lagi di Instagram.",
+    intro: "Klien terbaru kami. Lihat lebih banyak di Instagram.",
   },
 };
 
@@ -142,17 +142,17 @@ const FEATURED_DEFAULTS: Record<
   }
 > = {
   en: {
-    badgeFeatured: "Latest Client",
+    badgeFeatured: "Latest client",
     badgeOther: "Client",
-    ctaVisit: "Visit Website",
-    ctaDiscuss: "Discuss a Project",
+    ctaVisit: "Visit website",
+    ctaDiscuss: "Discuss a project",
     ctaSeeAll: "See all",
   },
   id: {
-    badgeFeatured: "Klien Terbaru",
+    badgeFeatured: "Klien terbaru",
     badgeOther: "Klien",
-    ctaVisit: "Kunjungi Website",
-    ctaDiscuss: "Diskusi Proyek",
+    ctaVisit: "Kunjungi website",
+    ctaDiscuss: "Diskusi proyek",
     ctaSeeAll: "Lihat semua",
   },
 };
@@ -175,9 +175,9 @@ const CTA_BAND_DEFAULTS: Record<
     eye: "Let's build",
     headLine1: "Got a project",
     headLine2: "in mind?",
-    sub: "Free consult & fast replies. Flexible & no lock-in, start this week.",
+    sub: "Free consultation and fast replies. Flexible, no lock-in, start this week.",
     btnPrimary: "Let's talk",
-    btnSecondary: "View Packages",
+    btnSecondary: "View packages",
     btnPrimaryUrl: "https://wa.me/6580892716?text=Hi%20Forkumi!%20I%20have%20a%20design%20project.",
     btnSecondaryUrl: "packages",
   },
@@ -185,9 +185,9 @@ const CTA_BAND_DEFAULTS: Record<
     eye: "Ayo mulai",
     headLine1: "Punya proyek",
     headLine2: "desain?",
-    sub: "Konsultasi gratis & respons cepat. Fleksibel & bebas ikatan, bisa mulai minggu ini.",
+    sub: "Konsultasi gratis dan respons cepat. Fleksibel, bebas ikatan, bisa mulai minggu ini.",
     btnPrimary: "Ngobrol yuk",
-    btnSecondary: "Lihat Paket",
+    btnSecondary: "Lihat paket",
     btnPrimaryUrl:
       "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.",
     btnSecondaryUrl: "packages",
@@ -226,16 +226,16 @@ const PKG_DEFAULTS: Record<
     headLine1: "Pick the",
     headLine2: "right plan",
     intro: "Flat monthly price, no hidden fees. Pause or cancel anytime.",
-    note: "Limited promo — normal price struck through. Pause or cancel anytime, no penalty.",
-    promoTag: "Limited Promo 🎉",
+    note: "Limited promo. The normal price is struck through. Pause or cancel anytime, no penalty.",
+    promoTag: "Limited promo",
   },
   id: {
     eye: "Paket",
     headLine1: "Pilih paket",
     headLine2: "yang pas",
     intro: "Harga tetap bulanan, tanpa biaya tersembunyi. Pause atau stop kapan aja.",
-    note: "Promo terbatas — harga normal dicoret. Pause / stop kapan aja, tanpa penalti.",
-    promoTag: "Promo Terbatas 🎉",
+    note: "Promo terbatas. Harga normal dicoret. Pause atau stop kapan aja, tanpa penalti.",
+    promoTag: "Promo terbatas",
   },
 };
 

@@ -30,24 +30,24 @@ const PKG_PAGE_DEFAULTS: Record<
   en: {
     h1Line1: "Pick the",
     h1Line2: "right plan",
-    lead: "Transparent, flexible, no long-term lock-in. Pick, pay, we build.",
+    lead: "Transparent and flexible, with no long-term lock-in. Choose a plan, pay, and we build.",
   },
   id: {
     h1Line1: "Pilih paket",
     h1Line2: "yang pas",
-    lead: "Transparan, fleksibel, dan bebas ikatan jangka panjang. Pilih, bayar, kami garap.",
+    lead: "Transparan dan fleksibel, tanpa ikatan jangka panjang. Pilih paket, bayar, lalu kami kerjakan.",
   },
 };
 const PKG_H1_HIGHLIGHT_DEFAULT = "1";
 
 const PKG_NOTE_DEFAULTS: Record<"id" | "en", string> = {
-  en: "Limited promo — normal price struck through. Pause or cancel anytime, no penalty.",
-  id: "Promo terbatas — harga normal dicoret. Pause / stop kapan aja, tanpa penalti.",
+  en: "Limited promo. The normal price is struck through. Pause or cancel anytime, no penalty.",
+  id: "Promo terbatas. Harga normal dicoret. Pause atau stop kapan saja, tanpa penalti.",
 };
 
 const PKG_PROMO_TAG_DEFAULTS: Record<"id" | "en", string> = {
-  en: "Limited Promo 🎉",
-  id: "Promo Terbatas 🎉",
+  en: "Limited promo",
+  id: "Promo terbatas",
 };
 
 const INCLUDED_DEFAULTS: Record<
@@ -59,12 +59,12 @@ const INCLUDED_DEFAULTS: Record<
   }
 > = {
   en: {
-    eye: "What’s Included",
+    eye: "What's included",
     headLine1: "Every plan",
     headLine2: "includes",
   },
   id: {
-    eye: "Yang Kamu Dapat",
+    eye: "Yang kamu dapat",
     headLine1: "Semua paket",
     headLine2: "sudah termasuk",
   },
@@ -80,13 +80,13 @@ const TERMS_DEFAULTS: Record<
 > = {
   en: {
     eye: "Terms",
-    headLine1: "Terms &",
-    headLine2: "Payment",
+    headLine1: "Terms and",
+    headLine2: "payment",
   },
   id: {
     eye: "Ketentuan",
-    headLine1: "Syarat &",
-    headLine2: "Pembayaran",
+    headLine1: "Syarat dan",
+    headLine2: "pembayaran",
   },
 };
 

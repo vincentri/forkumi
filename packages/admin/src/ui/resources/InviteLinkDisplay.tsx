@@ -68,7 +68,7 @@ export function InviteLinkDisplay({
         </div>
       </div>
       <p className="text-xs text-muted-foreground">
-        This link expires in 7 days. Share it with the user — they will set their own password on
+        This link expires in 7 days. Share it with the user. They will set their own password on
         sign-up.
       </p>
       <div className="flex justify-end gap-2">

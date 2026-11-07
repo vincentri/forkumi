@@ -14,7 +14,7 @@ import type { AnyProcedureBuilder, AnyRouterBuilder } from "./procedures";
 
 /**
  * Create a tRPC router for a keyValue-style resource (e.g. Settings).
- * Exposes `get`, `update`, `options`, `searchOptions`. No list — keyValue stores
+ * Exposes `get`, `update`, `options`, `searchOptions`. No list; keyValue stores
  * a single record of `key: value` pairs.
  *
  * `get` / `update` take an optional `locale` arg. When the resource config

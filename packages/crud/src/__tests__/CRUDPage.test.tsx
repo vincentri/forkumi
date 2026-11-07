@@ -67,7 +67,7 @@ describe("CRUDPage", () => {
   it("renders pagination when listData has multiple pages", () => {
     const multiPageData = { ...listData, total: 50, totalPages: 3 };
     render(<CRUDPage config={config} listData={multiPageData} />);
-    expect(screen.getByText(/showing 1–20 of 50/i)).toBeInTheDocument();
+    expect(screen.getByText(/showing 1 to 20 of 50/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/next page/i)).toBeInTheDocument();
   });
 

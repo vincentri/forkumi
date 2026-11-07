@@ -15,26 +15,26 @@ const WHY_SUB_DEFAULTS: Record<
   }
 > = {
   en: {
-    eye: "Why Subscribe",
+    eye: "Why subscribe",
     headLine1: "Tired of the",
     headLine2: "old way?",
     intro:
-      "In-house hiring, pricey agencies, or doing AI yourself — each has its headaches. Forkumi keeps it simple.",
-    line: "Forkumi = everything sorted in one subscription. Zero drama. ✦",
+      "Hiring in-house, paying an agency, or using AI yourself all bring headaches. Forkumi keeps it simple.",
+    line: "One subscription covers everything. Zero drama.",
   },
   id: {
-    eye: "Kenapa Langganan",
+    eye: "Kenapa langganan",
     headLine1: "Capek sama",
     headLine2: "cara lama?",
     intro:
-      "Rekrut in-house, agency mahal, atau coba AI sendiri — masing-masing ada repotnya. Forkumi bikin semuanya simpel.",
-    line: "Forkumi = semua beres dalam satu langganan. Tanpa drama. ✦",
+      "Rekrut in-house, bayar agency, atau pakai AI sendiri sama-sama merepotkan. Forkumi bikin semuanya simpel.",
+    line: "Satu langganan beres semua. Tanpa drama.",
   },
 };
 
 const WHY_SUB_HIGHLIGHT_INDEX_DEFAULT = "1";
 
-// ponytail: static marketing copy — no backend field. Wire to settings only if it needs editing.
+// ponytail: static marketing copy with no backend field. Wire it to settings only if it needs editing.
 const CMP_DEFAULTS: Record<"id" | "en", { eye: string; headLine1: string; headLine2: string }> = {
   en: { eye: "Comparison", headLine1: "Compare for", headLine2: "yourself" },
   id: { eye: "Perbandingan", headLine1: "Bandingkan", headLine2: "sendiri" },

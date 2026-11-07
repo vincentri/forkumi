@@ -14,7 +14,7 @@ function sanitizeField(field: CRUDField): CRUDField {
  */
 export function toClientCRUDConfig(config: CRUDConfig): CRUDConfig {
   // Strip server-only function-bearing keys (query, beforeCreate, beforeUpdate).
-  // Functions can't be serialized to Client Components — a single non-stripped hook
+  // Functions can't be serialized to Client Components; a single non-stripped hook
   // 500s the whole admin nav/page.
   const serverOnlyKeys = new Set(["query", "beforeCreate", "beforeUpdate"]);
   const clientConfig = Object.fromEntries(

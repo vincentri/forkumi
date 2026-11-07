@@ -21,8 +21,8 @@ describe("derivePermissionOptions", () => {
 
   it("capitalizes action in label", () => {
     const result = derivePermissionOptions([]);
-    expect(result[0].label).toBe("* — View (all)");
-    expect(result[1].label).toBe("* — Create (all)");
+    expect(result[0].label).toBe("All resources: View");
+    expect(result[1].label).toBe("All resources: Create");
   });
 
   it("generates 4 actions per standard config", () => {
@@ -55,11 +55,11 @@ describe("derivePermissionOptions", () => {
   });
 
   it("appends extraPermissions", () => {
-    const extras = [{ value: "custom:run", label: "Custom — Run" }];
+    const extras = [{ value: "custom:run", label: "Custom: Run" }];
     const result = derivePermissionOptions([], extras);
     const custom = result.filter((o) => o.value === "custom:run");
     expect(custom).toHaveLength(1);
-    expect(custom[0].label).toBe("Custom — Run");
+    expect(custom[0].label).toBe("Custom: Run");
   });
 
   it("handles multiple configs", () => {
@@ -78,12 +78,12 @@ describe("derivePermissionOptions", () => {
     const config = makeConfig({ label: "Blog Posts" });
     const result = derivePermissionOptions([config]);
     const perm = result.find((o) => o.value === "post:view");
-    expect(perm?.label).toBe("Blog Posts — View");
+    expect(perm?.label).toBe("Blog Posts: View");
   });
 
   it("returns wildcard + model + extras combined", () => {
     const config = makeConfig();
-    const extras = [{ value: "x:y", label: "X — Y" }];
+    const extras = [{ value: "x:y", label: "X: Y" }];
     const result = derivePermissionOptions([config], extras);
     // 4 wildcard + 4 model + 1 extra
     expect(result).toHaveLength(9);

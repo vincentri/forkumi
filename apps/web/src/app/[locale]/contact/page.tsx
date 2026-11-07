@@ -34,28 +34,28 @@ type ContactText = {
 
 const CONTACT_DEFAULTS: Record<"id" | "en", ContactText> = {
   en: {
-    intro: "Got a project or question? We reply fast. Pick whatever works for you.",
+    intro: "Got a project or question? We reply fast. Choose the contact method you prefer.",
     formHeading: "Send a quick message",
-    hoursHeading: "Working Hours",
+    hoursHeading: "Working hours",
     fieldName: "Name",
     fieldEmail: "Email",
     fieldPkg: "Plan of interest",
     fieldMessage: "Message",
     fieldSubmit: "Send via WhatsApp",
     successMessage: "Thanks! We'll get back to you soon.",
-    errorMessage: "Could not send — try again later.",
+    errorMessage: "Could not send. Try again later.",
   },
   id: {
     intro: "Punya proyek atau pertanyaan? Kami balas cepat. Pilih cara paling nyaman buatmu.",
     formHeading: "Kirim pesan singkat",
-    hoursHeading: "Jam Operasional",
+    hoursHeading: "Jam operasional",
     fieldName: "Nama",
     fieldEmail: "Email",
     fieldPkg: "Paket diminati",
     fieldMessage: "Pesan",
     fieldSubmit: "Kirim via WhatsApp",
     successMessage: "Terima kasih! Kami balas segera.",
-    errorMessage: "Gagal mengirim — coba lagi nanti.",
+    errorMessage: "Gagal mengirim. Coba lagi nanti.",
   },
 };
 
@@ -102,7 +102,9 @@ export default async function ContactPage({ params }: ContactPageProps): Promise
   const instagramLabel = firstValue(settings.contactInstagramLabel) ?? "@forkumi.design";
   const workingHours =
     firstValue(settings.contactWorkingHours) ??
-    (locale === "id" ? "Senin – Jumat · 09.00 – 18.00 WIB" : "Mon – Fri · 09:00 – 18:00 GMT+7");
+    (locale === "id"
+      ? "Senin sampai Jumat, 09.00 sampai 18.00 WIB"
+      : "Monday to Friday, 09:00 to 18:00 GMT+7");
   const PAGE_LABEL: Record<"id" | "en", string> = { id: "Kontak", en: "Contact" };
 
   return (

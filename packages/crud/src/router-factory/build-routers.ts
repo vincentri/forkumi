@@ -5,14 +5,14 @@ import type { AnyProcedureBuilder, AnyRouterBuilder, ProcedureMap } from "./proc
 
 /**
  * Auto-register all CRUD configs from a barrel export into a single router object.
- * Uses config.model as the tRPC route key — NOT the export name.
+ * Uses config.model as the tRPC route key; NOT the export name.
  *
  * @example
  * // src/server/router.ts
  * import * as CRUDConfigs from "~/crud";
  * const crudRouters = buildCRUDRouters(CRUDConfigs, router, protectedProcedure, prisma);
  * export const adminRouter = router({ me: ..., ...crudRouters });
- * // → admin.post.list, admin.product.create, etc.
+ * // admin.post.list, admin.product.create, etc.
  */
 export function buildCRUDRouters(
   configs: Record<string, CRUDConfig>,

@@ -422,7 +422,7 @@ export function CRUDPage({
             {(() => {
               const start = (listData.page - 1) * listData.pageSize + 1;
               const end = Math.min(listData.page * listData.pageSize, listData.total);
-              return `Showing ${start}–${end} of ${listData.total} items`;
+              return `Showing ${start} to ${end} of ${listData.total} items`;
             })()}
           </span>
           <div className="flex gap-2">

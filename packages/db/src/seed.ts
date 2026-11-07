@@ -12,12 +12,12 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  console.log("Quantyx — seeding database...");
+  console.log("Seeding the Quantyx database...");
 
   const hash = await bcrypt.hash("password", 10);
 
   // Step 1: Create roles FIRST (before any user upsert)
-  // "super admin" is the protected built-in role — cannot be edited or deleted
+  // "super admin" is the protected built-in role. It cannot be edited or deleted.
   const superAdminRole = await prisma.role.upsert({
     where: { name: "super admin" },
     update: {}, // never change permissions of the protected role via seed
@@ -38,7 +38,7 @@ async function main() {
     },
   });
 
-  // Step 2: Upsert admin user — always connect to super admin role
+  // Step 2: Upsert the admin user and always connect it to the super admin role
   await prisma.user.upsert({
     where: { email: "admin@example.com" },
     update: { role: { connect: { id: superAdminRole.id } } },
@@ -88,8 +88,8 @@ const SEED_FAQ_ITEMS: SeededFaqRow[] = [
       en: "How fast will I get my designs?",
     },
     answer: {
-      id: "Rata-rata request standar (Branding, Desain Grafis, Social Media) kelar maks 24 jam. Request kompleks kayak Website & App butuh waktu lebih, dan pasti kami kabari transparan.",
-      en: "Standard requests (Branding, Graphic Design, Social Media) in max 24h. Complex work like Website & App takes a bit longer — always communicated transparently.",
+      id: "Rata-rata request standar (Branding, Desain Grafis, Social Media) kelar maks 24 jam. Request kompleks kayak Website dan App butuh waktu lebih, dan pasti kami kabari transparan.",
+      en: "Standard requests (Branding, Graphic Design, Social Media) in max 24h. Complex work like Website and App takes longer, and we always communicate the timeline.",
     },
   },
   {
@@ -98,8 +98,8 @@ const SEED_FAQ_ITEMS: SeededFaqRow[] = [
       en: "What if I don't like the result?",
     },
     answer: {
-      id: "Santai! Revisi sepuasnya — kami sempurnakan sampai kamu puas. Tapi ingat, makin banyak revisi makin memengaruhi waktu pengiriman akhir.",
-      en: "No worries! Unlimited revisions — we refine until you're happy. Note: more revisions will affect final delivery time.",
+      id: "Santai! Revisi sepuasnya. Kami sempurnakan sampai kamu puas. Tapi ingat, makin banyak revisi makin memengaruhi waktu pengiriman akhir.",
+      en: "No worries! Unlimited revisions. We refine until you're happy. Note: more revisions will affect final delivery time.",
     },
   },
   {
@@ -108,8 +108,8 @@ const SEED_FAQ_ITEMS: SeededFaqRow[] = [
       en: "How does Pause work?",
     },
     answer: {
-      id: "Forkumi sistem bulan ke bulan. Kamu bisa jeda atau batalkan kapan aja tanpa denda atau biaya tersembunyi — bebas pilih kapan mau lanjut.",
-      en: "Forkumi is month-to-month. Pause or cancel anytime — no penalties, no hidden fees. Resume whenever you're ready.",
+      id: "Forkumi sistem bulan ke bulan. Kamu bisa jeda atau batalkan kapan aja tanpa denda atau biaya tersembunyi. Bebas pilih kapan mau lanjut.",
+      en: "Forkumi is month-to-month. Pause or cancel anytime, with no penalties and no hidden fees. Resume whenever you're ready.",
     },
   },
   {
@@ -118,8 +118,8 @@ const SEED_FAQ_ITEMS: SeededFaqRow[] = [
       en: "Who owns the designs?",
     },
     answer: {
-      id: "Kamu, 100%. Setelah desain selesai & dikirim, semua aset kreatif untuk brand-mu jadi milikmu sepenuhnya.",
-      en: "You — 100%. Once delivered, all creative assets for your brand are fully yours.",
+      id: "Kamu, 100%. Setelah desain selesai dan dikirim, semua aset kreatif untuk brand-mu jadi milikmu sepenuhnya.",
+      en: "You, 100%. Once delivered, all creative assets for your brand are fully yours.",
     },
   },
   {
@@ -128,8 +128,8 @@ const SEED_FAQ_ITEMS: SeededFaqRow[] = [
       en: "Why choose Forkumi?",
     },
     answer: {
-      id: "Desain berkualitas tanpa pusing tunjangan karyawan & admin ribet. Biaya tetap bulanan, dan bisa kamu on/off sesuai beban kerja. Fokus bisnis, desain biar kami yang urus.",
-      en: "Quality design without HR or messy admin. Flat monthly fee you can switch on/off anytime. Focus on business — we handle design.",
+      id: "Desain berkualitas tanpa pusing tunjangan karyawan dan admin ribet. Biaya tetap bulanan, dan bisa kamu nyalakan atau hentikan sesuai beban kerja. Fokus bisnis, desain biar kami yang urus.",
+      en: "Quality design without HR or messy admin. Flat monthly fee you can switch on or off anytime. Focus on the business; we handle design.",
     },
   },
   {
@@ -138,8 +138,8 @@ const SEED_FAQ_ITEMS: SeededFaqRow[] = [
       en: "How does it work?",
     },
     answer: {
-      id: "Pilih paket → isi form & meeting → bayar → digarap (≤24 jam) → revisi bebas → laporan tiap 3 bulan.",
-      en: "Pick a plan → brief & meeting → pay → delivered (≤24h) → revise freely → quarterly report.",
+      id: "Pilih paket, isi form dan meeting, bayar, garap maksimal 24 jam, revisi bebas, lalu laporan tiap 3 bulan.",
+      en: "Pick a plan, share a brief and meet, pay, receive delivery within 24 hours, revise freely, then get a quarterly report.",
     },
   },
 ];
@@ -250,8 +250,8 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
     color: "purple",
     icon: "bolt",
     heading: {
-      id: "Pengerjaan ≤24 jam",
-      en: "≤24h turnaround",
+      id: "Pengerjaan maksimal 24 jam",
+      en: "Turnaround within 24 hours",
     },
     paragraph: {
       id: "Untuk request desain standar.",
@@ -276,8 +276,8 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
     color: "gold",
     icon: "lock",
     heading: {
-      id: "Bebas Ikatan",
-      en: "No Lock-In",
+      id: "Bebas ikatan",
+      en: "No lock-in",
     },
     paragraph: {
       id: "Pause atau stop kapan aja, fleksibel bulanan.",
@@ -301,24 +301,24 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
     section: "terms",
     color: "purple",
     heading: {
-      id: "Permintaan Desain",
-      en: "Design Requests",
+      id: "Permintaan desain",
+      en: "Design requests",
     },
     paragraph: {
-      id: "Sesuai paket (1–3 request aktif), digarap satu per satu.",
-      en: "Per plan (1–3 active requests), handled one at a time.",
+      id: "Sesuai paket (1 sampai 3 request aktif), digarap satu per satu.",
+      en: "Per plan (1 to 3 active requests), handled one at a time.",
     },
   },
   {
     section: "terms",
     color: "purple",
     heading: {
-      id: "Waktu Pengerjaan",
+      id: "Waktu pengerjaan",
       en: "Turnaround",
     },
     paragraph: {
       id: "Desain standar maks 24 jam; request kompleks dikabari transparan.",
-      en: "Standard in 24h; complex work communicated transparently.",
+      en: "Standard work in 24 hours; we explain complex timelines up front.",
     },
   },
   {
@@ -337,20 +337,20 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
     section: "terms",
     color: "purple",
     heading: {
-      id: "Pause / Berhenti",
-      en: "Pause / Cancel",
+      id: "Pause / berhenti",
+      en: "Pause / cancel",
     },
     paragraph: {
-      id: "Kapan aja — tanpa ikatan jangka panjang, tanpa penalti.",
-      en: "Anytime — no long-term lock-in, no penalty.",
+      id: "Kapan aja. Tanpa ikatan jangka panjang, tanpa penalti.",
+      en: "Anytime, with no long-term lock-in and no penalty.",
     },
   },
   {
     section: "terms",
     color: "purple",
     heading: {
-      id: "Kepemilikan File",
-      en: "File Ownership",
+      id: "Kepemilikan file",
+      en: "File ownership",
     },
     paragraph: {
       id: "Semua file final 100% milikmu setelah pembayaran.",
@@ -361,8 +361,8 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
     section: "payment",
     color: "rose",
     heading: {
-      id: "Siklus Bulanan",
-      en: "Monthly Cycle",
+      id: "Siklus bulanan",
+      en: "Monthly cycle",
     },
     paragraph: {
       id: "Dibayar di muka tiap awal periode.",
@@ -377,8 +377,8 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
       en: "Methods",
     },
     paragraph: {
-      id: "Transfer bank (BCA/Mandiri) & e-wallet (GoPay, OVO, DANA).",
-      en: "Bank transfer & e-wallets (GoPay, OVO, DANA).",
+      id: "Transfer bank (BCA/Mandiri) dan e-wallet (GoPay, OVO, DANA).",
+      en: "Bank transfer and e-wallets (GoPay, OVO, DANA).",
     },
   },
   {
@@ -397,68 +397,68 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
     section: "payment",
     color: "rose",
     heading: {
-      id: "Tanpa Biaya Tersembunyi",
-      en: "No Hidden Fees",
+      id: "Tanpa biaya tersembunyi",
+      en: "No hidden fees",
     },
     paragraph: {
-      id: "Harga tetap — no per proyek, no kejutan.",
-      en: "Flat price — no per-project fees, no surprises.",
+      id: "Harga tetap, tanpa biaya per proyek, tanpa kejutan.",
+      en: "Flat price, with no per-project fees and no surprises.",
     },
   },
   {
     section: "trust",
     color: "purple",
     heading: {
-      id: "Bebas Revisi",
-      en: "Unlimited Revisions",
+      id: "Bebas revisi",
+      en: "Unlimited revisions",
     },
     paragraph: {
       id: "Revisi terus sampai kamu sreg. Kepuasanmu nomor satu.",
-      en: "Endless revisions until it's perfect. Your happiness comes first.",
+      en: "We revise until you are satisfied.",
     },
   },
   {
     section: "trust",
     color: "rose",
     heading: {
-      id: "Konsultasi Gratis",
-      en: "Free Consultation",
+      id: "Konsultasi gratis",
+      en: "Free consultation",
     },
     paragraph: {
       id: "Ngobrol soal brand-mu tanpa biaya. Kami bantu dari nol.",
-      en: "Talk through your brand for free. We help from zero.",
+      en: "Talk through your brand for free. We start from scratch with you.",
     },
   },
   {
     section: "trust",
     color: "gold",
     heading: {
-      id: "File & Aset Stok Gratis",
-      en: "Free Files & Stock Assets",
+      id: "File dan aset stok gratis",
+      en: "Free files and stock assets",
     },
     paragraph: {
-      id: "Semua file final + aset stok premium, gratis buat kamu.",
-      en: "All final files + premium stock assets, on us.",
+      id: "Semua file final dan aset stok premium, gratis buat kamu.",
+      en: "All final files and premium stock assets are included.",
     },
   },
   {
     section: "trust",
     color: "purple",
     heading: {
-      id: "Hasil Cepat",
-      en: "Fast Results",
+      id: "Hasil cepat",
+      en: "Fast results",
     },
     paragraph: {
-      id: "Tim kami gerak cepat — desain pertama meluncur ≤24 jam.",
-      en: "Our team moves fast — first design in ≤24h.",
+      id: "Tim kami gerak cepat. Desain pertama meluncur maksimal 24 jam.",
+      en: "Our team moves fast. The first design arrives within 24 hours.",
     },
   },
   {
     section: "trust",
     color: "rose",
     heading: {
-      id: "Jeda & Batalkan Mudah",
-      en: "Easy Pause & Cancel",
+      id: "Jeda dan batalkan mudah",
+      en: "Easy pause and cancel",
     },
     paragraph: {
       id: "Pause atau stop kapan aja. Bulan ke bulan, no drama.",
@@ -469,8 +469,8 @@ const SEED_SECTION_CARDS: SeededSectionRow[] = [
     section: "trust",
     color: "gold",
     heading: {
-      id: "Tim Profesional",
-      en: "Professional Team",
+      id: "Tim profesional",
+      en: "Professional team",
     },
     paragraph: {
       id: "Dikerjakan tim desainer beneran, bukan template asal jadi.",
@@ -530,8 +530,8 @@ const SEED_WHYSUB_CARDS: SeededWhysubRow[] = [
     color: "purple",
     heading: { id: "Punya desainer in-house?", en: "Hiring in-house?" },
     paragraph: {
-      id: "Gaji + BPJS + asuransi, izin sakit, butuh pelatihan, beli tools sendiri. Ribet & mahal.",
-      en: "Salary + benefits + insurance, sick days, training, paying for tools. Pricey & messy.",
+      id: "Gaji, BPJS, dan asuransi; izin sakit; pelatihan; dan biaya tools sendiri. Ribet dan mahal.",
+      en: "Salary, benefits, and insurance, plus sick days, training, and tool costs. Pricey and messy.",
     },
   },
   {
@@ -540,7 +540,7 @@ const SEED_WHYSUB_CARDS: SeededWhysubRow[] = [
     heading: { id: "Pakai agency lama?", en: "Old-school agency?" },
     paragraph: {
       id: "Harga fantastis, sistem ribet, kurang cocok buat startup, gonta-ganti agency.",
-      en: "Sky-high prices, clunky systems, not startup-friendly, agency-hopping.",
+      en: "Sky-high prices, clunky systems, not startup-friendly, and constant agency changes.",
     },
   },
   {
@@ -548,8 +548,8 @@ const SEED_WHYSUB_CARDS: SeededWhysubRow[] = [
     color: "gold",
     heading: { id: "Mau coba AI sendiri?", en: "Thinking of DIY AI?" },
     paragraph: {
-      id: "Boleh-boleh aja, tapi langganan tool-nya nggak murah dan harus kamu bayar sendiri. Nulis prompt yang pas juga butuh latihan, dan hasilnya sering belum sreg sama brand — ujungnya waktumu habis, fokus bisnis terganggu.",
-      en: "Totally fair to try — but the tools aren\u2019t cheap and you\u2019d pay for them yourself. Writing the right prompt takes practice, and results often miss your brand — eating your time and pulling focus from your business.",
+      id: "Boleh-boleh aja, tapi langganan tool-nya nggak murah dan harus kamu bayar sendiri. Nulis prompt yang pas juga butuh latihan, dan hasilnya sering belum sreg sama brand. Ujungnya waktumu habis, fokus bisnis terganggu.",
+      en: "Totally fair to try, but the tools aren't cheap and you'd pay for them yourself. Writing the right prompt takes practice, and results often miss your brand. That eats your time and pulls focus from your business.",
     },
   },
 ];
@@ -603,11 +603,11 @@ const SEED_PROCESS_PHASES: SeededPhaseRow[] = [
   {
     title: { id: "Pengerjaan", en: "Production" },
     steps: {
-      id: ["Konfirmasi pembayaran", "Tim langsung gas", "Kirim ≤24 jam"],
-      en: ["Confirm payment", "Team gets to work", "Deliver in ≤24h"],
+      id: ["Konfirmasi pembayaran", "Tim langsung gas", "Kirim maksimal 24 jam"],
+      en: ["Confirm payment", "Team gets to work", "Deliver within 24 hours"],
     },
     description: {
-      id: "Begitu pembayaran masuk, tim langsung garap sesuai brief-mu. Pengiriman pertama maks 24 jam.",
+      id: "Begitu pembayaran masuk, tim langsung garap sesuai brief-mu. Pengiriman pertama maksimal 24 jam.",
       en: "Once payment clears, the team starts right away. First delivery in max 24 hours.",
     },
   },
@@ -783,15 +783,15 @@ const SEED_PLAN_FEATURES: Record<string, Record<SeededLocale, string[]>> = {
   Basic: {
     en: [
       "1 active request at a time",
-      "Branding & graphic design",
-      "Max 24h turnaround",
+      "Branding and graphic design",
+      "Turnaround within 24 hours",
       "Unlimited revisions",
       "Email support",
     ],
     id: [
       "1 request aktif pada satu waktu",
-      "Branding & desain grafis",
-      "Kelar maks 24 jam",
+      "Branding dan desain grafis",
+      "Kelar maksimal 24 jam",
       "Revisi sepuasnya",
       "Dukungan email",
     ],
@@ -799,16 +799,16 @@ const SEED_PLAN_FEATURES: Record<string, Record<SeededLocale, string[]>> = {
   Standard: {
     en: [
       "2 active requests at a time",
-      "All Basic services + Website & App",
-      "Max 24h turnaround",
+      "All Basic services plus Website and App",
+      "Turnaround within 24 hours",
       "Unlimited revisions",
       "Priority support",
       "Monthly strategy call",
     ],
     id: [
       "2 request aktif pada satu waktu",
-      "Semua layanan Basic + Website & App",
-      "Kelar maks 24 jam",
+      "Semua layanan Basic plus Website dan App",
+      "Kelar maksimal 24 jam",
       "Revisi sepuasnya",
       "Dukungan prioritas",
       "Strategy call bulanan",
@@ -818,7 +818,7 @@ const SEED_PLAN_FEATURES: Record<string, Record<SeededLocale, string[]>> = {
     en: [
       "3 active requests at a time",
       "All Standard services",
-      "Max 24h turnaround",
+      "Turnaround within 24 hours",
       "Unlimited revisions",
       "Dedicated manager",
       "Weekly strategy call",
@@ -827,7 +827,7 @@ const SEED_PLAN_FEATURES: Record<string, Record<SeededLocale, string[]>> = {
     id: [
       "3 request aktif pada satu waktu",
       "Semua layanan Standard",
-      "Kelar maks 24 jam",
+      "Kelar maksimal 24 jam",
       "Revisi sepuasnya",
       "Manajer khusus",
       "Strategy call mingguan",

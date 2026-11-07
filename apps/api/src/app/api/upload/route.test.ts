@@ -67,7 +67,7 @@ describe("isUploadPath", () => {
   });
 
   it("does NOT detect path traversal (defense is in sanitizePath + resolvePublicFile)", () => {
-    // isUploadPath only checks prefix — traversal defense is layered in the route handler
+    // isUploadPath only checks prefix; traversal defense is layered in the route handler
     expect(isUploadPath("uploads/../../etc")).toBe(true);
   });
 });

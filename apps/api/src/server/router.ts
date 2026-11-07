@@ -193,7 +193,7 @@ function createFrontPageSettingsRouter(config: CRUDConfig) {
       );
       return Object.fromEntries(entries) as Record<string, SelectOption[]>;
     }),
-    // ponytail: cast prisma to PrismaLikeClient at the boundary — same reason as
+    // ponytail: cast prisma to PrismaLikeClient at the boundary; same reason as
     // createCRUDRouter calls above (Prisma 7 client lacks the index signature).
     searchOptions: permissionProcedure("view", config.model)
       .input(
@@ -763,7 +763,7 @@ const publicPlanOfInterestRouter = router({
 export const appRouter = router({
   // The admin UI (CRUDResourceClient, CrudResourceView, modals) accesses every
   // admin resource as `api.admin.<model>.<procedure>`. Keep them nested under
-  // `admin` so the client paths resolve — router.test.ts locks this.
+  // `admin` so the client paths resolve; router.test.ts locks this.
   admin: router({
     compareCategory: compareCategoryRouter,
     compareCriterion: compareCriterionRouter,

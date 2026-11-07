@@ -26,7 +26,7 @@ function isStringOrNull(value: unknown): value is string | null {
  * If any asset field value changed between previous and next, call the consumer's
  * onAssetReplaced hook so they can clean up the old file (e.g. delete from S3).
  * For gallery fields, diff old vs new URL arrays and clean up any removed URLs.
- * Errors are logged but never thrown — a cleanup failure must not break a CRUD update.
+ * Errors are logged but never thrown; a cleanup failure must not break a CRUD update.
  */
 export async function cleanupReplacedAssets(
   options: CRUDRouterOptions | undefined,

@@ -84,7 +84,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       data: { name, email, pkg: pkg ?? null, message, locale },
     });
   } catch (err) {
-    console.error("contact route — db create failed", err);
+    console.error("contact route: db create failed", err);
     return withCors(
       request,
       NextResponse.json(
@@ -109,7 +109,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       const safeMessage = escapeHtml(message).replace(/\n/g, "<br/>");
       await sendEmail({
         to: emailSettings.notifyTo,
-        subject: `New contact submission — ${name}`,
+        subject: `New contact submission: ${name}`,
         html: `
           <p>New inquiry coming for forkumi</p>
           <p><strong>Name:</strong> ${safeName}</p>
@@ -130,7 +130,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         ].join("\n"),
       });
     } catch (err) {
-      console.error("contact route — email notify failed", err);
+      console.error("contact route: email notify failed", err);
       // Still return success for the form save; email is best-effort.
     }
   }

@@ -92,7 +92,7 @@ function fieldToZod(field: CRUDField): z.ZodTypeAny {
     case "textarea":
     case "richtext":
     default:
-      // min(1) only applies when required — optional path handles empty string separately
+      // min(1) only applies when required; optional path handles empty string separately
       schema = field.required ? z.string().min(1, "Required") : z.string();
       break;
   }
@@ -101,7 +101,7 @@ function fieldToZod(field: CRUDField): z.ZodTypeAny {
     if (field.type === "boolean") {
       return schema.optional();
     }
-    // Allow empty string → undefined for non-required string fields
+    // Allow empty string to become undefined for non-required string fields
     if (
       [
         "text",
@@ -145,7 +145,7 @@ export function buildZodSchema(config: CRUDConfig) {
   return z.object(shape).passthrough();
 }
 
-/** Schema for update — all fields optional (partial update) */
+/** Schema for update; all fields optional (partial update) */
 export function buildUpdateZodSchema(config: CRUDConfig) {
   return buildZodSchema(config).partial();
 }

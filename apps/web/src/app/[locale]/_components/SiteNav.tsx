@@ -20,7 +20,7 @@ const NAV: Array<{ path: string; page: string; label: Record<"id" | "en", string
   { path: "/contact", page: "contact", label: { id: "Kontak", en: "Contact" } },
 ];
 
-const TALK: Record<"id" | "en", string> = { id: "Ngobrol yuk", en: "Let’s talk" };
+const TALK: Record<"id" | "en", string> = { id: "Ngobrol yuk", en: "Let's talk" };
 const WA_FALLBACK =
   "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan.";
 
@@ -106,7 +106,7 @@ export function SiteNav({ locale, settings }: SiteNavProps): ReactElement {
           </button>
         </div>
         <a className="talk" href={ctaUrl} target="_blank" rel="noopener">
-          <span>{ctaLabel}</span> →
+          <span>{ctaLabel}</span>
         </a>
         <button
           type="button"

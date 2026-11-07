@@ -16,7 +16,7 @@ interface KeyValuePageProps {
   saving?: boolean;
   extraTabContent?: Record<string, ReactNode | ((values: Record<string, unknown>) => ReactNode)>;
   modelApi?: ModelSelectApi;
-  /** Active locale — shown as a badge and passed through onSave so the parent can route the write to the right (key, locale) row. */
+  /** Active locale; shown as a badge and passed through onSave so the parent can route the write to the right (key, locale) row. */
   locale?: string;
 }
 

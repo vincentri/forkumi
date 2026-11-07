@@ -27,51 +27,51 @@ const PAGE_SEO = {
   about: {
     descriptionSetting: "pageAboutLead",
     id: {
-      title: "Tentang Forkumi | Partner Desain Langganan",
+      title: "Tentang Forkumi | Partner desain langganan",
       description:
         "Kenali visi, misi, dan cara Forkumi membantu bisnis mendapatkan desain berkualitas lewat layanan langganan yang fleksibel.",
     },
     en: {
-      title: "About Forkumi | Your Subscription Design Team",
+      title: "About Forkumi | Your subscription design team",
       description:
-        "Meet Forkumi and learn how our flexible design subscription helps businesses access reliable, high-quality creative support.",
+        "Forkumi provides branding, social media, and website design through one monthly subscription.",
     },
   },
   services: {
     descriptionSetting: "servicesPageLead",
     id: {
-      title: "Layanan Desain Grafis Langganan | Forkumi",
+      title: "Layanan desain grafis langganan | Forkumi",
       description:
         "Dapatkan branding, desain media sosial, website, dan kebutuhan kreatif lainnya dalam satu langganan desain Forkumi.",
     },
     en: {
-      title: "Design Subscription Services | Forkumi",
+      title: "Design subscription services | Forkumi",
       description:
-        "Get branding, social media design, websites, and other creative services through one flexible Forkumi design subscription.",
+        "Forkumi provides branding, social media design, websites, and other creative work through one monthly subscription.",
     },
   },
   portfolio: {
     descriptionSetting: "portfolioPageLead",
     id: {
-      title: "Portfolio Desain dan Website | Forkumi",
+      title: "Portfolio desain dan website | Forkumi",
       description:
         "Lihat hasil desain, branding, media sosial, dan website yang dikerjakan Forkumi untuk berbagai bisnis dan industri.",
     },
     en: {
-      title: "Design and Website Portfolio | Forkumi",
+      title: "Design and website portfolio | Forkumi",
       description:
-        "Explore branding, social media, design, and website projects created by Forkumi for businesses across different industries.",
+        "See branding, social media, design, and website projects Forkumi built for businesses across industries.",
     },
   },
   packages: {
     descriptionSetting: "packagesPageLead",
     id: {
-      title: "Paket Desain Langganan Fleksibel | Forkumi",
+      title: "Paket desain langganan fleksibel | Forkumi",
       description:
         "Pilih paket desain bulanan Forkumi dengan harga transparan, proses fleksibel, dan tanpa kontrak jangka panjang.",
     },
     en: {
-      title: "Flexible Design Subscription Plans | Forkumi",
+      title: "Flexible design subscription plans | Forkumi",
       description:
         "Choose a Forkumi monthly design plan with transparent pricing, flexible service, and no long-term contract.",
     },
@@ -79,12 +79,12 @@ const PAGE_SEO = {
   contact: {
     descriptionSetting: "contactIntro",
     id: {
-      title: "Hubungi Forkumi | Konsultasi Proyek Desain",
+      title: "Hubungi Forkumi | Konsultasi proyek desain",
       description:
         "Diskusikan kebutuhan desain, branding, atau website bersama Forkumi melalui WhatsApp, telepon, email, atau formulir kontak.",
     },
     en: {
-      title: "Contact Forkumi | Discuss Your Design Project",
+      title: "Contact Forkumi | Discuss your design project",
       description:
         "Discuss your design, branding, or website needs with Forkumi through WhatsApp, phone, email, or our contact form.",
     },

@@ -79,7 +79,7 @@ export function SignInForm({
     <div className="min-h-screen flex">
       <AuthBrandPanel
         tagline={heroTitle || "Everything you need\nto run your app."}
-        subtext={heroSubtitle || "Users, roles, permissions, and audit logs — all in one place."}
+        subtext={heroSubtitle || "Users, roles, permissions, and audit logs in one place."}
         logoUrl={logoDarkUrl ?? logoLightUrl}
         appName={appName}
       />

@@ -2,7 +2,7 @@ import type { CRUDConfig, CRUDField, CRUDFieldSelect } from "../types";
 
 /**
  * Prisma model delegate accessor for a model name.
- * Assumes the first letter is lowercased (e.g. "BlogPost" → "blogPost"),
+ * Assumes the first letter is lowercased (e.g. "BlogPost" to "blogPost"),
  * matching Prisma's default client convention.
  */
 export function prismaModelKey(model: string): string {
@@ -56,7 +56,7 @@ export function buildRelationInclude(config: CRUDConfig): Record<string, unknown
 
 /**
  * Convert a Prisma row's relation `include` data into the ID arrays the frontend
- * expects. E.g. `{ tags: [{ id: "1" }, { id: "2" }] }` → `{ tagIds: ["1","2"] }`.
+ * expects. E.g. `{ tags: [{ id: "1" }, { id: "2" }] }` becomes `{ tagIds: ["1","2"] }`.
  */
 export function flattenRelations(
   config: CRUDConfig,
@@ -92,7 +92,7 @@ export function flattenRelations(
 
 /**
  * Convert a frontend payload's relation ID arrays into Prisma's nested-write format
- * (e.g. `{ tagIds: ["1","2"] }` → `{ tags: { connect: [{ id: "1" }, { id: "2" }] } }`
+ * (e.g. `{ tagIds: ["1","2"] }` becomes `{ tags: { connect: [{ id: "1" }, { id: "2" }] } }`
  * or with `deleteMany: {}` for updates).
  */
 export function applyRelationWrites(

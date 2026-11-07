@@ -25,7 +25,7 @@ interface Props {
 }
 
 /**
- * Renders a keyValue-mode resource (e.g. Settings) — single form, no table.
+ * Renders a keyValue-mode resource (e.g. Settings): single form, no table.
  * For Settings specifically, injects an extra "Email" tab with the email provider config.
  * When the config declares `supportedLocales`, renders a locale switcher that
  * scopes the GET/UPDATE to a single (key, locale) row.

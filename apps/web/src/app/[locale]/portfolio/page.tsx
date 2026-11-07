@@ -28,16 +28,16 @@ const FEATURED_DEFAULTS: Record<
   }
 > = {
   en: {
-    badgeFeatured: "Latest Client",
+    badgeFeatured: "Latest client",
     badgeOther: "Client",
-    ctaVisit: "Visit Website",
-    ctaDiscuss: "Discuss a Project",
+    ctaVisit: "Visit website",
+    ctaDiscuss: "Discuss a project",
   },
   id: {
-    badgeFeatured: "Klien Terbaru",
+    badgeFeatured: "Klien terbaru",
     badgeOther: "Klien",
-    ctaVisit: "Kunjungi Website",
-    ctaDiscuss: "Diskusi Proyek",
+    ctaVisit: "Kunjungi website",
+    ctaDiscuss: "Diskusi proyek",
   },
 };
 
@@ -52,12 +52,12 @@ const H1_DEFAULTS: Record<
   en: {
     line1: "Our latest",
     line2: "work",
-    lead: "Real work for real brands. This is Forkumi in action.",
+    lead: "Work for real brands. See Forkumi in action.",
   },
   id: {
     line1: "Karya",
     line2: "terbaru kami",
-    lead: "Karya nyata untuk brand nyata. Inilah hasil kerja Forkumi.",
+    lead: "Karya untuk brand nyata. Inilah hasil kerja Forkumi.",
   },
 };
 

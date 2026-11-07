@@ -10,7 +10,7 @@ describe("createGetPublicSettings", () => {
     };
   }
 
-  it("returns key→value map from settings rows", async () => {
+  it("returns key to value map from settings rows", async () => {
     const prisma = mockPrisma([
       { key: "appName", value: "Quantyx" },
       { key: "logoUrl", value: "/defaults/logo.png" },

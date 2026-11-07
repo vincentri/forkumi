@@ -45,7 +45,7 @@ function toPascalCase(str) {
 }
 
 function toLabel(name) {
-  // "productTitle" → "Product Title"
+  // "productTitle" to "Product Title"
   return name
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (c) => c.toUpperCase())
@@ -57,9 +57,9 @@ function pluralLabel(name) {
   const lower = name.toLowerCase();
   // already plural
   if (lower.endsWith("s") && !lower.endsWith("ss")) return base;
-  // consonant + y → ies (gallery → Galleries, category → Categories)
+  // consonant + y: ies (gallery to Galleries, category to Categories)
   if (lower.match(/[^aeiou]y$/)) return base.slice(0, -1) + "ies";
-  // s, x, z, ch, sh → es (beach → Beaches)
+  // s, x, z, ch, sh: es (beach to Beaches)
   if (lower.match(/(s|x|z|ch|sh)$/)) return base + "es";
   return base + "s";
 }
@@ -138,7 +138,7 @@ ${fieldLines.join(",\n")}
 }
 
 async function main() {
-  console.log("\quantyx — new CRUD resource\n");
+  console.log("\quantyx: new CRUD resource\n");
 
   // Model name
   let model = "";
@@ -179,7 +179,7 @@ async function main() {
   const configPath = resolve(configDir, `${model}.ts`);
 
   if (existsSync(configPath)) {
-    console.log(`\n⚠  apps/api/src/crud/${model}.ts already exists — not overwriting.`);
+    console.log(`\n⚠  apps/api/src/crud/${model}.ts already exists; not overwriting.`);
     console.log(
       `   Delete it and re-run, or use pnpm crud:scaffold ${model} to scaffold without re-creating the config.`,
     );

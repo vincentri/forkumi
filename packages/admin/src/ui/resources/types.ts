@@ -2,7 +2,7 @@ import type { QueryState } from "@repo/crud";
 
 /**
  * Minimal structural type for the tRPC router shape that CRUDResourceClient expects.
- * Keep it loose on purpose — the actual router is generated per-app and tRPC's
+ * Keep it loose on purpose; the actual router is generated per-app and tRPC's
  * inferred types aren't available at the package boundary. Callers can pass any
  * router that exposes the standard `list` / `create` / `update` / `delete` / `bulkDelete`
  * / `options` / `searchOptions` / `exportCsv` procedures.

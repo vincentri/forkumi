@@ -4,14 +4,14 @@ Reusable monorepo scaffold for client projects. Includes auth (NextAuth.js), dat
 
 **Measured TTHW (time-to-hello-world):** ~37s on a warm machine (cold pnpm cache). ~15s on repeat runs (warm cache). Both apps ready at `localhost:3001/admin`.
 
-## Quick Start
+## Quick start
 
 ```bash
-# Replace 'your-github' with your GitHub username (e.g. github.com/jane-dev → jane-dev)
+# Replace 'your-github' with your GitHub username (e.g. github.com/jane-dev becomes jane-dev)
 pnpm dlx degit your-github/quantyx my-project
 cd my-project
 node scripts/setup.mjs        # writes .env with a generated NEXTAUTH_SECRET
-# edit .env — set DATABASE_URL (and optionally DIRECT_URL) if your DB credentials differ from the defaults
+# edit .env to set DATABASE_URL (and optionally DIRECT_URL) if your DB credentials differ from the defaults
 # start your local Postgres first (see "Local Postgres" below)
 pnpm install && pnpm db:migrate init && pnpm db:seed
 pnpm dev
@@ -19,8 +19,8 @@ pnpm dev
 
 Open:
 
-- `http://localhost:3001/admin` — admin panel (admin@example.com / password)
-- `http://localhost:3000` — public frontend
+- Admin panel: `http://localhost:3001/admin` (admin@example.com / password)
+- Public frontend: `http://localhost:3000`
 
 **First run?** `pnpm install` takes ~25s cold. Subsequent runs use the pnpm cache (~3s).
 
@@ -65,7 +65,7 @@ DATABASE_URL=postgresql://postgres:admin@localhost:5432/storetrac
 
 From your Mac host, the same DB is still available at `localhost:5432`.
 
-## Testing Locally (Before Pushing to GitHub)
+## Testing locally (before pushing to GitHub)
 
 degit requires a remote URL. For local iteration, use `rsync` instead:
 
@@ -92,45 +92,45 @@ pnpm dev
 `pnpm db:seed` creates:
 
 - **Super Admin** role (all permissions) and **Viewer** role (view only)
-- **admin@example.com / password** — assigned Super Admin role
+- **admin@example.com / password** is assigned the Super Admin role
 
 Open `http://localhost:3001/admin` and log in.
 
 `--delete` removes files in test-project that were deleted in quantyx. `--exclude='.env'` preserves your local env.
 
-**Wipe and re-seed:** `pnpm dev:reset` — drops all data and re-runs the seed. Useful when you want a clean slate during development.
+**Wipe and re-seed:** `pnpm dev:reset` drops all data and re-runs the seed. Useful when you want a clean slate during development.
 
 ## Architecture
 
 Split-app: `apps/web` (frontend, port 3000) + `apps/api` (backend, port 3001).
 
 ```
-apps/web   (port 3000) — public Next.js frontend
-apps/api   (port 3001) — admin CMS + tRPC + NextAuth
+apps/web   (port 3000)  public Next.js frontend
+apps/api   (port 3001)  admin CMS, tRPC, and NextAuth
 packages/
-  admin/   — built-in admin resources (users, roles, settings, auth pages, nav)
-  db/      — Prisma schema + generated client
-  auth/    — NextAuth config (credentials + JWT, no DB adapter)
-  crud/    — CRUD builder (defineCRUD → tRPC + React UI)
-  ui/      — shadcn/ui component library
-  tsconfig/— shared TypeScript bases
+  admin/    built-in admin resources (users, roles, settings, auth pages, nav)
+  db/       Prisma schema and generated client
+  auth/     NextAuth config (credentials and JWT, no DB adapter)
+  crud/     CRUD builder (defineCRUD builds the tRPC router and React UI)
+  ui/       shadcn/ui component library
+  tsconfig/ shared TypeScript bases
 ```
 
-## Adding a Resource
+## Adding a resource
 
-Two paths — use whichever fits your workflow:
+Two paths. Use whichever fits your workflow.
 
-### Path A: Interactive (no config file needed)
+### Path A: interactive (no config file needed)
 
 ```bash
 pnpm crud:new
-# → prompts for model name, field names/types/required
-# → writes apps/api/src/crud/<model>.ts
-# → updates schema.prisma + crud/index.ts
-# → creates and applies a Prisma migration
+# prompts for model name and field names, types, and required flags
+# writes apps/api/src/crud/<model>.ts
+# updates schema.prisma and crud/index.ts
+# creates and applies a Prisma migration
 ```
 
-### Path B: Write config first, then scaffold
+### Path B: write config first, then scaffold
 
 ```typescript
 // apps/api/src/crud/product.ts
@@ -149,13 +149,13 @@ export const ProductCRUD = defineCRUD({
 ```
 
 ```bash
-pnpm crud:scaffold product   # reads config → updates schema + barrel
-# → creates and applies a Prisma migration
+pnpm crud:scaffold product   # reads config, then updates schema and barrel
+# creates and applies a Prisma migration
 ```
 
 Nav link, tRPC routes (`admin.product.list/create/update/delete/bulkDelete`), migration, and admin page at `/admin/product` are automatic.
 
-## Custom Admin Pages
+## Custom admin pages
 
 For pages that don't fit the CRUD builder (dashboards, reports, custom forms):
 
@@ -168,14 +168,14 @@ export const customLinks: AdminNavLink[] = [
     label: "Analytics",
     href: "/admin/analytics",
     icon: "BarChart3",
-    permissions: ["analytics:view"], // optional — omit to show to all users
+    permissions: ["analytics:view"], // optional, omit to show to all users
   },
 ];
 ```
 
 If `permissions` is set, the first entry gates sidebar visibility and all entries appear as assignable permissions in the Role editor.
 
-## Field Types
+## Field types
 
 | Type         | Prisma   | UI Control       | Notes                                                                                                   |
 | ------------ | -------- | ---------------- | ------------------------------------------------------------------------------------------------------- |
@@ -197,19 +197,19 @@ If `permissions` is set, the first entry gates sidebar visibility and all entrie
 
 Add `filterable: true` to any field to show a column filter in the table header. Supported on `boolean`, `select`, `date`, and text-based fields.
 
-## Environment Variables
+## Environment variables
 
 Copy `.env.example` to `.env`. `setup.mjs` does this automatically and generates `NEXTAUTH_SECRET` for you.
 
 Key variables:
 
-- `DATABASE_URL` — connection string used by the app and Prisma Client (`postgresql://USER:PASSWORD@HOST:PORT/DB_NAME`)
-- `DIRECT_URL` — (optional) direct connection for Prisma migrations/introspection; falls back to `DATABASE_URL` if not set
-- `NEXTAUTH_SECRET` — auto-generated by setup.mjs
-- `NEXTAUTH_URL` — `http://localhost:3001`
-- `NEXT_PUBLIC_API_URL` — `http://localhost:3001` (used by apps/web to reach apps/api)
+- `DATABASE_URL` is the connection string used by the app and Prisma Client (`postgresql://USER:PASSWORD@HOST:PORT/DB_NAME`)
+- `DIRECT_URL` is the optional direct connection for Prisma migrations and introspection. It falls back to `DATABASE_URL` if not set.
+- `NEXTAUTH_SECRET` is auto-generated by setup.mjs
+- `NEXTAUTH_URL` is `http://localhost:3001`
+- `NEXT_PUBLIC_API_URL` is `http://localhost:3001` (used by apps/web to reach apps/api)
 
-## Default Branding Assets
+## Default branding assets
 
 Fresh installs seed admin branding to the tracked files in `public/defaults/admin/`:
 
@@ -217,7 +217,7 @@ Fresh installs seed admin branding to the tracked files in `public/defaults/admi
 - `default-logo-dark.png`
 - `default-favicon.png`
 
-Replace those files before first seed if you want project-specific defaults. After install, use Admin → Settings → Branding to upload new light/dark logos and favicon.
+Replace those files before first seed if you want project-specific defaults. After install, open Admin, then Settings, then Branding to upload new light and dark logos and a favicon.
 
 Local uploads are stored in ignored `public/uploads/admin/settings/`. On serverless hosts such as Vercel, local disk is not durable; use S3-compatible storage for production uploads.
 
@@ -243,34 +243,34 @@ S3 uploads do not set object ACLs. Make `uploads/*` and `defaults/*` publicly re
 | `pnpm db:migrate`                          | Generate and apply a local Prisma migration file                     |
 | `pnpm db:seed`                             | Create seed data (admin@example.com / password)                      |
 | `pnpm db:studio`                           | Open Prisma Studio                                                   |
-| `pnpm dev:reset`                           | Wipe DB + re-seed; uploads default assets to S3 when enabled         |
+| `pnpm dev:reset`                           | Wipe the DB and re-seed; uploads default assets to S3 when enabled   |
 | `pnpm --filter api assets:upload-defaults` | Upload seeded `/defaults/...` files to S3 when `STORAGE_PROVIDER=s3` |
-| `pnpm crud:new`                            | Interactive: create a new CRUD resource                              |
-| `pnpm crud:scaffold`                       | Non-interactive: sync config → schema + barrel                       |
+| `pnpm crud:new`                            | Interactive; creates a new CRUD resource                             |
+| `pnpm crud:scaffold`                       | Non-interactive; syncs config to schema and barrel                   |
 
-## Split-Mode Cookie Notes
+## Split-mode cookie notes
 
 In local dev, `apps/web` (:3000) and `apps/api` (:3001) share cookies because browsers treat `localhost` ports as the same origin. No extra config needed.
 
 In production, set `NEXTAUTH_COOKIE_DOMAIN=.yourdomain.com` on both apps so the session cookie is shared across subdomains.
 
-If deploying on fully separate domains (not subdomains of the same root), the `sameSite: 'lax'` cookie default will block cross-domain requests. Set `sameSite: 'none'` in `packages/auth/src/config.ts` under `cookies.sessionToken` — requires HTTPS.
+If deploying on fully separate domains (not subdomains of the same root), the `sameSite: 'lax'` cookie default will block cross-domain requests. Set `sameSite: 'none'` in `packages/auth/src/config.ts` under `cookies.sessionToken`. It requires HTTPS.
 
-## Known Security Limitations
+## Known security limitations
 
 These are known trade-offs in the current template. Mitigate before using on high-stakes projects:
 
-- **Permission staleness** — Role permissions are stored in the JWT token, not re-fetched on every request. If you demote or remove a user, they retain their current permissions until the token expires (~1 hour). To mitigate: reduce `maxAge` in `packages/auth/src/config.ts`, or add a server-side session store.
-- **Best-effort login rate limiting** — `apps/api/src/proxy.ts` rate-limits credential login attempts in memory. This is useful locally and on a single long-lived instance, but it resets on deploy/cold start and is not shared across serverless instances. Use a shared store (Redis, Upstash, etc.) before exposing high-stakes projects to the internet.
-- **SVG uploads disabled by default** — The upload route accepts JPEG, PNG, GIF, and WebP. Keep SVG disabled unless you add sanitization and strict serving headers.
+- **Permission staleness.** Role permissions are stored in the JWT token, not re-fetched on every request. If you demote or remove a user, they retain their current permissions until the token expires (~1 hour). To mitigate: reduce `maxAge` in `packages/auth/src/config.ts`, or add a server-side session store.
+- **Best-effort login rate limiting.** `apps/api/src/proxy.ts` rate-limits credential login attempts in memory. This is useful locally and on a single long-lived instance, but it resets on deploy/cold start and is not shared across serverless instances. Use a shared store (Redis, Upstash, etc.) before exposing high-stakes projects to the internet.
+- **SVG uploads disabled by default.** The upload route accepts JPEG, PNG, GIF, and WebP. Keep SVG disabled unless you add sanitization and strict serving headers.
 
-## What's NOT in the CRUD Builder
+## What's not in the CRUD builder
 
-- Relational fields (FK selects) — add manually in your tRPC router
-- Per-field access control — use `protectedProcedure` in your router
-- Custom business logic hooks — override `createCRUDRouter` or extend the router manually
+- Relational fields (FK selects): add them manually in your tRPC router.
+- Per-field access control: use `protectedProcedure` in your router.
+- Custom business logic hooks: override `createCRUDRouter` or extend the router manually.
 
-## Going to Production
+## Going to production
 
 ### Database migrations
 
@@ -290,14 +290,14 @@ Use `pnpm db:migrate` to generate migration files. Commit the generated files in
 
 ### Deploy targets
 
-Both Vercel and Railway work. The key difference: **Vercel** is serverless, so local filesystem uploads and in-memory rate-limit state are not durable. Use an external Postgres database and S3-compatible storage. **Railway** runs a longer-lived process, so local instance state is more stable, but S3-compatible storage is still recommended for production uploads.
+Both Vercel and Railway work. Vercel is serverless, so local filesystem uploads and in-memory rate-limit state are not durable. Use an external Postgres database and S3-compatible storage. **Railway** runs a longer-lived process, so local instance state is more stable, but S3-compatible storage is still recommended for production uploads.
 
 For Vercel, deploy `apps/api` and `apps/web` as separate projects from the same repo, with each project configured to its app root. Docker Compose is local-only.
 
 ## Troubleshooting
 
-**`P1001: Can't reach database server`** — Postgres is not reachable from the app container. Start your centralized Postgres compose first, ensure the `pgvector_default` network exists, and make sure the DB has the network alias `postgres`.
+**`P1001: Can't reach database server`.** Postgres is not reachable from the app container. Start your centralized Postgres compose first, ensure the `pgvector_default` network exists, and make sure the DB has the network alias `postgres`.
 
-**`TypeError: Cannot read properties of undefined (reading 'list')`** — The CRUD model isn't registered. Run `pnpm crud:scaffold <model>`, then restart the dev server.
+**`TypeError: Cannot read properties of undefined (reading 'list')`.** The CRUD model isn't registered. Run `pnpm crud:scaffold <model>`, then restart the dev server.
 
-**`NEXTAUTH_SECRET` missing** — Run `node scripts/setup.mjs` (writes `.env` automatically) or set it manually: `openssl rand -base64 32`.
+**`NEXTAUTH_SECRET` missing.** Run `node scripts/setup.mjs` (writes `.env` automatically) or set it manually: `openssl rand -base64 32`.

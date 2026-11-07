@@ -2,7 +2,7 @@ import type { CRUDConfig } from "./types";
 
 /**
  * Define a CRUD resource config.
- * This is the single source of truth — it drives both the tRPC router
+ * This is the single source of truth: it drives both the tRPC router
  * and the React UI components (form, table, page).
  *
  * @example

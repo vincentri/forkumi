@@ -29,7 +29,7 @@ function PermissionMatrix({
   fieldName: string;
   readOnly?: boolean;
 }) {
-  // Track which rows have "All" active — when All is on, individual cells are disabled
+  // Track which rows have "All" active; when All is on, individual cells are disabled
   const [lockedRows, setLockedRows] = useState<Set<string>>(() => {
     // Pre-lock any row where all values are already checked on mount
     const initial = new Set<string>();
@@ -55,7 +55,7 @@ function PermissionMatrix({
     return initial;
   });
 
-  // Parse model:action → build matrix
+  // Parse model:action to build matrix
   const actionSet = new Set<string>();
   const resourceSet = new Set<string>();
   options.forEach((o) => {
@@ -98,7 +98,7 @@ function PermissionMatrix({
       onChange([...new Set([...checked, ...vals])]);
       setLockedRows((prev) => new Set([...prev, resource]));
     } else {
-      // Uncheck All → uncheck all cells and unlock row
+      // Uncheck All: uncheck all cells and unlock row
       onChange(checked.filter((v) => !vals.includes(v)));
       setLockedRows((prev) => {
         const next = new Set(prev);

@@ -56,7 +56,7 @@ function caller(): AnyCaller {
   } as any) as any;
 }
 
-describe("appRouter shape — admin namespace contract", () => {
+describe("appRouter shape: admin namespace contract", () => {
   // The client (CRUDResourceClient) accesses routers as `api.admin.<model>`.
   // If the admin routers sit at the root instead of under `admin`, every
   // admin tRPC call 404s. Lock the namespace here.

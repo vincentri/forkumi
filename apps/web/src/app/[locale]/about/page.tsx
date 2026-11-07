@@ -35,25 +35,25 @@ const VM_DEFAULTS: Record<
     h1Line1: "Why we",
     h1Line2: "exist",
     lead: "We believe great design should be accessible to every business.",
-    eye: "Vision & Mission",
+    eye: "Vision & mission",
     visionHeading: "Vision",
     visionParagraph:
-      "Make world-class design simple, affordable & unlimited for every business — local & global.",
+      "Make professional design simple, affordable, and unlimited for every business, local and global.",
     missionHeading: "Mission",
     missionParagraph:
-      "Transparent pricing, no hiring or long contracts, and being your creative team — not just a vendor.",
+      "Transparent pricing, no hiring or long contracts, and a creative team you can reach directly.",
   },
   id: {
     h1Line1: "Kenapa kami",
     h1Line2: "ada",
     lead: "Kami percaya desain hebat harusnya mudah diakses semua bisnis.",
-    eye: "Visi & Misi",
+    eye: "Visi & misi",
     visionHeading: "Visi",
     visionParagraph:
-      "Bikin akses ke desain kelas dunia jadi simpel, terjangkau, dan unlimited untuk setiap bisnis — Indonesia & global.",
+      "Bikin akses ke desain profesional jadi simpel, terjangkau, dan unlimited untuk setiap bisnis, lokal maupun global.",
     missionHeading: "Misi",
     missionParagraph:
-      "Harga transparan, hapus ribetnya rekrutmen & kontrak panjang, dan jadi perpanjangan tim kreatifmu — bukan sekadar vendor.",
+      "Harga transparan, tanpa rekrutmen atau kontrak panjang, dan tim kreatif yang bisa kamu hubungi langsung.",
   },
 };
 
@@ -70,13 +70,13 @@ const TRUST_DEFAULTS: Record<
     eye: "Guarantees",
     headLine1: "Why you can",
     headLine2: "trust us",
-    intro: "Not empty promises — commitments we hold on every project.",
+    intro: "Commitments we hold on every project.",
   },
   id: {
     eye: "Jaminan",
     headLine1: "Kenapa kamu bisa",
     headLine2: "percaya kami",
-    intro: "Bukan janji manis — ini komitmen yang kami pegang di tiap proyek.",
+    intro: "Komitmen yang kami pegang di tiap proyek.",
   },
 };
 
@@ -96,7 +96,7 @@ const PROCESS_DEFAULTS: Record<
   id: {
     eye: "Proses",
     headLine1: "Cara kerja yang",
-    headLine2: "simpel & transparan",
+    headLine2: "simpel dan transparan",
   },
 };
 

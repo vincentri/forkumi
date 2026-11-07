@@ -47,12 +47,12 @@ const CATALOG_DEFAULTS: Record<
   }
 > = {
   en: {
-    eye: "Full Services",
+    eye: "Full services",
     headLine1: "Every design need,",
     headLine2: "one team",
   },
   id: {
-    eye: "Layanan Lengkap",
+    eye: "Layanan lengkap",
     headLine1: "Semua kebutuhan",
     headLine2: "desainmu, satu tim",
   },
@@ -71,13 +71,13 @@ const IND_DEFAULTS: Record<
     eye: "Industries",
     headLine1: "Industries",
     headLine2: "we serve",
-    intro: "From tech startups to local SMEs — Forkumi fits every sector.",
+    intro: "Forkumi works with tech startups, local SMEs, and other sectors.",
   },
   id: {
     eye: "Industri",
     headLine1: "Industri yang",
     headLine2: "kami layani",
-    intro: "Dari startup teknologi sampai UMKM lokal — desain Forkumi cocok untuk semua bidang.",
+    intro: "Forkumi bekerja dengan startup teknologi, UMKM lokal, dan bidang lain.",
   },
 };
 

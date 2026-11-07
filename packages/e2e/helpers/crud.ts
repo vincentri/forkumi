@@ -175,7 +175,7 @@ export async function fillField(page: Page, field: FormFieldDefinition, value: s
     }
 
     case "richtext": {
-      // Richtext editor may be in a hidden tab — click the tab first
+      // Richtext editor may be in a hidden tab; click the tab first
       const tab = page.getByRole("tab", { name: new RegExp(field.label, "i") });
       if ((await tab.count()) > 0) {
         await tab.click();
@@ -189,7 +189,7 @@ export async function fillField(page: Page, field: FormFieldDefinition, value: s
 
     case "image":
     case "file": {
-      // File uploads require file chooser handling — skip for now
+      // File uploads require file chooser handling; skip for now
       throw new Error(`fillField: "${field.type}" not yet supported in helpers`);
     }
   }
@@ -230,7 +230,7 @@ export async function waitForDialogClose(page: Page) {
 // ── Higher-level flows ────────────────────────────────
 
 /**
- * Navigate → open dialog → fill → submit → verify dialog closed → verify in list.
+ * Navigate, open dialog, fill, submit, verify dialog closed, verify in list.
  */
 export async function createResource(
   page: Page,
@@ -246,7 +246,7 @@ export async function createResource(
 }
 
 /**
- * Navigate → open edit → fill → submit.
+ * Navigate, open edit, fill, submit.
  */
 export async function editResource(
   page: Page,
@@ -263,7 +263,7 @@ export async function editResource(
 }
 
 /**
- * Navigate → open delete dialog → confirm.
+ * Navigate, open delete dialog, confirm.
  */
 export async function deleteResource(page: Page, config: ResourceConfig, rowIndex = 0) {
   await page.goto(config.url);

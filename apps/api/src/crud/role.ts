@@ -7,7 +7,7 @@ export const RoleCRUD = createRoleCRUD(
     UserCRUD,
     SettingsCRUD,
     // ponytail: stub so role:* permissions are grantable. The real RoleCRUD
-    // is built FROM these options — including it literally would cycle.
+    // is built FROM these options; including it literally would cycle.
     { model: "role", label: "Roles" } as CRUDConfig,
   ]),
 );

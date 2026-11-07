@@ -3,8 +3,8 @@ import { createRoleCRUD } from "../../crud/role";
 
 describe("createRoleCRUD", () => {
   const permOptions = [
-    { value: "user:view", label: "Users — View" },
-    { value: "user:create", label: "Users — Create" },
+    { value: "user:view", label: "Users: View" },
+    { value: "user:create", label: "Users: Create" },
   ];
 
   it("returns a valid CRUD config", () => {

@@ -497,7 +497,7 @@ describe("createCRUDRouter deletePolicy", () => {
 
 // Import the real function instead of re-implementing
 describe("Prisma error handling (imported handlePrismaError)", () => {
-  it("P2002 with target fields → CONFLICT with field names in message", () => {
+  it("P2002 with target fields: CONFLICT with field names in message", () => {
     const prismaError = { code: "P2002", meta: { target: ["email"] } };
     expect(() => handlePrismaError(prismaError)).toThrowError(TRPCError);
     try {
@@ -508,7 +508,7 @@ describe("Prisma error handling (imported handlePrismaError)", () => {
     }
   });
 
-  it("P2002 without target → generic CONFLICT message", () => {
+  it("P2002 without target: generic CONFLICT message", () => {
     const prismaError = { code: "P2002" };
     try {
       handlePrismaError(prismaError);
@@ -518,7 +518,7 @@ describe("Prisma error handling (imported handlePrismaError)", () => {
     }
   });
 
-  it("P2025 → NOT_FOUND", () => {
+  it("P2025: NOT_FOUND", () => {
     const prismaError = { code: "P2025" };
     try {
       handlePrismaError(prismaError);
@@ -527,12 +527,12 @@ describe("Prisma error handling (imported handlePrismaError)", () => {
     }
   });
 
-  it("TRPCError passthrough — rethrows without wrapping", () => {
+  it("TRPCError passthrough: rethrows without wrapping", () => {
     const trpcErr = new TRPCError({ code: "FORBIDDEN", message: "No access" });
     expect(() => handlePrismaError(trpcErr)).toThrow(trpcErr);
   });
 
-  it("generic non-Prisma error → INTERNAL_SERVER_ERROR", () => {
+  it("generic non-Prisma error: INTERNAL_SERVER_ERROR", () => {
     const unknownError = new Error("something else");
     try {
       handlePrismaError(unknownError);
@@ -542,7 +542,7 @@ describe("Prisma error handling (imported handlePrismaError)", () => {
     }
   });
 
-  it("non-Prisma object → INTERNAL_SERVER_ERROR", () => {
+  it("non-Prisma object: INTERNAL_SERVER_ERROR", () => {
     const weirdError = { message: "not a prisma error" };
     try {
       handlePrismaError(weirdError);
@@ -551,7 +551,7 @@ describe("Prisma error handling (imported handlePrismaError)", () => {
     }
   });
 
-  it("null → INTERNAL_SERVER_ERROR", () => {
+  it("null: INTERNAL_SERVER_ERROR", () => {
     try {
       handlePrismaError(null);
     } catch (err) {
@@ -559,7 +559,7 @@ describe("Prisma error handling (imported handlePrismaError)", () => {
     }
   });
 
-  it("undefined → INTERNAL_SERVER_ERROR", () => {
+  it("undefined: INTERNAL_SERVER_ERROR", () => {
     try {
       handlePrismaError(undefined);
     } catch (err) {
@@ -854,7 +854,7 @@ describe("createCRUDRouter searchOptions with ids", () => {
     const result = await (routerResult as any).searchOptions._queryFn({
       input: { field: "categoryId", ids: ["1"], search: "Cat" },
     });
-    // Should deduplicate — only one result for id "1"
+    // Should deduplicate; only one result for id "1"
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({ value: "1", label: "Cat 1" });
   });

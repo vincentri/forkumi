@@ -12,7 +12,7 @@ export function derivePermissionOptions(
   const options: { value: string; label: string }[] = [
     ...STANDARD_ACTIONS.map((a) => ({
       value: `*:${a}`,
-      label: `* — ${capitalize(a)} (all)`,
+      label: `All resources: ${capitalize(a)}`,
     })),
   ];
 
@@ -25,7 +25,7 @@ export function derivePermissionOptions(
     for (const action of actions) {
       options.push({
         value: `${config.model}:${action}`,
-        label: `${config.label} — ${capitalize(action)}`,
+        label: `${config.label}: ${capitalize(action)}`,
       });
     }
   }

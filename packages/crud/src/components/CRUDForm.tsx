@@ -125,15 +125,15 @@ interface CRUDFormProps {
   extraTabs?: CRUDExtraTab[];
   /** Zod object merged into the form resolver to validate extra tab fields. */
   extraSchema?: z.ZodObject<z.ZodRawShape>;
-  /** Current modal mode — forwarded to extra tab render callbacks. */
+  /** Current modal mode; forwarded to extra tab render callbacks. */
   mode?: "create" | "edit";
-  /** Existing row id when editing — forwarded to extra tab render callbacks. */
+  /** Existing row id when editing; forwarded to extra tab render callbacks. */
   rowId?: string;
 }
 
 /**
  * Auto-generated form from a CRUDConfig.
- * Field rendering is delegated to FieldRenderer → fields/*.tsx.
+ * Field rendering is delegated to FieldRenderer in fields/*.tsx.
  */
 export function CRUDForm({
   config,
@@ -183,7 +183,7 @@ export function CRUDForm({
     }
 
     // ponytail: Prisma returns null for unset optional strings, but the
-    // schedule schema only accepts "" or HH:mm. Normalize null → "" on the
+    // schedule schema only accepts "" or HH:mm. Normalize null to "" on the
     // way in so edit mode (which seeds from `defaultValues`) doesn't choke.
     // Gallery items get position-sequenced and null-safe alt text.
     const incoming = defaultValues as Record<string, unknown> | undefined;
@@ -277,7 +277,7 @@ export function CRUDForm({
   }, [activeTab, hasTabs, tabs]);
 
   // Auto-generate slug fields from their source field.
-  // lastAutoRef tracks the last value we wrote — if the slug still matches it (or is empty), keep auto-filling.
+  // lastAutoRef tracks the last value we wrote; if the slug still matches it (or is empty), keep auto-filling.
   const slugFields = formFields.filter((f) => f.slugFrom);
   // oxlint-disable-next-line react/rules-of-hooks
   const lastAutoRef = useRef<Record<string, string>>({});

@@ -22,7 +22,7 @@ export interface ServerEnv {
  */
 export async function startServer(env: ServerEnv): Promise<ChildProcess> {
   if (process.env.E2E_SKIP_BUILD === "1") {
-    console.log("[e2e] E2E_SKIP_BUILD=1 — reusing existing apps/api/.next build");
+    console.log("[e2e] E2E_SKIP_BUILD=1; reusing existing apps/api/.next build");
   } else {
     console.log("[e2e] Building api (next build)...");
     await run("pnpm", ["--filter", "api", "build"], { cwd: REPO_ROOT });
@@ -33,7 +33,7 @@ export async function startServer(env: ServerEnv): Promise<ChildProcess> {
     DATABASE_URL: env.DATABASE_URL,
     DIRECT_URL: env.DIRECT_URL,
     NEXTAUTH_URL: BASE_URL,
-    // Never reach S3 during admin render — keep storage local for tests.
+    // Never reach S3 during admin render; keep storage local for tests.
     STORAGE_PROVIDER: "local",
     NODE_ENV: "production",
   };

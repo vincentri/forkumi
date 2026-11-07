@@ -16,8 +16,8 @@ const LABELS = {
   follow: { id: "Ikuti kami", en: "Follow us" },
   rights: { id: "Hak cipta dilindungi.", en: "All rights reserved." },
   made: {
-    id: "Dibuat dengan ❤ untuk brand yang bertumbuh.",
-    en: "Made with ❤ for growing brands.",
+    id: "Dibuat untuk brand yang bertumbuh.",
+    en: "Made for growing brands.",
   },
   tag: {
     id: "Partner desain langganan untuk brand yang ingin tampil pro tanpa ribet.",
@@ -27,7 +27,7 @@ const LABELS = {
   nPort: { id: "Portfolio", en: "Portfolio" },
   nPkg: { id: "Paket", en: "Packages" },
   nAbout: { id: "Tentang", en: "About" },
-  hours: { id: "Senin – Jumat · 09.00 – 18.00", en: "Mon – Fri · 09:00 – 18:00" },
+  hours: { id: "Senin sampai Jumat, 09.00 sampai 18.00", en: "Monday to Friday, 09:00 to 18:00" },
 } as const;
 
 const WA =

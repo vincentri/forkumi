@@ -13,8 +13,8 @@ import { API_PRISMA_DIR, E2E_PRISMA_DIR } from "../paths";
  *    (prevents prod from adding models that e2e silently ignores)
  *
  * When you add a new model to apps/api/prisma/schema.prisma:
- *   - If it's needed by e2e specs → add it to packages/e2e/prisma/schema.prisma
- *   - If it's intentionally excluded → add its name to EXCLUDED_MODELS below
+ *   - If it's needed by e2e specs: add it to packages/e2e/prisma/schema.prisma
+ *   - If it's intentionally excluded: add its name to EXCLUDED_MODELS below
  *
  * The exclude list is version-controlled. Every entry here is a deliberate
  * decision to not test that model at the e2e level.
@@ -96,7 +96,7 @@ function extractModels(src: string): Map<string, string> {
 /**
  * Strip relation fields whose target model isn't in the `e2eModelNames` set.
  * The e2e schema is a structural subset of prod, so prod models will have
- * relation fields pointing to other models that e2e doesn't declare — those
+ * relation fields pointing to other models that e2e doesn't declare; those
  * would otherwise cause spurious field-signature mismatches.
  */
 function stripRelationsToMissingModels(body: string, e2eModelNames: Set<string>): string {

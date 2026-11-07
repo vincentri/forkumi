@@ -22,7 +22,7 @@ describe("buildZodSchema", () => {
       expect(() => schema.parse({ title: "" })).toThrow();
     });
 
-    it("optional: empty string → undefined", () => {
+    it("optional: empty string becomes undefined", () => {
       const schema = buildZodSchema(makeConfig([{ name: "title", type: "text", label: "Title" }]));
       const result = schema.parse({ title: "" });
       expect(result.title).toBeUndefined();
@@ -90,7 +90,7 @@ describe("buildZodSchema", () => {
       expect(() => schema.parse({ color: "#ff000" })).toThrow(); // 5 chars
     });
 
-    it("optional: empty string → undefined (browser clears color picker)", () => {
+    it("optional: empty string becomes undefined (browser clears color picker)", () => {
       const schema = buildZodSchema(makeConfig([{ name: "color", type: "color", label: "Color" }]));
       const result = schema.parse({ color: "" });
       expect(result.color).toBeUndefined();
@@ -139,8 +139,8 @@ describe("buildZodSchema", () => {
       expect(() => schema.parse({ status: "unknown" })).toThrow();
     });
 
-    it("optional: null from DB → undefined (user with no role assigned)", () => {
-      // Regression: ISSUE-004 — Edit form shows 'Invalid literal value, expected ""' when
+    it("optional: null from DB becomes undefined (user with no role assigned)", () => {
+      // Regression: ISSUE-004: Edit form shows 'Invalid literal value, expected ""' when
       // an optional select field (e.g. roleId) is null in the DB. null must coerce to undefined.
       // Found by /qa on 2026-04-25
       const schema = buildZodSchema(
@@ -159,12 +159,12 @@ describe("buildZodSchema", () => {
   });
 
   describe("showInForm: false fields", () => {
-    // Regression: ISSUE-001 — Edit form silently fails when DB row has null for a
+    // Regression: ISSUE-001: Edit form silently fails when DB row has null for a
     // display-only field (e.g. roleName: null). The Zod schema must skip showInForm:false
     // fields so null/unexpected values in the row don't block form submission.
     // Found by /qa on 2026-04-24
     // Report: .gstack/qa-reports/qa-report-localhost-3001-2026-04-24.md
-    it("skips showInForm:false fields in validation — null display value must not block submit", () => {
+    it("skips showInForm:false fields in validation: null display value must not block submit", () => {
       const schema = buildZodSchema(
         makeConfig([
           { name: "name", type: "text", label: "Name", required: true },
@@ -172,7 +172,7 @@ describe("buildZodSchema", () => {
           { name: "createdAt", type: "date", label: "Created", showInForm: false },
         ]),
       );
-      // Row from DB: roleName is null, createdAt is a formatted string — both should pass through
+      // Row from DB: roleName is null, createdAt is a formatted string; both should pass through
       const result = schema.parse({
         name: "Test User",
         roleName: null,
@@ -195,7 +195,7 @@ describe("buildZodSchema", () => {
 });
 
 describe("buildUpdateZodSchema", () => {
-  it("all fields become optional — empty object passes", () => {
+  it("all fields become optional: empty object passes", () => {
     const schema = buildUpdateZodSchema(
       makeConfig([
         { name: "title", type: "text", label: "Title", required: true },

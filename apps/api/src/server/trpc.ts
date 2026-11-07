@@ -36,12 +36,12 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 });
 
 /**
- * Permission-scoped procedure — checks `model:action` or `*:action` in the user's role.
+ * Permission-scoped procedure: checks `model:action` or `*:action` in the user's role.
  * Users with `isProtectedRole: true` (super admin) bypass all checks.
  * Users with no role have no permissions and always get FORBIDDEN.
  *
  * Permission format: "user:view", "product:create", "*:view" (wildcard = all models).
- * Legacy format ("view", "create") is not supported — update seed and existing roles.
+ * Legacy format ("view", "create") is not supported; update seed and existing roles.
  */
 export function permissionProcedure(action: StandardAction, model?: string) {
   return protectedProcedure.use(({ ctx, next }) => {

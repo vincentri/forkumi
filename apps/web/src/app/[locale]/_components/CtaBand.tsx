@@ -21,12 +21,12 @@ const CTA_DEFAULTS: Record<
   }
 > = {
   en: {
-    eye: "Let’s build",
+    eye: "Let's build",
     headLine1: "Got a project",
     headLine2: "in mind?",
-    sub: "Free consult & fast replies. Flexible & no lock-in, start this week.",
-    btnPrimary: "Let’s talk",
-    btnSecondary: "View Packages",
+    sub: "Free consultation and fast replies. Flexible, no lock-in, start this week.",
+    btnPrimary: "Let's talk",
+    btnSecondary: "View packages",
     btnPrimaryUrl: "https://wa.me/6580892716?text=Hi%20Forkumi!%20I%20have%20a%20design%20project.",
     btnSecondaryUrl: "packages",
   },
@@ -34,9 +34,9 @@ const CTA_DEFAULTS: Record<
     eye: "Ayo mulai",
     headLine1: "Punya proyek",
     headLine2: "desain?",
-    sub: "Konsultasi gratis & respons cepat. Fleksibel & bebas ikatan, bisa mulai minggu ini.",
+    sub: "Konsultasi gratis dan respons cepat. Fleksibel, bebas ikatan, bisa mulai minggu ini.",
     btnPrimary: "Ngobrol yuk",
-    btnSecondary: "Lihat Paket",
+    btnSecondary: "Lihat paket",
     btnPrimaryUrl:
       "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.",
     btnSecondaryUrl: "packages",

@@ -62,7 +62,7 @@ export function generateValidData(fields: CRUDField[]): Record<string, string | 
       case "range":
         data[field.name] = "50";
         break;
-      // model-select, model-multi-select, multicheck, image, file — skip
+      // model-select, model-multi-select, multicheck, image, file; skip
       default:
         break;
     }

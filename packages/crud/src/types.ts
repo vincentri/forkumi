@@ -167,7 +167,7 @@ interface CRUDFieldBase {
   sortable?: boolean;
   /** Tab group label for keyValue settings and CRUD create/edit forms */
   tab?: string;
-  /** Namespace stored as a DB column on keyValue rows — enables filtered queries */
+  /** Namespace stored as a DB column on keyValue rows; enables filtered queries */
   namespace?: string;
   /** For localized keyValue resources, set false to save the same value for every locale. Defaults to true. */
   localized?: boolean;
@@ -179,7 +179,7 @@ interface CRUDFieldBase {
   visibleWhen?: CRUDFieldVisibilityCondition;
   /** Enable server-side filtering and show a table column filter. Defaults to true except password and multicheck fields. */
   filterable?: boolean;
-  /** Enforce uniqueness — pre-flight check on create/update before hitting the DB */
+  /** Enforce uniqueness; pre-flight check on create/update before hitting the DB */
   unique?: boolean;
   /** Auto-generate this field's value as a slug derived from another field's name (e.g. "title") */
   slugFrom?: string;
@@ -211,7 +211,7 @@ export interface CRUDFieldSelect extends CRUDFieldBase {
   multiple?: boolean;
   /**
    * When set alongside `multiple: true`, treats this field as a Prisma relation
-   * (many-to-many). The value array is never stored as a scalar column — it is
+   * (many-to-many). The value array is never stored as a scalar column; it is
    * translated to `{ set: [{id},...] }` on write and read back via `include`.
    */
   relation?: {
@@ -219,14 +219,14 @@ export interface CRUDFieldSelect extends CRUDFieldBase {
     field: string;
     /** Target Prisma model key (lowercase), e.g. "tag" */
     model: string;
-    /** Explicit join model key — scaffold generates a named join table (e.g. "blogTag" → blog_tags with blog_id/tag_id) */
+    /** Explicit join model key; scaffold generates a named join table (e.g. "blogTag" to blog_tags with blog_id/tag_id) */
     through?: string;
   };
 }
 
 export interface CRUDFieldMulticheck extends CRUDFieldBase {
   type: "multicheck";
-  /** Required for multicheck fields — list of {label, value} checkboxes */
+  /** Required for multicheck fields; list of {label, value} checkboxes */
   options: SelectOption[];
   /**
    * Storage: values are stored as a comma-separated String in Postgres (e.g. "tag1,tag2,tag3").
@@ -299,7 +299,7 @@ export interface QueryState {
 import type { UseFormReturn } from "react-hook-form";
 
 export interface CRUDConfig {
-  /** Prisma model name — lowercase (e.g. "product" for model Product) */
+  /** Prisma model name; lowercase (e.g. "product" for model Product) */
   model: string;
   /** Display label for the admin UI (e.g. "Products") */
   label: string;

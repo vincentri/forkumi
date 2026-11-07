@@ -69,7 +69,7 @@ async function main() {
     changed = true;
     console.log(`✓  Removed apps/api/src/crud/${model}.ts`);
   } else {
-    console.log(`⚠  apps/api/src/crud/${model}.ts not found — skipping file removal.`);
+    console.log(`⚠  apps/api/src/crud/${model}.ts not found; skipping file removal.`);
   }
 
   if (existsSync(barrelPath)) {

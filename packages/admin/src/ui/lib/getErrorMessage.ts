@@ -6,7 +6,7 @@ export function getErrorMessage(err: unknown): string {
       const issues = JSON.parse(err.message);
       if (Array.isArray(issues) && issues[0]?.message) return issues[0].message;
     } catch {
-      // not JSON — fall through
+      // not JSON; fall through
     }
     return err.message;
   }

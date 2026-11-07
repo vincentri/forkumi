@@ -146,7 +146,7 @@ describe("createRoleRouter", () => {
       (db as any).role.findUnique.mockResolvedValue({ id: "r1", protected: false });
 
       await expect(roleRouter.delete({ ctx, input: { id: "r1" } })).rejects.toThrow(
-        "Cannot delete role — 3 users assigned.",
+        "Cannot delete role. 3 users are assigned.",
       );
     });
 
@@ -159,7 +159,7 @@ describe("createRoleRouter", () => {
       (db as any).role.findUnique.mockResolvedValue({ id: "r1", protected: false });
 
       await expect(roleRouter.delete({ ctx, input: { id: "r1" } })).rejects.toThrow(
-        "Cannot delete role — 1 user assigned.",
+        "Cannot delete role. 1 user is assigned.",
       );
     });
   });

@@ -66,7 +66,7 @@ interface CRUDTableProps {
   emptyState?: React.ReactNode;
   /** Email of the currently logged-in user. Rows matching this email get a "You" badge. */
   currentUserEmail?: string;
-  /** ID of a newly created row — gets a 2s highlight animation. */
+  /** ID of a newly created row; gets a 2s highlight animation. */
   lastCreatedId?: string;
   /** Whether to show checkboxes for bulk selection. */
   showCheckboxes?: boolean;
@@ -358,7 +358,7 @@ export function CRUDTable({
       if (sortDir === "asc") {
         onSort(field.name, "desc");
       } else {
-        // desc → unsorted: pass empty string to signal clear
+        // desc to unsorted: pass empty string to signal clear
         onSort("", "asc");
       }
     } else {

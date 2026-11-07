@@ -10,7 +10,7 @@ test.describe("Front Page Settings (keyValue)", () => {
   });
 
   test.afterEach(async ({ page }) => {
-    // Always navigate back to General tab first — some tests switch to
+    // Always navigate back to General tab first; some tests switch to
     // other tabs which hide the Site Name field.
     await switchTab(page, "General");
     const current = await page.getByLabel("Site Name").inputValue();
@@ -67,7 +67,7 @@ test.describe("Front Page Settings (keyValue)", () => {
     await headerScript.fill("<script>console.log('test')</script>");
     await saveKeyValuePage(page);
     await expect(headerScript).toHaveValue("<script>console.log('test')</script>");
-    // Reset scripts to empty — no seeded default exists
+    // Reset scripts to empty; no seeded default exists
     await headerScript.clear();
     await saveKeyValuePage(page);
   });

@@ -6,8 +6,8 @@ import { join, extname } from "path";
 import { randomBytes } from "crypto";
 import { resolvePublicDir } from "~/lib/public-files";
 
-const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB — images
-const MAX_VIDEO_BYTES = 50 * 1024 * 1024; // 50 MB — videos
+const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB for images
+const MAX_VIDEO_BYTES = 50 * 1024 * 1024; // 50 MB for videos
 const ALLOWED_MIME = new Set([
   "image/jpeg",
   "image/png",
@@ -19,7 +19,7 @@ const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp", ".
 const ALLOWED_VIDEO_MIME = new Set(["video/mp4", "video/webm", "video/quicktime"]);
 const ALLOWED_VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov"]);
 
-// Lightweight SVG scrub — no jsdom/DOMPurify (breaks on Vercel/Turbopack ESM).
+// Lightweight SVG scrub: no jsdom/DOMPurify (breaks on Vercel/Turbopack ESM).
 // Strips scripts, foreignObject, and inline event handlers / javascript: URLs.
 function sanitizeSvg(buffer: Buffer): Buffer | null {
   const raw = buffer.toString("utf8").trim();

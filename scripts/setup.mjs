@@ -2,8 +2,8 @@
 /**
  * node scripts/setup.mjs
  *
- * Copies .env.example → .env and injects a fresh NEXTAUTH_SECRET.
- * Safe to re-run — skips if .env already exists.
+ * Copies .env.example to .env and injects a fresh NEXTAUTH_SECRET.
+ * Safe to re-run; skips if .env already exists.
  */
 
 import { existsSync, readFileSync, writeFileSync } from "fs";
@@ -19,7 +19,7 @@ const envFile = resolve(root, ".env");
 
 // --- Already exists ---
 if (existsSync(envFile)) {
-  console.log(".env already exists — skipping. Delete it and re-run to reset.");
+  console.log(".env already exists; skipping. Delete it and re-run to reset.");
   process.exit(0);
 }
 
@@ -40,7 +40,7 @@ console.log("✓  Created .env with a generated NEXTAUTH_SECRET");
 console.log("");
 console.log("Next steps:");
 console.log(
-  "  1. Edit .env — set DATABASE_URL (and optionally DIRECT_URL) if your DB credentials differ from the defaults",
+  "  1. Edit .env: set DATABASE_URL (and optionally DIRECT_URL) if your DB credentials differ from the defaults",
 );
 console.log("     Defaults: postgresql://postgres:postgres@localhost:5432/quantyx");
 console.log("");
