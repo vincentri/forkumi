@@ -1,7 +1,8 @@
-FROM node:22-alpine AS base
+FROM node:26-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+# Node 25+ no longer bundles corepack; install it so packageManager pins pnpm.
+RUN npm install -g corepack@latest && corepack enable
 
 # ---- deps ----
 FROM base AS deps
@@ -53,7 +54,7 @@ RUN PRISMA_VSTORE=$(ls -d /app/node_modules/.pnpm/@prisma+client@*/node_modules/
     cp -r "$PRISMA_VSTORE" "$PRISMA_TARGET/.prisma/client"
 
 # ---- tools ----
-FROM node:22-alpine AS tools
+FROM node:26-alpine AS tools
 WORKDIR /tools
 RUN --mount=type=cache,id=npm-tools,target=/root/.npm \
     npm install --save-exact \
@@ -69,7 +70,7 @@ RUN PRISMA_GENERATE_SKIP_AUTOINSTALL=true \
     node_modules/.bin/prisma generate --schema ./prisma/schema.prisma
 
 # ---- runner ----
-FROM node:22-alpine AS runner
+FROM node:26-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
