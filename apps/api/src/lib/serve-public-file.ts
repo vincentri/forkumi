@@ -3,10 +3,7 @@ import { NextResponse } from "next/server";
 import { contentTypeForPath, resolvePublicFile } from "~/lib/public-files";
 
 /** Read from bind-mounted public/ at request time (Next.js static serving misses new files). */
-export async function servePublicFile(
-  subPath: string,
-  segments: string[],
-): Promise<NextResponse> {
+export async function servePublicFile(subPath: string, segments: string[]): Promise<NextResponse> {
   let filePath: string;
   try {
     filePath = resolvePublicFile(subPath, ...segments);

@@ -55,8 +55,8 @@ services:
       retries: 12
       start_period: 30s
     # depends_on:
-      # postgres:
-      #   condition: service_healthy
+    # postgres:
+    #   condition: service_healthy
 
   web:
     container_name: ${WEB_CONTAINER_NAME:-web}

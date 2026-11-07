@@ -46,9 +46,7 @@ describe("proxy", () => {
     vi.stubEnv("NEXT_PUBLIC_WEB_URL", "https://forkumi.co,http://localhost:3000");
     const { proxy } = await loadProxy();
 
-    const response = proxy(
-      makeRequest({ method: "OPTIONS", origin: "https://forkumi.co" }),
-    );
+    const response = proxy(makeRequest({ method: "OPTIONS", origin: "https://forkumi.co" }));
 
     expect(response.headers.get("Access-Control-Allow-Origin")).toBe("https://forkumi.co");
   });
@@ -56,9 +54,7 @@ describe("proxy", () => {
   it("does not set allow-origin for disallowed origins", async () => {
     const { proxy } = await loadProxy();
 
-    const response = proxy(
-      makeRequest({ method: "OPTIONS", origin: "https://example.com" }),
-    );
+    const response = proxy(makeRequest({ method: "OPTIONS", origin: "https://example.com" }));
 
     expect(response.status).toBe(204);
     expect(response.headers.get("Access-Control-Allow-Origin")).toBeNull();

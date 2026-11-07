@@ -36,8 +36,22 @@ function isAllowedImageReference(value: string): boolean {
 }
 
 const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
-  ({ value, uploadUrl = "/api/upload", fieldName = "file", maxSizeMB = 5, disabled, onChange, onRemove, className }, ref) => {
-    const [mode, setMode] = React.useState<ImageMode>(() => isExternalImageUrl(value) ? "url" : "upload");
+  (
+    {
+      value,
+      uploadUrl = "/api/upload",
+      fieldName = "file",
+      maxSizeMB = 5,
+      disabled,
+      onChange,
+      onRemove,
+      className,
+    },
+    ref,
+  ) => {
+    const [mode, setMode] = React.useState<ImageMode>(() =>
+      isExternalImageUrl(value) ? "url" : "upload",
+    );
     const [uploading, setUploading] = React.useState(false);
     const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
     const [brokenUrl, setBrokenUrl] = React.useState<string | null>(null);
@@ -146,7 +160,12 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
             <div className="flex items-center gap-4">
               <div className="relative h-16 w-16 rounded-md border border-border overflow-hidden bg-muted">
                 {/* oxlint-disable-next-line nextjs/no-img-element */}
-                <img src={displayUrl} alt="" className="h-full w-full object-contain" onError={() => setBrokenUrl(displayUrl ?? null)} />
+                <img
+                  src={displayUrl}
+                  alt=""
+                  className="h-full w-full object-contain"
+                  onError={() => setBrokenUrl(displayUrl ?? null)}
+                />
               </div>
               {!disabled && (
                 <div className="flex gap-2">
@@ -176,8 +195,18 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
           ) : (
             <div className="flex items-center gap-4">
               <div className="h-16 w-16 rounded-md border border-dashed border-border bg-muted flex items-center justify-center">
-                <svg className="h-6 w-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.41a2.25 2.25 0 013.182 0l2.909 2.91m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                <svg
+                  className="h-6 w-6 text-muted-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.41a2.25 2.25 0 013.182 0l2.909 2.91m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+                  />
                 </svg>
               </div>
               {!disabled && (
@@ -229,7 +258,7 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
         />
       </div>
     );
-  }
+  },
 );
 ImageUpload.displayName = "ImageUpload";
 

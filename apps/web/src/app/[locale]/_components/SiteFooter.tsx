@@ -15,7 +15,10 @@ const LABELS = {
   contact: { id: "Kontak", en: "Contact" },
   follow: { id: "Ikuti kami", en: "Follow us" },
   rights: { id: "Hak cipta dilindungi.", en: "All rights reserved." },
-  made: { id: "Dibuat dengan ❤ untuk brand yang bertumbuh.", en: "Made with ❤ for growing brands." },
+  made: {
+    id: "Dibuat dengan ❤ untuk brand yang bertumbuh.",
+    en: "Made with ❤ for growing brands.",
+  },
   tag: {
     id: "Partner desain langganan untuk brand yang ingin tampil pro tanpa ribet.",
     en: "A design subscription partner for brands that want to look pro without the hassle.",
@@ -51,7 +54,10 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
   const emailUrl = safeHref(pick(settings, "contactEmailUrl", MAIL), MAIL);
   const instagramUrl = safeHref(pick(settings, "contactInstagramUrl", IG), IG);
   const workingHours = pick(settings, "contactWorkingHours", LABELS.hours[locale]);
-  const socialInstagramUrl = safeHref(pick(settings, "socialInstagramUrl", instagramUrl), instagramUrl);
+  const socialInstagramUrl = safeHref(
+    pick(settings, "socialInstagramUrl", instagramUrl),
+    instagramUrl,
+  );
   const socialWhatsappUrl = safeHref(pick(settings, "socialWhatsappUrl", whatsappUrl), whatsappUrl);
   const socialEmailUrl = safeHref(pick(settings, "socialEmailUrl", emailUrl), emailUrl);
 
@@ -89,13 +95,21 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
             <h5>{pick(settings, "footerFollowHeading", LABELS.follow[locale])}</h5>
             <div className="fsoc">
               <a href={socialInstagramUrl} target="_blank" rel="noopener" aria-label="Instagram">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /></svg>
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                </svg>
               </a>
               <a href={socialWhatsappUrl} target="_blank" rel="noopener" aria-label="WhatsApp">
-                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                <svg viewBox="0 0 24 24">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
               </a>
               <a href={socialEmailUrl} aria-label="Email">
-                <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg>
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="M3 7l9 6 9-6" />
+                </svg>
               </a>
             </div>
           </div>
@@ -103,7 +117,13 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
         <div className="fbot">
           <span>
             © {new Date().getFullYear()}.{" "}
-            <span>{pick(settings, "footerCopyrightText", pick(settings, "footerRightsText", LABELS.rights[locale]))}</span>
+            <span>
+              {pick(
+                settings,
+                "footerCopyrightText",
+                pick(settings, "footerRightsText", LABELS.rights[locale]),
+              )}
+            </span>
           </span>
           <span>{pick(settings, "footerMadeText", LABELS.made[locale])}</span>
         </div>

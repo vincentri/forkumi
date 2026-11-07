@@ -2,7 +2,14 @@
 
 import type { UseFormRegister, UseFormWatch, Control } from "react-hook-form";
 import { Separator } from "@repo/ui";
-import type { CRUDField, CRUDFieldMulticheck, CRUDFieldRange, CRUDFieldSelect, CRUDFieldImage, CRUDFieldFile } from "../../types";
+import type {
+  CRUDField,
+  CRUDFieldMulticheck,
+  CRUDFieldRange,
+  CRUDFieldSelect,
+  CRUDFieldImage,
+  CRUDFieldFile,
+} from "../../types";
 import { BooleanField } from "./BooleanField";
 import { ColorField } from "./ColorField";
 import { DateTimeField } from "./DateTimeField";
@@ -39,7 +46,14 @@ export interface FieldRendererProps {
  * Dispatches to the right field component based on field.type.
  * Adding a new field type: create a new component in fields/, add a case here.
  */
-export function FieldRenderer({ field, register, watch, control, readOnly, modelApi }: FieldRendererProps) {
+export function FieldRenderer({
+  field,
+  register,
+  watch,
+  control,
+  readOnly,
+  modelApi,
+}: FieldRendererProps) {
   switch (field.type) {
     case "textarea":
       return <TextareaField field={field} register={register} />;
@@ -64,11 +78,21 @@ export function FieldRenderer({ field, register, watch, control, readOnly, model
     case "range":
       return <RangeField field={field as CRUDFieldRange} register={register} watch={watch} />;
     case "multicheck":
-      return <MulticheckField field={field as CRUDFieldMulticheck} control={control} readOnly={readOnly} />;
+      return (
+        <MulticheckField
+          field={field as CRUDFieldMulticheck}
+          control={control}
+          readOnly={readOnly}
+        />
+      );
     case "image":
-      return <ImageUploadField field={field as CRUDFieldImage} control={control} readOnly={readOnly} />;
+      return (
+        <ImageUploadField field={field as CRUDFieldImage} control={control} readOnly={readOnly} />
+      );
     case "file":
-      return <FileUploadField field={field as CRUDFieldFile} control={control} readOnly={readOnly} />;
+      return (
+        <FileUploadField field={field as CRUDFieldFile} control={control} readOnly={readOnly} />
+      );
     case "separator":
       return <Separator className="my-2" />;
     default:

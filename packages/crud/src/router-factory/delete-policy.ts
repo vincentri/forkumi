@@ -3,7 +3,11 @@ import type { CRUDConfig, CRUDDeletePolicy } from "../types";
 import { prismaModelKey } from "./relations";
 
 // oxlint-disable-next-line typescript/no-explicit-any
-export async function applyDeletePolicies(db: any, config: CRUDConfig, ids: string[]): Promise<void> {
+export async function applyDeletePolicies(
+  db: any,
+  config: CRUDConfig,
+  ids: string[],
+): Promise<void> {
   const policies = config.deletePolicy ?? [];
   if (policies.length === 0) return;
 
@@ -17,7 +21,9 @@ export async function applyDeletePolicies(db: any, config: CRUDConfig, ids: stri
       if (relatedCount > 0) {
         throw new TRPCError({
           code: "CONFLICT",
-          message: policy.message ?? `Cannot delete this ${config.label.toLowerCase()} because it is still in use.`,
+          message:
+            policy.message ??
+            `Cannot delete this ${config.label.toLowerCase()} because it is still in use.`,
         });
       }
     }
@@ -29,7 +35,12 @@ export async function applyDeletePolicies(db: any, config: CRUDConfig, ids: stri
 }
 
 // oxlint-disable-next-line typescript/no-explicit-any
-async function applyReferencingUpdate(db: any, config: CRUDConfig, policy: CRUDDeletePolicy, ids: string[]): Promise<void> {
+async function applyReferencingUpdate(
+  db: any,
+  config: CRUDConfig,
+  policy: CRUDDeletePolicy,
+  ids: string[],
+): Promise<void> {
   if (policy.onDelete === "restrict" || policy.onDelete === "ignore") return;
   if (policy.onDelete === "setValue" && policy.value === undefined) {
     throw new TRPCError({

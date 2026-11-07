@@ -39,8 +39,8 @@ describe("field visibility", () => {
       { ...baseField, visibleWhen: { field: "emailProvider", equals: "ses" } },
     ];
 
-    expect(visibleFieldsForValues(fields, { emailProvider: "resend" }).map((field) => field.name)).toEqual([
-      "emailProvider",
-    ]);
+    expect(
+      visibleFieldsForValues(fields, { emailProvider: "resend" }).map((field) => field.name),
+    ).toEqual(["emailProvider"]);
   });
 });

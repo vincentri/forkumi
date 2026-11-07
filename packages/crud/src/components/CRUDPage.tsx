@@ -168,7 +168,12 @@ export function CRUDPage({
     setSortDir(dir);
     setPage(1);
     setSelectedIds(new Set());
-    onQueryChange?.({ page: 1, sortField: newField, sortDir: dir, filters: Object.keys(filters).length ? filters : undefined });
+    onQueryChange?.({
+      page: 1,
+      sortField: newField,
+      sortDir: dir,
+      filters: Object.keys(filters).length ? filters : undefined,
+    });
   }
 
   function handleFilterChange(field: string, value: string | boolean | null) {
@@ -181,7 +186,12 @@ export function CRUDPage({
     setFilters(next);
     setPage(1);
     setSelectedIds(new Set());
-    onQueryChange?.({ page: 1, sortField, sortDir, filters: Object.keys(next).length ? next : undefined });
+    onQueryChange?.({
+      page: 1,
+      sortField,
+      sortDir,
+      filters: Object.keys(next).length ? next : undefined,
+    });
   }
 
   function clearFilters() {
@@ -260,13 +270,15 @@ export function CRUDPage({
   const singularLabel = singularize(config.label);
   const activeFilterCount = Object.keys(filters).length;
   const showCheckboxes = !!(onDelete && config.deletable !== false && onBulkDelete);
-  const atMaxRecords = config.maxRecords !== undefined && (listData?.total ?? 0) >= config.maxRecords;
-  const hasColumnLayout = config.formLayout?.some((section) => (section.columns?.length ?? 0) > 1) ?? false;
+  const atMaxRecords =
+    config.maxRecords !== undefined && (listData?.total ?? 0) >= config.maxRecords;
+  const hasColumnLayout =
+    config.formLayout?.some((section) => (section.columns?.length ?? 0) > 1) ?? false;
   const dialogWidthClass = hasColumnLayout
     ? "max-w-[calc(100vw-2rem)] sm:max-w-2xl md:max-w-5xl"
     : config.fields.some((f) => f.type === "multicheck")
-    ? "max-w-3xl"
-    : "max-w-2xl";
+      ? "max-w-3xl"
+      : "max-w-2xl";
 
   return (
     <div className="space-y-4">
@@ -276,12 +288,22 @@ export function CRUDPage({
         <div className="flex items-center gap-2">
           {extraHeaderActions}
           {onExportCsv && (
-            <Button type="button" variant="outline" onClick={handleExportCsv} disabled={isExporting}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleExportCsv}
+              disabled={isExporting}
+            >
               {isExporting ? "Exporting..." : "Export CSV"}
             </Button>
           )}
           {onCreate && !atMaxRecords && (
-            <Button onClick={() => { setModal({ type: "create" }); setMutationError(null); }}>
+            <Button
+              onClick={() => {
+                setModal({ type: "create" });
+                setMutationError(null);
+              }}
+            >
               + New {singularLabel}
             </Button>
           )}
@@ -292,7 +314,9 @@ export function CRUDPage({
       <div className="flex items-center gap-2">
         {activeFilterCount > 0 && (
           <>
-            <Badge variant="secondary">{activeFilterCount} {activeFilterCount === 1 ? "filter" : "filters"}</Badge>
+            <Badge variant="secondary">
+              {activeFilterCount} {activeFilterCount === 1 ? "filter" : "filters"}
+            </Badge>
             <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
               Clear filters
             </Button>
@@ -311,7 +335,14 @@ export function CRUDPage({
       {selectedIds.size > 0 && (
         <div className="flex items-center gap-3 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm">
           <span className="text-muted-foreground">{selectedIds.size} selected</span>
-          <Button variant="destructive" size="sm" onClick={() => { setBulkDeleteOpen(true); setBulkDeleteError(null); }}>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => {
+              setBulkDeleteOpen(true);
+              setBulkDeleteError(null);
+            }}
+          >
             Delete selected
           </Button>
           <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>
@@ -329,20 +360,31 @@ export function CRUDPage({
         sortDir={sortDir}
         onSort={handleSort}
         modelApi={modelApi}
-        onEdit={onUpdate ? (row) => { setModal({ type: "edit", row }); setMutationError(null); } : undefined}
+        onEdit={
+          onUpdate
+            ? (row) => {
+                setModal({ type: "edit", row });
+                setMutationError(null);
+              }
+            : undefined
+        }
         onDelete={onDelete ? (row) => setDeleteTarget(row) : undefined}
-        onDuplicate={onDuplicate ? async (row) => {
-          setIsMutating(true);
-          setMutationError(null);
-          try {
-            await onDuplicate(row);
-            onRefetch?.();
-          } catch (err) {
-            setMutationError(err instanceof Error ? err.message : "Something went wrong.");
-          } finally {
-            setIsMutating(false);
-          }
-        } : undefined}
+        onDuplicate={
+          onDuplicate
+            ? async (row) => {
+                setIsMutating(true);
+                setMutationError(null);
+                try {
+                  await onDuplicate(row);
+                  onRefetch?.();
+                } catch (err) {
+                  setMutationError(err instanceof Error ? err.message : "Something went wrong.");
+                } finally {
+                  setIsMutating(false);
+                }
+              }
+            : undefined
+        }
         onRowAction={onRowAction}
         rowActionLabel={rowActionLabel}
         rowActionVisible={rowActionVisible}
@@ -351,11 +393,14 @@ export function CRUDPage({
         lastCreatedId={lastCreatedId ?? undefined}
         showCheckboxes={showCheckboxes}
         selectedIds={selectedIds}
-        onSelectRow={(id) => setSelectedIds((prev) => {
-          const next = new Set(prev);
-          if (next.has(id)) next.delete(id); else next.add(id);
-          return next;
-        })}
+        onSelectRow={(id) =>
+          setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+          })
+        }
         onSelectAll={(checked) => {
           if (checked) {
             const selectableIds = (listData?.items ?? [])
@@ -386,7 +431,10 @@ export function CRUDPage({
                 variant="outline"
                 size="sm"
                 aria-label="Previous page"
-                onClick={() => { updateQuery({ page: listData.page - 1 }); setSelectedIds(new Set()); }}
+                onClick={() => {
+                  updateQuery({ page: listData.page - 1 });
+                  setSelectedIds(new Set());
+                }}
               >
                 Prev
               </Button>
@@ -396,7 +444,10 @@ export function CRUDPage({
                 variant="outline"
                 size="sm"
                 aria-label="Next page"
-                onClick={() => { updateQuery({ page: listData.page + 1 }); setSelectedIds(new Set()); }}
+                onClick={() => {
+                  updateQuery({ page: listData.page + 1 });
+                  setSelectedIds(new Set());
+                }}
               >
                 Next
               </Button>
@@ -409,7 +460,10 @@ export function CRUDPage({
       <Dialog
         open={modal.type !== "closed"}
         onOpenChange={(open) => {
-          if (!open) { setModal({ type: "closed" }); setMutationError(null); }
+          if (!open) {
+            setModal({ type: "closed" });
+            setMutationError(null);
+          }
         }}
       >
         <DialogContent className={`flex flex-col max-h-[90vh] ${dialogWidthClass}`}>
@@ -419,37 +473,41 @@ export function CRUDPage({
               <>
                 <DialogHeader>
                   <DialogTitle>
-                    {modal.type === "create" ? `New ${singularLabel}` : isProtectedRow ? `View ${singularLabel}` : `Edit ${singularLabel}`}
+                    {modal.type === "create"
+                      ? `New ${singularLabel}`
+                      : isProtectedRow
+                        ? `View ${singularLabel}`
+                        : `Edit ${singularLabel}`}
                   </DialogTitle>
                   <DialogDescription>
                     {modal.type === "create"
                       ? `Fill in the fields below to create a new ${singularLabel.toLowerCase()}.`
                       : isProtectedRow
-                      ? `This ${singularLabel.toLowerCase()} is protected and cannot be modified.`
-                      : `Update the fields below.`}
+                        ? `This ${singularLabel.toLowerCase()} is protected and cannot be modified.`
+                        : `Update the fields below.`}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="overflow-y-auto flex-1 min-h-0 pr-1">
-                {mutationError && (
-                  <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive mb-4">
-                    {mutationError}
-                  </p>
-                )}
-                {modal.type !== "closed" && (
-                  <CRUDForm
-                    config={config}
-                    defaultValues={modal.type === "edit" ? modal.row : undefined}
-                    onSubmit={handleSubmit}
-                    isLoading={isMutating}
-                    submitLabel={modal.type === "create" ? "Create" : "Update"}
-                    readOnly={isProtectedRow}
-                    modelApi={modelApi}
-                    extraTabs={extraTabs}
-                    extraSchema={extraSchema}
-                    mode={modal.type === "create" ? "create" : "edit"}
-                    rowId={modal.type === "edit" ? (modal.row.id as string) : undefined}
-                  />
-                )}
+                  {mutationError && (
+                    <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive mb-4">
+                      {mutationError}
+                    </p>
+                  )}
+                  {modal.type !== "closed" && (
+                    <CRUDForm
+                      config={config}
+                      defaultValues={modal.type === "edit" ? modal.row : undefined}
+                      onSubmit={handleSubmit}
+                      isLoading={isMutating}
+                      submitLabel={modal.type === "create" ? "Create" : "Update"}
+                      readOnly={isProtectedRow}
+                      modelApi={modelApi}
+                      extraTabs={extraTabs}
+                      extraSchema={extraSchema}
+                      mode={modal.type === "create" ? "create" : "edit"}
+                      rowId={modal.type === "edit" ? (modal.row.id as string) : undefined}
+                    />
+                  )}
                 </div>
               </>
             );
@@ -460,7 +518,12 @@ export function CRUDPage({
       {/* Delete Confirmation Dialog */}
       <Dialog
         open={!!deleteTarget}
-        onOpenChange={(open) => { if (!open) { setDeleteTarget(null); setDeleteError(null); } }}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteTarget(null);
+            setDeleteError(null);
+          }
+        }}
       >
         <DialogContent className="max-w-sm">
           <DialogHeader>
@@ -473,7 +536,13 @@ export function CRUDPage({
             </p>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setDeleteTarget(null); setDeleteError(null); }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDeleteTarget(null);
+                setDeleteError(null);
+              }}
+            >
               Cancel
             </Button>
             <Button variant="destructive" disabled={isMutating} onClick={confirmDelete}>
@@ -486,11 +555,18 @@ export function CRUDPage({
       {/* Bulk Delete Confirmation Dialog */}
       <Dialog
         open={bulkDeleteOpen}
-        onOpenChange={(open) => { if (!open) { setBulkDeleteOpen(false); setBulkDeleteError(null); } }}
+        onOpenChange={(open) => {
+          if (!open) {
+            setBulkDeleteOpen(false);
+            setBulkDeleteError(null);
+          }
+        }}
       >
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Delete {selectedIds.size} {selectedIds.size === 1 ? singularLabel : config.label}?</DialogTitle>
+            <DialogTitle>
+              Delete {selectedIds.size} {selectedIds.size === 1 ? singularLabel : config.label}?
+            </DialogTitle>
             <DialogDescription>This action cannot be undone.</DialogDescription>
           </DialogHeader>
           {bulkDeleteError && (
@@ -499,7 +575,13 @@ export function CRUDPage({
             </p>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => { setBulkDeleteOpen(false); setBulkDeleteError(null); }}>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setBulkDeleteOpen(false);
+                setBulkDeleteError(null);
+              }}
+            >
               Cancel
             </Button>
             <Button variant="destructive" disabled={isMutating} onClick={confirmBulkDelete}>

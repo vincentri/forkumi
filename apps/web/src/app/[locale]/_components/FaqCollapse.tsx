@@ -35,11 +35,7 @@ export function FaqCollapse({
         ))}
       </div>
       <div style={{ textAlign: "center", marginTop: "22px" }}>
-        <button
-          type="button"
-          className="see-more"
-          onClick={() => setOpen((value) => !value)}
-        >
+        <button type="button" className="see-more" onClick={() => setOpen((value) => !value)}>
           {open ? seeLessLabel : seeMoreLabel} <span className="ico">{open ? "↑" : "↓"}</span>
         </button>
       </div>

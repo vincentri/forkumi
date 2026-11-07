@@ -14,11 +14,14 @@ export type WhysubCardData = {
 export async function getWhysubCards(locale: "id" | "en"): Promise<WhysubCardData[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.whysub.list?input=${input}`, fetchNextOptions(["public:whysub"]));
+    const response = await fetch(
+      `${apiOrigin()}/api/trpc/public.whysub.list?input=${input}`,
+      fetchNextOptions(["public:whysub"]),
+    );
     if (!response.ok) {
       return [];
     }
-    const payload = await response.json() as { result?: { data?: { json?: WhysubCardData[] } } };
+    const payload = (await response.json()) as { result?: { data?: { json?: WhysubCardData[] } } };
     return payload.result?.data?.json ?? [];
   } catch {
     return [];

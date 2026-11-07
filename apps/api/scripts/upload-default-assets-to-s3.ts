@@ -71,12 +71,14 @@ async function main() {
     const key = assetKey(assetPath);
     const body = await readFile(join(publicDir, key));
 
-    await s3.send(new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: body,
-      ContentType: contentTypeFor(assetPath),
-    }));
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: body,
+        ContentType: contentTypeFor(assetPath),
+      }),
+    );
 
     console.log(`Uploaded ${assetPath} to s3://${bucket}/${key}`);
   }
@@ -91,12 +93,14 @@ async function main() {
     const key = `assets/${relative(webAssetsDir, filePath).split("\\").join("/")}`;
     const body = await readFile(filePath);
 
-    await s3.send(new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: body,
-      ContentType: contentTypeFor(filePath),
-    }));
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: body,
+        ContentType: contentTypeFor(filePath),
+      }),
+    );
 
     console.log(`Uploaded /${key} to s3://${bucket}/${key}`);
   }

@@ -43,7 +43,9 @@ import type { AppRouter } from "./router";
 import { t } from "./trpc";
 
 void appRouter;
-type _AssertAdminNamespace = AppRouter extends { _def: { procedures: Record<string, unknown> } } ? true : true;
+type _AssertAdminNamespace = AppRouter extends { _def: { procedures: Record<string, unknown> } }
+  ? true
+  : true;
 void (null as unknown as _AssertAdminNamespace);
 
 type AnyCaller = Record<string, any>;
@@ -119,14 +121,26 @@ describe("appRouter shape — admin namespace contract", () => {
     });
 
     expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledTimes(2);
-    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      where: { key_locale: { key: "site_name", locale: "en" } },
-      create: expect.objectContaining({ key: "site_name", locale: "en", value: "Forkumi Shared" }),
-    }));
-    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      where: { key_locale: { key: "site_name", locale: "id" } },
-      create: expect.objectContaining({ key: "site_name", locale: "id", value: "Forkumi Shared" }),
-    }));
+    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { key_locale: { key: "site_name", locale: "en" } },
+        create: expect.objectContaining({
+          key: "site_name",
+          locale: "en",
+          value: "Forkumi Shared",
+        }),
+      }),
+    );
+    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { key_locale: { key: "site_name", locale: "id" } },
+        create: expect.objectContaining({
+          key: "site_name",
+          locale: "id",
+          value: "Forkumi Shared",
+        }),
+      }),
+    );
   });
 
   it("keeps localized front page fields scoped to the selected locale", async () => {
@@ -138,10 +152,12 @@ describe("appRouter shape — admin namespace contract", () => {
     });
 
     expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledTimes(1);
-    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledWith(expect.objectContaining({
-      where: { key_locale: { key: "headerCtaLabel", locale: "id" } },
-      create: expect.objectContaining({ key: "headerCtaLabel", locale: "id", value: "Ngobrol" }),
-    }));
+    expect(mocks.prisma.frontPageSettings.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { key_locale: { key: "headerCtaLabel", locale: "id" } },
+        create: expect.objectContaining({ key: "headerCtaLabel", locale: "id", value: "Ngobrol" }),
+      }),
+    );
   });
 
   it("exposes admin.role.list", async () => {

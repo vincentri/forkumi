@@ -30,7 +30,12 @@ describe("derivePermissionOptions", () => {
     const result = derivePermissionOptions([config]);
     const modelPerms = result.filter((o) => o.value.startsWith("post:"));
     expect(modelPerms).toHaveLength(4);
-    expect(modelPerms.map((p) => p.value)).toEqual(["post:view", "post:create", "post:update", "post:delete"]);
+    expect(modelPerms.map((p) => p.value)).toEqual([
+      "post:view",
+      "post:create",
+      "post:update",
+      "post:delete",
+    ]);
   });
 
   it("generates only view for readOnly config", () => {

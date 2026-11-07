@@ -28,6 +28,7 @@ packages/
 `packages/auth` exports factories (`createAuthOptions`, `createGetServerAuthSession`) that accept a db adapter and password hasher. No dependency on `@repo/db` or `bcryptjs`. Apps wire these in `apps/api/src/lib/auth.ts`.
 
 Key files:
+
 - `apps/api/src/server/router.ts` — root tRPC router; admin resource routers MUST be nested under `admin` (client accesses `api.admin.<model>`), `account` and `public` stay at root
 - `apps/api/src/crud/*.ts` — per-resource CRUD configs (thin re-exports from `@repo/admin` for built-ins)
 - `packages/crud/src/router-factory.ts` — generates tRPC list/create/update/delete procedures
@@ -49,7 +50,7 @@ pnpm --filter crud test --watch  # watch mode
 
 Test files live in `packages/crud/src/__tests__/`. Framework: Vitest + @testing-library/react. Coverage focuses on CRUDPage component behavior (error banner, form visibility, table rendering).
 
-No tests for Next.js pages — those are verified by the build check below. tRPC router *shape* is locked by `apps/api/src/server/router.test.ts` (admin namespace + root account/public) and router `select` fields by `@repo/admin` user-router tests.
+No tests for Next.js pages — those are verified by the build check below. tRPC router _shape_ is locked by `apps/api/src/server/router.test.ts` (admin namespace + root account/public) and router `select` fields by `@repo/admin` user-router tests.
 
 **Never remove failing tests.** Fix the underlying issue instead (add Radix providers, polyfill browser APIs, fix React version mismatches, etc.). Remove a test only if the feature itself is being removed from the codebase.
 
@@ -125,6 +126,7 @@ Ports: `3000` = `apps/web` (frontend), `3001` = `apps/api` (backend/admin).
 Use `/browse` skill from gstack for all web browsing. Never use `mcp__claude-in-chrome__*` tools.
 
 Available skills:
+
 - /office-hours
 - /plan-ceo-review
 - /plan-eng-review

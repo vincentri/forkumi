@@ -5,7 +5,14 @@ export type { InputProps } from "./components/input";
 export { Textarea } from "./components/textarea";
 export type { TextareaProps } from "./components/textarea";
 export { Label } from "./components/label";
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "./components/card";
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "./components/card";
 export {
   Dialog,
   DialogPortal,
@@ -45,15 +52,37 @@ export { cn } from "./lib/utils";
 export { isManagedAssetPath, resolveAssetUrl } from "./lib/asset-url";
 export { Toaster, toast } from "./components/toaster";
 export {
-  AlertTriangle, ChevronUp, ChevronDown, ChevronsUpDown, Copy, MoreVertical, Pencil, Trash2, X,
-  Menu, Moon, Sun, LayoutDashboard, Users, ShieldCheck, Settings,
-  PanelLeftClose, PanelLeftOpen, FolderOpen, Folder, LogOut, User,
+  AlertTriangle,
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
+  Copy,
+  MoreVertical,
+  Pencil,
+  Trash2,
+  X,
+  Menu,
+  Moon,
+  Sun,
+  LayoutDashboard,
+  Users,
+  ShieldCheck,
+  Settings,
+  PanelLeftClose,
+  PanelLeftOpen,
+  FolderOpen,
+  Folder,
+  LogOut,
+  User,
 } from "lucide-react";
 export type { LucideIcon } from "lucide-react";
 
 import * as LucideIcons from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-export const NAV_ICONS: Record<string, LucideIcon> = LucideIcons as unknown as Record<string, LucideIcon>;
+export const NAV_ICONS: Record<string, LucideIcon> = LucideIcons as unknown as Record<
+  string,
+  LucideIcon
+>;
 
 // Extended shadcn components
 export { Skeleton } from "./components/skeleton";
@@ -67,7 +96,12 @@ export { Alert, AlertTitle, AlertDescription } from "./components/alert";
 export { Avatar, AvatarImage, AvatarFallback } from "./components/avatar";
 export { ScrollArea, ScrollBar } from "./components/scroll-area";
 export { Progress } from "./components/progress";
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "./components/accordion";
+export {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "./components/accordion";
 export {
   Breadcrumb,
   BreadcrumbList,

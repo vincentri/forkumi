@@ -4,28 +4,30 @@ import { handlePrismaError } from "@repo/crud";
 import type { AdminDbAdapter } from "../adapters";
 import type { StandardAction } from "../../lib/permissions";
 
-const permissionString = z.string().regex(
-  /^(\*|[a-z]+):[a-z]+$/,
-  "Permission must be 'model:action' or '*:action' (e.g. 'user:view', '*:create')",
-);
+const permissionString = z
+  .string()
+  .regex(
+    /^(\*|[a-z]+):[a-z]+$/,
+    "Permission must be 'model:action' or '*:action' (e.g. 'user:view', '*:create')",
+  );
 
 interface RouterDeps {
   router: any;
   permissionProcedure: (action: StandardAction, model?: string) => any;
 }
 
-export function createRoleRouter(
-  db: AdminDbAdapter,
-  trpc: RouterDeps,
-) {
-  const roleListProcedure = trpc.permissionProcedure("view", "role")
-    .input(z.object({
-      page: z.number().min(1).default(1),
-      pageSize: z.number().min(1).max(100).default(20),
-      search: z.string().optional(),
-      sortField: z.string().optional(),
-      sortDir: z.enum(["asc", "desc"]).optional(),
-    }))
+export function createRoleRouter(db: AdminDbAdapter, trpc: RouterDeps) {
+  const roleListProcedure = trpc
+    .permissionProcedure("view", "role")
+    .input(
+      z.object({
+        page: z.number().min(1).default(1),
+        pageSize: z.number().min(1).max(100).default(20),
+        search: z.string().optional(),
+        sortField: z.string().optional(),
+        sortDir: z.enum(["asc", "desc"]).optional(),
+      }),
+    )
     .query(async ({ input }: { input: any }) => {
       const { page, pageSize, search, sortField, sortDir } = input;
       const skip = (page - 1) * pageSize;
@@ -39,12 +41,15 @@ export function createRoleRouter(
       return { items, total, page, pageSize, totalPages: Math.ceil(total / pageSize) };
     });
 
-  const roleCreateProcedure = trpc.permissionProcedure("create", "role")
-    .input(z.object({
-      name: z.string(),
-      permissions: z.array(permissionString).default([]),
-      protected: z.boolean().optional(),
-    }))
+  const roleCreateProcedure = trpc
+    .permissionProcedure("create", "role")
+    .input(
+      z.object({
+        name: z.string(),
+        permissions: z.array(permissionString).default([]),
+        protected: z.boolean().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }: { ctx: any; input: any }) => {
       try {
         const callerIsProtected = ctx.session?.user?.isProtectedRole ?? false;
@@ -57,15 +62,18 @@ export function createRoleRouter(
       }
     });
 
-  const roleUpdateProcedure = trpc.permissionProcedure("update", "role")
-    .input(z.object({
-      id: z.string(),
-      data: z.object({
-        name: z.string().optional(),
-        permissions: z.array(permissionString).optional(),
-        protected: z.boolean().optional(),
+  const roleUpdateProcedure = trpc
+    .permissionProcedure("update", "role")
+    .input(
+      z.object({
+        id: z.string(),
+        data: z.object({
+          name: z.string().optional(),
+          permissions: z.array(permissionString).optional(),
+          protected: z.boolean().optional(),
+        }),
       }),
-    }))
+    )
     .mutation(async ({ ctx, input }: { ctx: any; input: any }) => {
       try {
         const callerIsProtected = ctx.session?.user?.isProtectedRole ?? false;
@@ -82,7 +90,8 @@ export function createRoleRouter(
       }
     });
 
-  const roleDeleteProcedure = trpc.permissionProcedure("delete", "role")
+  const roleDeleteProcedure = trpc
+    .permissionProcedure("delete", "role")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }: { ctx: any; input: any }) => {
       try {

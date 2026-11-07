@@ -25,7 +25,9 @@ export function ForkumiEffects(): null {
       { threshold: 0.15, rootMargin: "0px 0px -6% 0px" },
     );
     const observeAll = () =>
-      document.querySelectorAll<HTMLElement>(".reveal:not(.in)").forEach((el) => observer.observe(el));
+      document
+        .querySelectorAll<HTMLElement>(".reveal:not(.in)")
+        .forEach((el) => observer.observe(el));
     observeAll();
 
     // Parallax sparkles on scroll (rAF-throttled).
@@ -51,7 +53,11 @@ export function ForkumiEffects(): null {
     const cur = document.getElementById("cursor");
     const dot = document.getElementById("dot");
     if (isFinePointer && cur) {
-      let mx = 0, my = 0, cx = 0, cy = 0, raf = 0;
+      let mx = 0,
+        my = 0,
+        cx = 0,
+        cy = 0,
+        raf = 0;
       const tick = () => {
         raf = 0;
         cx += (mx - cx) * 0.18;
@@ -75,7 +81,8 @@ export function ForkumiEffects(): null {
         const target = e.target;
         cur.classList.toggle(
           "big",
-          target instanceof Element && !!target.closest("a,button,.ind,.gcard,.plan,.stat,.pthumb,.cbtn"),
+          target instanceof Element &&
+            !!target.closest("a,button,.ind,.gcard,.plan,.stat,.pthumb,.cbtn"),
         );
       };
       document.addEventListener("mousemove", onMove, { passive: true });

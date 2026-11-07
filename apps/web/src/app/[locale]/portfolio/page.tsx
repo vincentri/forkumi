@@ -18,12 +18,15 @@ type PortfolioPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-const FEATURED_DEFAULTS: Record<"id" | "en", {
-  badgeFeatured: string;
-  badgeOther: string;
-  ctaVisit: string;
-  ctaDiscuss: string;
-}> = {
+const FEATURED_DEFAULTS: Record<
+  "id" | "en",
+  {
+    badgeFeatured: string;
+    badgeOther: string;
+    ctaVisit: string;
+    ctaDiscuss: string;
+  }
+> = {
   en: {
     badgeFeatured: "Latest Client",
     badgeOther: "Client",
@@ -38,11 +41,14 @@ const FEATURED_DEFAULTS: Record<"id" | "en", {
   },
 };
 
-const H1_DEFAULTS: Record<"id" | "en", {
-  line1: string;
-  line2: string;
-  lead: string;
-}> = {
+const H1_DEFAULTS: Record<
+  "id" | "en",
+  {
+    line1: string;
+    line2: string;
+    lead: string;
+  }
+> = {
   en: {
     line1: "Our latest",
     line2: "work",
@@ -87,8 +93,7 @@ export default async function PortfolioPage({ params }: PortfolioPageProps): Pro
     firstValue(settings.featuredBadgeOther, featuredDefaults.badgeOther) ??
     featuredDefaults.badgeOther;
   const featuredCtaVisit =
-    firstValue(settings.featuredCtaVisit, featuredDefaults.ctaVisit) ??
-    featuredDefaults.ctaVisit;
+    firstValue(settings.featuredCtaVisit, featuredDefaults.ctaVisit) ?? featuredDefaults.ctaVisit;
   const featuredCtaDiscuss =
     firstValue(settings.featuredCtaDiscuss, featuredDefaults.ctaDiscuss) ??
     featuredDefaults.ctaDiscuss;
@@ -111,7 +116,13 @@ export default async function PortfolioPage({ params }: PortfolioPageProps): Pro
   return (
     <>
       <section className="page-hero">
-        <img className="sparkle" src="/assets/img/sparkle_rose.png" style={{ top: "38%", right: "9%", width: "48px" }} data-d="0.5" alt="" />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_rose.png"
+          style={{ top: "38%", right: "9%", width: "48px" }}
+          data-d="0.5"
+          alt=""
+        />
         <div className="wrap">
           <Breadcrumb locale={locale} current={PAGE_LABEL[locale]} />
           <h1>
@@ -151,12 +162,19 @@ export default async function PortfolioPage({ params }: PortfolioPageProps): Pro
                 {featuredCtaVisit} <span className="ar">➔</span>
               </a>
             ) : (
-              <a className="btn primary sm" href={featuredWhatsappFallback} target="_blank" rel="noopener">
+              <a
+                className="btn primary sm"
+                href={featuredWhatsappFallback}
+                target="_blank"
+                rel="noopener"
+              >
                 {featuredCtaDiscuss} <span className="ar">➔</span>
               </a>
             );
             const secondaryCta = item.igUrl ? (
-              <a className="btn ghost sm" href={item.igUrl} target="_blank" rel="noopener">Instagram</a>
+              <a className="btn ghost sm" href={item.igUrl} target="_blank" rel="noopener">
+                Instagram
+              </a>
             ) : null;
             return (
               <div key={item.id} className="port-feat reveal" style={{ marginBottom: "26px" }}>
@@ -181,8 +199,13 @@ export default async function PortfolioPage({ params }: PortfolioPageProps): Pro
             );
           })}
           <div className="ig-cta reveal">
-            <div><h4>{igHeading}</h4><p>{igParagraph}</p></div>
-            <a className="btn" href={igUrl} target="_blank" rel="noopener">@forkumi.design <span className="ar">➔</span></a>
+            <div>
+              <h4>{igHeading}</h4>
+              <p>{igParagraph}</p>
+            </div>
+            <a className="btn" href={igUrl} target="_blank" rel="noopener">
+              @forkumi.design <span className="ar">➔</span>
+            </a>
           </div>
         </div>
       </section>

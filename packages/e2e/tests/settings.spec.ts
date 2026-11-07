@@ -1,8 +1,5 @@
 import { test, expect } from "@playwright/test";
-import {
-  saveKeyValuePage,
-  switchTab,
-} from "../helpers/crud";
+import { saveKeyValuePage, switchTab } from "../helpers/crud";
 
 test.describe("Settings (keyValue)", () => {
   let appNameBefore: string;

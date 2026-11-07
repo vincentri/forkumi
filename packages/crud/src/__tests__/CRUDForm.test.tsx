@@ -43,9 +43,7 @@ describe("CRUDForm", () => {
     const textConfig: CRUDConfig = {
       model: "note",
       label: "Notes",
-      fields: [
-        { name: "title", type: "text", label: "Title", required: true },
-      ],
+      fields: [{ name: "title", type: "text", label: "Title", required: true }],
     };
     const { container } = render(<CRUDForm config={textConfig} onSubmit={onSubmit} />);
 
@@ -54,9 +52,7 @@ describe("CRUDForm", () => {
     fireEvent.submit(container.querySelector("form")!);
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledWith(
-        expect.objectContaining({ title: "Test Product" }),
-      );
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ title: "Test Product" }));
     });
   });
 
@@ -102,7 +98,9 @@ describe("CRUDForm", () => {
       ],
     };
     const { container } = render(<CRUDForm config={layoutConfig} onSubmit={vi.fn()} />);
-    const headings = Array.from(container.querySelectorAll("h3")).map((heading) => heading.textContent);
+    const headings = Array.from(container.querySelectorAll("h3")).map(
+      (heading) => heading.textContent,
+    );
     expect(headings).toEqual(["Meta", "Content"]);
   });
 
@@ -113,10 +111,7 @@ describe("CRUDForm", () => {
       formLayout: [
         {
           section: "Meta",
-          columns: [
-            { rows: [["slug"], ["title", "tag"]] },
-            { rows: [["categoryId"]] },
-          ],
+          columns: [{ rows: [["slug"], ["title", "tag"]] }, { rows: [["categoryId"]] }],
         },
       ],
       fields: [
@@ -145,10 +140,7 @@ describe("CRUDForm", () => {
       formLayout: [
         {
           section: "Publishing",
-          rows: [
-            ["status", "published"],
-            [{ field: "publishedAt", span: 2 }],
-          ],
+          rows: [["status", "published"], [{ field: "publishedAt", span: 2 }]],
         },
       ],
       fields: [
@@ -171,9 +163,7 @@ describe("CRUDForm", () => {
     const layoutConfig: CRUDConfig = {
       model: "post",
       label: "Posts",
-      formLayout: [
-        { section: "Meta", rows: [["slug", "missingField"]] },
-      ],
+      formLayout: [{ section: "Meta", rows: [["slug", "missingField"]] }],
       fields: [
         { name: "slug", type: "text", label: "Slug" },
         { name: "notes", type: "textarea", label: "Notes" },
@@ -215,11 +205,7 @@ describe("CRUDForm", () => {
       ],
     };
     render(
-      <CRUDForm
-        config={slugConfig}
-        onSubmit={vi.fn()}
-        defaultValues={{ slug: "custom-slug" }}
-      />,
+      <CRUDForm config={slugConfig} onSubmit={vi.fn()} defaultValues={{ slug: "custom-slug" }} />,
     );
     await userEvent.type(screen.getByLabelText(/title/i), "Hello World");
     // Slug should NOT be overwritten
@@ -325,7 +311,9 @@ describe("CRUDForm", () => {
     fireEvent.submit(container.querySelector("form")!);
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ title: "New Title", slug: "manual-slug" }));
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ title: "New Title", slug: "manual-slug" }),
+      );
     });
   });
 
@@ -371,10 +359,21 @@ describe("CRUDForm", () => {
       label: "Products",
       fields: [
         { name: "showBadge", type: "boolean", label: "Show Badge" },
-        { name: "badgeText", type: "text", label: "Badge Text", visibleWhen: { field: "showBadge", equals: true } },
+        {
+          name: "badgeText",
+          type: "text",
+          label: "Badge Text",
+          visibleWhen: { field: "showBadge", equals: true },
+        },
       ],
     };
-    render(<CRUDForm config={conditionalConfig} onSubmit={vi.fn()} defaultValues={{ showBadge: false }} />);
+    render(
+      <CRUDForm
+        config={conditionalConfig}
+        onSubmit={vi.fn()}
+        defaultValues={{ showBadge: false }}
+      />,
+    );
     expect(screen.queryByLabelText(/badge text/i)).not.toBeInTheDocument();
   });
 
@@ -384,10 +383,21 @@ describe("CRUDForm", () => {
       label: "Products",
       fields: [
         { name: "showBadge", type: "boolean", label: "Show Badge" },
-        { name: "badgeText", type: "text", label: "Badge Text", visibleWhen: { field: "showBadge", equals: true } },
+        {
+          name: "badgeText",
+          type: "text",
+          label: "Badge Text",
+          visibleWhen: { field: "showBadge", equals: true },
+        },
       ],
     };
-    render(<CRUDForm config={conditionalConfig} onSubmit={vi.fn()} defaultValues={{ showBadge: false }} />);
+    render(
+      <CRUDForm
+        config={conditionalConfig}
+        onSubmit={vi.fn()}
+        defaultValues={{ showBadge: false }}
+      />,
+    );
     fireEvent.click(screen.getByRole("switch", { name: /show badge/i }));
     await waitFor(() => {
       expect(screen.getByLabelText(/badge text/i)).toBeInTheDocument();

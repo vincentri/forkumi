@@ -110,7 +110,15 @@ function BrandMark({ logoUrl, appName }: { logoUrl?: string | null; appName?: st
   );
 }
 
-function NavLink({ href, label, active, onClick, icon: Icon, collapsed, indent }: {
+function NavLink({
+  href,
+  label,
+  active,
+  onClick,
+  icon: Icon,
+  collapsed,
+  indent,
+}: {
   href: string;
   label: string;
   active: boolean;
@@ -132,10 +140,12 @@ function NavLink({ href, label, active, onClick, icon: Icon, collapsed, indent }
       )}
     >
       {Icon && <Icon className="h-4 w-4 shrink-0" />}
-      <span className={cn(
-        "truncate transition-opacity duration-150",
-        collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100",
-      )}>
+      <span
+        className={cn(
+          "truncate transition-opacity duration-150",
+          collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100",
+        )}
+      >
         {label}
       </span>
     </Link>
@@ -173,9 +183,8 @@ function NavContent({
   const pathname = usePathname();
   const { theme, toggle, mounted } = useTheme();
   const accountLabel = userEmail || "Account";
-  const logoUrl = mounted && theme === "dark"
-    ? logoDarkUrl ?? logoLightUrl
-    : logoLightUrl ?? logoDarkUrl;
+  const logoUrl =
+    mounted && theme === "dark" ? (logoDarkUrl ?? logoLightUrl) : (logoLightUrl ?? logoDarkUrl);
 
   // Build ordered group structure — group order follows first appearance in navItems
   type NavSection =
@@ -207,7 +216,12 @@ function NavContent({
     if (group) {
       if (!insertedGroups.has(group)) {
         insertedGroups.add(group);
-        orderedSections.push({ type: "group", label: group, icon: groupIconMap[group], items: groupMap[group] });
+        orderedSections.push({
+          type: "group",
+          label: group,
+          icon: groupIconMap[group],
+          items: groupMap[group],
+        });
       }
     } else {
       orderedSections.push({ type: "ungrouped", item });
@@ -215,10 +229,7 @@ function NavContent({
   }
 
   const initialGroupOpen = Object.fromEntries(
-    groupOrder.map((g) => [
-      g,
-      groupMap[g].some((item) => pathname === getItemHref(item)),
-    ]),
+    groupOrder.map((g) => [g, groupMap[g].some((item) => pathname === getItemHref(item))]),
   );
   const [groupOpen, setGroupOpen] = useState<Record<string, boolean>>(initialGroupOpen);
 
@@ -226,10 +237,12 @@ function NavContent({
     <TooltipProvider delayDuration={0}>
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className={cn(
-          "px-4 py-5 border-b border-border flex-shrink-0 flex items-center",
-          collapsed ? "justify-center" : "justify-between",
-        )}>
+        <div
+          className={cn(
+            "px-4 py-5 border-b border-border flex-shrink-0 flex items-center",
+            collapsed ? "justify-center" : "justify-between",
+          )}
+        >
           {!collapsed && <BrandMark logoUrl={logoUrl} appName={appName} />}
           <Button
             variant="ghost"
@@ -238,15 +251,18 @@ function NavContent({
             aria-label="Toggle dark mode"
             className="h-7 w-7 shrink-0"
           >
-            {mounted && (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
+            {mounted &&
+              (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
           </Button>
         </div>
 
         {/* Nav */}
-        <nav className={cn(
-          "flex-1 py-4 space-y-1",
-          collapsed ? "overflow-visible" : "overflow-y-auto",
-        )}>
+        <nav
+          className={cn(
+            "flex-1 py-4 space-y-1",
+            collapsed ? "overflow-visible" : "overflow-y-auto",
+          )}
+        >
           <div className="px-2">
             <NavLink
               href="/admin"
@@ -278,9 +294,12 @@ function NavContent({
 
             const { label: groupLabel, icon: groupIcon, items } = section;
             const isOpen = !!groupOpen[groupLabel];
-            const GroupIcon = groupIcon && NAV_ICONS[groupIcon]
-              ? NAV_ICONS[groupIcon]
-              : isOpen ? FolderOpen : Folder;
+            const GroupIcon =
+              groupIcon && NAV_ICONS[groupIcon]
+                ? NAV_ICONS[groupIcon]
+                : isOpen
+                  ? FolderOpen
+                  : Folder;
             const groupActive = items.some((item) => pathname === getItemHref(item));
             return (
               <div key={groupLabel} className="px-2 pt-2">
@@ -323,33 +342,36 @@ function NavContent({
                   </div>
                 ) : (
                   <>
-                      <button
-                        type="button"
-                        onClick={() => setGroupOpen((o) => ({ ...o, [groupLabel]: !o[groupLabel] }))}
-                        aria-expanded={isOpen}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 rounded text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:bg-muted transition-colors"
-                      >
-                        <GroupIcon className="h-3.5 w-3.5 shrink-0" />
-                        <span className="flex-1 text-left">{groupLabel}</span>
-                        <ChevronDown className={cn(
+                    <button
+                      type="button"
+                      onClick={() => setGroupOpen((o) => ({ ...o, [groupLabel]: !o[groupLabel] }))}
+                      aria-expanded={isOpen}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 rounded text-xs font-semibold text-muted-foreground uppercase tracking-wider hover:bg-muted transition-colors"
+                    >
+                      <GroupIcon className="h-3.5 w-3.5 shrink-0" />
+                      <span className="flex-1 text-left">{groupLabel}</span>
+                      <ChevronDown
+                        className={cn(
                           "h-3.5 w-3.5 transition-transform duration-200",
                           !isOpen && "-rotate-90",
-                        )} />
-                      </button>
-                    {isOpen && items.map((item) => {
-                      const href = getItemHref(item);
-                      return (
-                        <NavLink
-                          key={href}
-                          href={href}
-                          label={item.label}
-                          active={pathname === href}
-                          onClick={onNavigate}
-                          icon={getItemIcon(item)}
-                          indent
-                        />
-                      );
-                    })}
+                        )}
+                      />
+                    </button>
+                    {isOpen &&
+                      items.map((item) => {
+                        const href = getItemHref(item);
+                        return (
+                          <NavLink
+                            key={href}
+                            href={href}
+                            label={item.label}
+                            active={pathname === href}
+                            onClick={onNavigate}
+                            icon={getItemIcon(item)}
+                            indent
+                          />
+                        );
+                      })}
                   </>
                 )}
               </div>
@@ -369,9 +391,11 @@ function NavContent({
                   aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                   className="h-8 w-8"
                 >
-                  {collapsed
-                    ? <PanelLeftOpen className="h-4 w-4" />
-                    : <PanelLeftClose className="h-4 w-4" />}
+                  {collapsed ? (
+                    <PanelLeftOpen className="h-4 w-4" />
+                  ) : (
+                    <PanelLeftClose className="h-4 w-4" />
+                  )}
                 </Button>
               </TooltipTrigger>
               {collapsed && <TooltipContent side="right">Expand sidebar</TooltipContent>}
@@ -380,10 +404,12 @@ function NavContent({
         )}
 
         {/* Footer */}
-        <div className={cn(
-          "px-4 py-4 border-t border-border flex-shrink-0",
-          collapsed && "px-2 flex justify-center",
-        )}>
+        <div
+          className={cn(
+            "px-4 py-4 border-t border-border flex-shrink-0",
+            collapsed && "px-2 flex justify-center",
+          )}
+        >
           {!collapsed ? (
             <>
               <Link
@@ -438,19 +464,27 @@ function NavContent({
   );
 }
 
-export function AdminNav({ navItems, userEmail, appName, logoLightUrl, logoDarkUrl }: AdminNavProps) {
+export function AdminNav({
+  navItems,
+  userEmail,
+  appName,
+  logoLightUrl,
+  logoDarkUrl,
+}: AdminNavProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <>
-      <aside className={cn(
-        "hidden md:flex flex-col h-screen sticky top-0",
-        "bg-background border-r border-border",
-        "transition-[width] duration-200 ease-in-out",
-        collapsed ? "overflow-visible" : "overflow-hidden",
-        collapsed ? "w-14" : "w-56",
-      )}>
+      <aside
+        className={cn(
+          "hidden md:flex flex-col h-screen sticky top-0",
+          "bg-background border-r border-border",
+          "transition-[width] duration-200 ease-in-out",
+          collapsed ? "overflow-visible" : "overflow-hidden",
+          collapsed ? "w-14" : "w-56",
+        )}
+      >
         <NavContent
           navItems={navItems}
           userEmail={userEmail}
@@ -465,7 +499,12 @@ export function AdminNav({ navItems, userEmail, appName, logoLightUrl, logoDarkU
       <div className="md:hidden fixed top-3 left-3 z-50">
         <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger asChild>
-            <Button variant="outline" size="icon" aria-label="Open menu" className="h-11 w-11 bg-background">
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Open menu"
+              className="h-11 w-11 bg-background"
+            >
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>

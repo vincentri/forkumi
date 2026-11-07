@@ -9,7 +9,14 @@ vi.mock("superjson", () => ({
   default: { serialize: (v: unknown) => v, deserialize: (v: unknown) => v },
 }));
 
-import { createTRPCContext, permissionProcedure, protectedProcedure, publicProcedure, router, t } from "./trpc";
+import {
+  createTRPCContext,
+  permissionProcedure,
+  protectedProcedure,
+  publicProcedure,
+  router,
+  t,
+} from "./trpc";
 
 function createCaller(testRouter: any, ctx: any) {
   return t.createCallerFactory(testRouter)(ctx) as any;
@@ -48,31 +55,41 @@ describe("permissionProcedure", () => {
 
   it("allows exact model:action match", async () => {
     const r = router({ test: permissionProcedure("view", "user").query(() => "ok") });
-    const caller = createCaller(r, { session: { user: { isProtectedRole: false, permissions: ["user:view"] } } });
+    const caller = createCaller(r, {
+      session: { user: { isProtectedRole: false, permissions: ["user:view"] } },
+    });
     expect(await caller.test()).toBe("ok");
   });
 
   it("allows wildcard *:action match", async () => {
     const r = router({ test: permissionProcedure("view", "user").query(() => "ok") });
-    const caller = createCaller(r, { session: { user: { isProtectedRole: false, permissions: ["*:view"] } } });
+    const caller = createCaller(r, {
+      session: { user: { isProtectedRole: false, permissions: ["*:view"] } },
+    });
     expect(await caller.test()).toBe("ok");
   });
 
   it("throws FORBIDDEN when no matching permission", async () => {
     const r = router({ test: permissionProcedure("delete", "user").query(() => "ok") });
-    const caller = createCaller(r, { session: { user: { isProtectedRole: false, permissions: ["user:view"] } } });
+    const caller = createCaller(r, {
+      session: { user: { isProtectedRole: false, permissions: ["user:view"] } },
+    });
     await expect(caller.test()).rejects.toThrow();
   });
 
   it("allows wildcard-only with no model", async () => {
     const r = router({ test: permissionProcedure("view").query(() => "ok") });
-    const caller = createCaller(r, { session: { user: { isProtectedRole: false, permissions: ["*:view"] } } });
+    const caller = createCaller(r, {
+      session: { user: { isProtectedRole: false, permissions: ["*:view"] } },
+    });
     expect(await caller.test()).toBe("ok");
   });
 
   it("throws FORBIDDEN when no model and no wildcard", async () => {
     const r = router({ test: permissionProcedure("view").query(() => "ok") });
-    const caller = createCaller(r, { session: { user: { isProtectedRole: false, permissions: ["user:view"] } } });
+    const caller = createCaller(r, {
+      session: { user: { isProtectedRole: false, permissions: ["user:view"] } },
+    });
     await expect(caller.test()).rejects.toThrow();
   });
 
@@ -91,9 +108,7 @@ describe("router", () => {
 
   it("formats ZodError in error response", async () => {
     const r = router({
-      test: publicProcedure
-        .input(z.object({ name: z.string().min(1) }))
-        .query(() => "ok"),
+      test: publicProcedure.input(z.object({ name: z.string().min(1) })).query(() => "ok"),
     });
     const caller = createCaller(r, {});
     await expect(caller.test({ name: "" } as any)).rejects.toThrow();
@@ -107,7 +122,13 @@ describe("router", () => {
       data: { code: "BAD_REQUEST", httpStatus: 400, zodError: null },
     };
     const zodError = new ZodError([
-      { code: "too_small", minimum: 1, inclusive: true, path: ["name"], message: "Required" } as any,
+      {
+        code: "too_small",
+        minimum: 1,
+        inclusive: true,
+        path: ["name"],
+        message: "Required",
+      } as any,
     ]);
     const result = formatter({ shape, error: { cause: zodError } as any });
     expect(result.data.zodError).toBeDefined();

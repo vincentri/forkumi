@@ -63,5 +63,5 @@ rl.question(
       console.error(databaseHint());
       process.exit(1);
     }
-  }
+  },
 );

@@ -6,7 +6,13 @@ import { useForm, type FieldErrors } from "react-hook-form";
 import { Button, Label, Separator, Tabs, TabsContent, TabsList, TabsTrigger, cn } from "@repo/ui";
 import { buildZodSchema } from "../schema-builder";
 import { z } from "zod";
-import type { CRUDConfig, CRUDExtraTab, CRUDField, CRUDFormLayoutItem, CRUDFormLayoutSection } from "../types";
+import type {
+  CRUDConfig,
+  CRUDExtraTab,
+  CRUDField,
+  CRUDFormLayoutItem,
+  CRUDFormLayoutSection,
+} from "../types";
 import { FieldRenderer, type ModelSelectApi } from "./fields/FieldRenderer";
 import { isFieldVisible, visibleFieldsForValues } from "../field-visibility";
 import { toSlug } from "../util/slug";
@@ -32,14 +38,22 @@ function layoutItemField(item: CRUDFormLayoutItem): string {
 }
 
 function layoutItemSpan(item: CRUDFormLayoutItem): number {
-  return typeof item === "string" ? 1 : item.span ?? 1;
+  return typeof item === "string" ? 1 : (item.span ?? 1);
 }
 
 function rowColumnCount(row: CRUDFormLayoutItem[]): number {
-  return Math.min(4, Math.max(1, row.reduce((total, item) => total + layoutItemSpan(item), 0)));
+  return Math.min(
+    4,
+    Math.max(
+      1,
+      row.reduce((total, item) => total + layoutItemSpan(item), 0),
+    ),
+  );
 }
 
-function columnTemplate(columns: NonNullable<CRUDConfig["formLayout"]>[number]["columns"]): string | undefined {
+function columnTemplate(
+  columns: NonNullable<CRUDConfig["formLayout"]>[number]["columns"],
+): string | undefined {
   if (!columns?.some((column) => column.weight !== undefined)) return undefined;
   return columns.map((column) => `minmax(0, ${column.weight ?? 1}fr)`).join(" ");
 }
@@ -71,7 +85,10 @@ function layoutFieldNames(layout: CRUDFormLayoutSection[] | undefined): string[]
   return names;
 }
 
-function filterLayoutByFields(layout: CRUDFormLayoutSection[] | undefined, allowedFields: Set<string>): CRUDFormLayoutSection[] {
+function filterLayoutByFields(
+  layout: CRUDFormLayoutSection[] | undefined,
+  allowedFields: Set<string>,
+): CRUDFormLayoutSection[] {
   return (layout ?? [])
     .map((section) => ({
       ...section,
@@ -270,7 +287,12 @@ export function CRUDForm({
     const source = resolvedDefaultValues[slugField.slugFrom!];
     const slug = resolvedDefaultValues[slugField.name];
     // ponytail: existing rows follow source by default; manual edits in this form still stop it.
-    if (typeof source === "string" && typeof slug === "string" && slug && !lastAutoRef.current[slugField.name]) {
+    if (
+      typeof source === "string" &&
+      typeof slug === "string" &&
+      slug &&
+      !lastAutoRef.current[slugField.name]
+    ) {
       lastAutoRef.current[slugField.name] = slug;
       lastSourceRef.current[slugField.name] = source;
     }
@@ -290,7 +312,7 @@ export function CRUDForm({
       const derived = toSlug(sourceValue);
       lastAutoRef.current[slugField.name] = derived;
       setValue(slugField.name, derived, { shouldValidate: false });
-    // oxlint-disable-next-line react/exhaustive-deps
+      // oxlint-disable-next-line react/exhaustive-deps
     }, [sourceValue]);
   });
 
@@ -301,7 +323,8 @@ export function CRUDForm({
         for (const item of row) {
           const fieldName = layoutItemField(item);
           const field = fieldByName.get(fieldName);
-          if (field && field.type !== "schedule" && field.type !== "gallery") referencedFields.add(fieldName);
+          if (field && field.type !== "schedule" && field.type !== "gallery")
+            referencedFields.add(fieldName);
         }
       }
     }
@@ -309,7 +332,8 @@ export function CRUDForm({
       for (const item of row) {
         const fieldName = layoutItemField(item);
         const field = fieldByName.get(fieldName);
-        if (field && field.type !== "schedule" && field.type !== "gallery") referencedFields.add(fieldName);
+        if (field && field.type !== "schedule" && field.type !== "gallery")
+          referencedFields.add(fieldName);
       }
     }
   }
@@ -318,7 +342,9 @@ export function CRUDForm({
   const visibleFormFields = visibleFieldsForValues(normalFields, watchedValues);
   const fieldOrder = [
     ...layoutFieldNames(config.formLayout).filter((fieldName) => fieldByName.has(fieldName)),
-    ...normalFields.map((field) => field.name).filter((fieldName) => !layoutFieldNames(config.formLayout).includes(fieldName)),
+    ...normalFields
+      .map((field) => field.name)
+      .filter((fieldName) => !layoutFieldNames(config.formLayout).includes(fieldName)),
   ];
   const errorCountsByTab = Object.keys(errors).reduce<Record<string, number>>((acc, fieldName) => {
     const field = fieldByName.get(fieldName);
@@ -327,8 +353,8 @@ export function CRUDForm({
         field.type === "schedule"
           ? scheduleTabLabel(field)
           : field.type === "gallery"
-          ? galleryTabLabel(field)
-          : fieldTab(field);
+            ? galleryTabLabel(field)
+            : fieldTab(field);
       acc[tab] = (acc[tab] ?? 0) + 1;
       return acc;
     }
@@ -345,15 +371,16 @@ export function CRUDForm({
 
   function handleInvalidSubmit(submitErrors: FieldErrors<Record<string, unknown>>) {
     if (!hasTabs) return;
-    const firstErroredField = fieldOrder.find((fieldName) => submitErrors[fieldName])
-      ?? Object.keys(submitErrors).find((fieldName) => submitErrors[fieldName]);
+    const firstErroredField =
+      fieldOrder.find((fieldName) => submitErrors[fieldName]) ??
+      Object.keys(submitErrors).find((fieldName) => submitErrors[fieldName]);
     const field = firstErroredField ? fieldByName.get(firstErroredField) : undefined;
     let tab: string | undefined = field
       ? field.type === "schedule"
         ? scheduleTabLabel(field)
         : field.type === "gallery"
-        ? galleryTabLabel(field)
-        : fieldTab(field)
+          ? galleryTabLabel(field)
+          : fieldTab(field)
       : undefined;
     if (!tab && firstErroredField && extraTabs) {
       const found = extraTabs.find((t) => t.fieldNames.includes(firstErroredField));
@@ -430,7 +457,11 @@ export function CRUDForm({
     if (items.length === 0) return null;
 
     return (
-      <div key={key} data-layout-row className={cn("grid grid-cols-1 gap-4", GRID_COLS[rowColumnCount(row)])}>
+      <div
+        key={key}
+        data-layout-row
+        className={cn("grid grid-cols-1 gap-4", GRID_COLS[rowColumnCount(row)])}
+      >
         {items.map(({ item, field }) => (
           <div key={field.name} className={COL_SPANS[layoutItemSpan(item)]}>
             {renderField(field)}
@@ -457,7 +488,11 @@ export function CRUDForm({
 
   function renderConfiguredLayout(layout: CRUDFormLayoutSection[]) {
     return layout.map((section, sectionIndex) => (
-      <section key={`${section.section ?? "section"}-${sectionIndex}`} data-layout-section className="space-y-4">
+      <section
+        key={`${section.section ?? "section"}-${sectionIndex}`}
+        data-layout-section
+        className="space-y-4"
+      >
         {section.section && (
           <div className="border-b pb-2">
             <h3 className="text-sm font-medium text-foreground">{section.section}</h3>
@@ -473,19 +508,25 @@ export function CRUDForm({
                 ? "md:[grid-template-columns:var(--crud-form-columns)]"
                 : GRID_COLS[Math.min(4, Math.max(1, section.columns.length))],
             )}
-            style={columnTemplate(section.columns)
-              ? ({ "--crud-form-columns": columnTemplate(section.columns) } as CSSProperties)
-              : undefined}
+            style={
+              columnTemplate(section.columns)
+                ? ({ "--crud-form-columns": columnTemplate(section.columns) } as CSSProperties)
+                : undefined
+            }
           >
             {section.columns.map((column, columnIndex) => (
               <div key={columnIndex} data-layout-column className="space-y-4">
-                {column.rows.map((row, rowIndex) => renderLayoutRow(row, `${sectionIndex}-${columnIndex}-${rowIndex}`))}
+                {column.rows.map((row, rowIndex) =>
+                  renderLayoutRow(row, `${sectionIndex}-${columnIndex}-${rowIndex}`),
+                )}
               </div>
             ))}
           </div>
         ) : (
           <div className="space-y-4">
-            {(section.rows ?? []).map((row, rowIndex) => renderLayoutRow(row, `${sectionIndex}-${rowIndex}`))}
+            {(section.rows ?? []).map((row, rowIndex) =>
+              renderLayoutRow(row, `${sectionIndex}-${rowIndex}`),
+            )}
           </div>
         )}
       </section>
@@ -498,7 +539,16 @@ export function CRUDForm({
       return (
         <div data-extra-tab={tab} className="space-y-4">
           {extra.render(
-            { register, handleSubmit, watch, setValue, control, formState: { errors }, reset: () => undefined, getValues: () => ({}) } as never,
+            {
+              register,
+              handleSubmit,
+              watch,
+              setValue,
+              control,
+              formState: { errors },
+              reset: () => undefined,
+              getValues: () => ({}),
+            } as never,
             { readOnly, mode: mode ?? "create", id: rowId },
           )}
         </div>
@@ -510,7 +560,12 @@ export function CRUDForm({
       return (
         <ScheduleEditor
           value={(watch(scheduleField.name) as ScheduleItem[] | undefined) ?? []}
-          onChange={(value) => setValue(scheduleField.name, value as unknown, { shouldValidate: true, shouldDirty: true })}
+          onChange={(value) =>
+            setValue(scheduleField.name, value as unknown, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
+          }
           error={errors[scheduleField.name]?.message as string | undefined}
           dayLabels={scheduleField.dayLabels}
           disabled={readOnly}
@@ -523,7 +578,12 @@ export function CRUDForm({
       return (
         <GalleryEditor
           value={(watch(galleryField.name) as GalleryItem[] | undefined) ?? []}
-          onChange={(value) => setValue(galleryField.name, value as unknown, { shouldValidate: true, shouldDirty: true })}
+          onChange={(value) =>
+            setValue(galleryField.name, value as unknown, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
+          }
           error={errors[galleryField.name]?.message as string | undefined}
           uploadUrl={galleryField.uploadUrl}
           maxSizeMB={galleryField.maxSizeMB}
@@ -534,7 +594,9 @@ export function CRUDForm({
 
     const tabFieldNames = fieldNamesForTab(tab);
     const visibleTabFields = visibleFormFields.filter((field) => tabFieldNames.has(field.name));
-    const tabLayout = hasTabs ? filterLayoutByFields(config.formLayout, tabFieldNames) : config.formLayout;
+    const tabLayout = hasTabs
+      ? filterLayoutByFields(config.formLayout, tabFieldNames)
+      : config.formLayout;
     const unreferencedFields = hasLayout
       ? visibleTabFields.filter((field) => !referencedFields.has(field.name))
       : [];
@@ -558,8 +620,7 @@ export function CRUDForm({
     <form
       onSubmit={(event) => {
         const formData = new FormData(event.currentTarget);
-        void handleSubmit(
-        (data) => {
+        void handleSubmit((data) => {
           const cleaned = Object.fromEntries(
             Object.entries(data).filter(([key]) => !separatorNames.has(key)),
           );
@@ -569,9 +630,7 @@ export function CRUDForm({
             if (typeof slug === "string") cleaned[slugField.name] = slug;
           }
           return onSubmit(cleaned);
-        },
-        handleInvalidSubmit,
-      )(event);
+        }, handleInvalidSubmit)(event);
       }}
       className="space-y-4"
       noValidate
@@ -585,7 +644,11 @@ export function CRUDForm({
                 <TabsTrigger
                   key={tab}
                   value={tab}
-                  className={errorCount > 0 ? "text-destructive data-[state=active]:text-destructive" : undefined}
+                  className={
+                    errorCount > 0
+                      ? "text-destructive data-[state=active]:text-destructive"
+                      : undefined
+                  }
                 >
                   {tab}
                   {errorCount > 0 && <span className="ml-1">({errorCount})</span>}

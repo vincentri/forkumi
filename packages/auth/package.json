@@ -2,14 +2,14 @@
   "name": "@repo/auth",
   "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "test": "vitest run"
-  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     }
+  },
+  "scripts": {
+    "test": "vitest run"
   },
   "dependencies": {
     "next-auth": "^4.24.14"

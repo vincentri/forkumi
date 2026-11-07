@@ -71,9 +71,7 @@ describe("KeyValuePage", () => {
     const boolConfig: CRUDConfig = {
       model: "settings",
       label: "Settings",
-      fields: [
-        { name: "maintenance", type: "boolean", label: "Maintenance Mode" },
-      ],
+      fields: [{ name: "maintenance", type: "boolean", label: "Maintenance Mode" }],
     };
     render(<KeyValuePage config={boolConfig} data={{ maintenance: "true" }} onSave={vi.fn()} />);
     expect(screen.getByRole("switch")).toBeInTheDocument();

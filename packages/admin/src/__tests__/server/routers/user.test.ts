@@ -81,7 +81,15 @@ describe("createUserRouter", () => {
       await (router as any).list({ ctx, input: { page: 1, pageSize: 20 } });
 
       const select = (db as any).user.findMany.mock.calls[0][0].select as Record<string, unknown>;
-      const knownUserFields = ["id", "email", "name", "password", "roleId", "createdAt", "updatedAt"];
+      const knownUserFields = [
+        "id",
+        "email",
+        "name",
+        "password",
+        "roleId",
+        "createdAt",
+        "updatedAt",
+      ];
       for (const field of Object.keys(select)) {
         if (field === "role") continue;
         expect(knownUserFields).toContain(field);
@@ -97,7 +105,12 @@ describe("createUserRouter", () => {
       const hasher = mockPasswordHasher();
       const router = createUserRouter(db, trpc, hasher);
       const ctx = { session: { user: {} } };
-      (db as any).user.create.mockResolvedValue({ id: "u1", name: "A", email: "a@b.com", password: "hashed" });
+      (db as any).user.create.mockResolvedValue({
+        id: "u1",
+        name: "A",
+        email: "a@b.com",
+        password: "hashed",
+      });
 
       const result = await (router as any).create({
         ctx,
@@ -165,9 +178,9 @@ describe("createUserRouter", () => {
       const router = createUserRouter(db, trpc, hasher);
       const ctx = { session: { user: { id: "u1" } } };
 
-      await expect(
-        (router as any).delete({ ctx, input: { id: "u1" } }),
-      ).rejects.toThrow("Cannot delete your own account");
+      await expect((router as any).delete({ ctx, input: { id: "u1" } })).rejects.toThrow(
+        "Cannot delete your own account",
+      );
     });
 
     it("throws FORBIDDEN when target has protected role", async () => {
@@ -178,9 +191,9 @@ describe("createUserRouter", () => {
       const ctx = { session: { user: { id: "admin", isProtectedRole: false } } };
       (db as any).user.findUnique.mockResolvedValue({ role: { protected: true } });
 
-      await expect(
-        (router as any).delete({ ctx, input: { id: "u2" } }),
-      ).rejects.toThrow("Cannot delete a user with a protected role.");
+      await expect((router as any).delete({ ctx, input: { id: "u2" } })).rejects.toThrow(
+        "Cannot delete a user with a protected role.",
+      );
     });
 
     it("deletes user when allowed", async () => {
@@ -198,7 +211,12 @@ describe("createUserRouter", () => {
   });
 
   describe("inviteProcedure", () => {
-    function createInviteRouterForTest(appUrl?: string, options?: { sendInvitationEmail?: (args: { email: string; inviteUrl: string }) => Promise<void> }) {
+    function createInviteRouterForTest(
+      appUrl?: string,
+      options?: {
+        sendInvitationEmail?: (args: { email: string; inviteUrl: string }) => Promise<void>;
+      },
+    ) {
       const db = mockDb();
       const trpc = mockTrpc();
       const router = createInviteRouter(db, trpc, appUrl, options);
@@ -225,9 +243,9 @@ describe("createUserRouter", () => {
       const ctx = { session: { user: { id: "admin", email: "admin@e.com" } } };
       (db as any).user.findUnique.mockResolvedValue({ id: "existing" });
 
-      await expect(
-        inviteProcedure({ ctx, input: { email: "existing@e.com" } }),
-      ).rejects.toThrow("Email already has an account.");
+      await expect(inviteProcedure({ ctx, input: { email: "existing@e.com" } })).rejects.toThrow(
+        "Email already has an account.",
+      );
     });
 
     it("throws CONFLICT when invitation already pending", async () => {
@@ -241,9 +259,9 @@ describe("createUserRouter", () => {
         acceptedAt: null,
       });
 
-      await expect(
-        inviteProcedure({ ctx, input: { email: "pending@e.com" } }),
-      ).rejects.toThrow("Invitation already pending for this address.");
+      await expect(inviteProcedure({ ctx, input: { email: "pending@e.com" } })).rejects.toThrow(
+        "Invitation already pending for this address.",
+      );
     });
 
     it("deletes old invitation before creating new one", async () => {
@@ -293,7 +311,9 @@ describe("createUserRouter", () => {
 
       const result = await revokeProcedure({ input: { email: "x@e.com" } });
       expect(result).toEqual({ ok: true });
-      expect((db as any).userInvitation.delete).toHaveBeenCalledWith({ where: { email: "x@e.com" } });
+      expect((db as any).userInvitation.delete).toHaveBeenCalledWith({
+        where: { email: "x@e.com" },
+      });
     });
 
     it("throws NOT_FOUND when no pending invitation", async () => {
@@ -301,14 +321,19 @@ describe("createUserRouter", () => {
       const { revokeInvite: revokeProcedure } = router as any;
       (db as any).userInvitation.findUnique.mockResolvedValue(null);
 
-      await expect(
-        revokeProcedure({ input: { email: "x@e.com" } }),
-      ).rejects.toThrow("No pending invitation found for this email.");
+      await expect(revokeProcedure({ input: { email: "x@e.com" } })).rejects.toThrow(
+        "No pending invitation found for this email.",
+      );
     });
   });
 
   describe("sendInviteEmailProcedure", () => {
-    function createInviteRouterForTest(appUrl?: string, options?: { sendInvitationEmail?: (args: { email: string; inviteUrl: string }) => Promise<void> }) {
+    function createInviteRouterForTest(
+      appUrl?: string,
+      options?: {
+        sendInvitationEmail?: (args: { email: string; inviteUrl: string }) => Promise<void>;
+      },
+    ) {
       const db = mockDb();
       const trpc = mockTrpc();
       const router = createInviteRouter(db, trpc, appUrl, options);
@@ -320,7 +345,9 @@ describe("createUserRouter", () => {
       const { sendInviteEmail: sendProcedure } = router as any;
 
       await expect(
-        sendProcedure({ input: { email: "x@e.com", inviteUrl: "http://localhost/auth/accept-invite?token=abc" } }),
+        sendProcedure({
+          input: { email: "x@e.com", inviteUrl: "http://localhost/auth/accept-invite?token=abc" },
+        }),
       ).rejects.toThrow("Email delivery is not configured.");
     });
 
@@ -340,7 +367,10 @@ describe("createUserRouter", () => {
       });
 
       const result = await sendProcedure({
-        input: { email: "x@e.com", inviteUrl: `http://localhost/auth/accept-invite?token=${rawToken}` },
+        input: {
+          email: "x@e.com",
+          inviteUrl: `http://localhost/auth/accept-invite?token=${rawToken}`,
+        },
       });
       expect(result).toEqual({ ok: true });
       expect(sendEmail).toHaveBeenCalled();

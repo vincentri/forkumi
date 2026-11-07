@@ -1,9 +1,16 @@
-import type { CRUDConfig, CRUDField, CRUDFieldFile, CRUDFieldGallery, CRUDFieldImage } from "../types";
+import type {
+  CRUDConfig,
+  CRUDField,
+  CRUDFieldFile,
+  CRUDFieldGallery,
+  CRUDFieldImage,
+} from "../types";
 import type { CRUDRouterOptions } from "../types";
 
 export function assetFields(fields: CRUDField[]): Array<CRUDFieldImage | CRUDFieldFile> {
-  return fields.filter((field): field is CRUDFieldImage | CRUDFieldFile =>
-    field.type === "image" || field.type === "file",
+  return fields.filter(
+    (field): field is CRUDFieldImage | CRUDFieldFile =>
+      field.type === "image" || field.type === "file",
   );
 }
 
@@ -36,7 +43,8 @@ export async function cleanupReplacedAssets(
 
     const oldValue = previousValues[field.name];
     const newValue = nextData[field.name];
-    if (typeof oldValue !== "string" || !isStringOrNull(newValue) || oldValue === newValue) continue;
+    if (typeof oldValue !== "string" || !isStringOrNull(newValue) || oldValue === newValue)
+      continue;
 
     try {
       await options.onAssetReplaced({

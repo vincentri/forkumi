@@ -51,14 +51,18 @@ export async function openCreateDialog(page: Page, singularLabel: string) {
  * Opens the edit dialog for a given row (0-indexed, default first row).
  * Clicks the three-dot menu in the row's last cell, then selects "Edit".
  */
-export async function openEditDialog(
-  page: Page,
-  singularLabel: string,
-  rowIndex = 0,
-) {
+export async function openEditDialog(page: Page, singularLabel: string, rowIndex = 0) {
   // Wait for table rows to be populated
-  await expect(page.getByRole("row").filter({ has: page.locator("td") }).first()).toBeVisible();
-  const row = page.getByRole("row").filter({ has: page.locator("td") }).nth(rowIndex);
+  await expect(
+    page
+      .getByRole("row")
+      .filter({ has: page.locator("td") })
+      .first(),
+  ).toBeVisible();
+  const row = page
+    .getByRole("row")
+    .filter({ has: page.locator("td") })
+    .nth(rowIndex);
   await row.locator("td").last().getByRole("button").click();
   await page.getByRole("menuitem", { name: "Edit" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
@@ -68,14 +72,18 @@ export async function openEditDialog(
 /**
  * Opens the delete confirmation dialog for a given row.
  */
-export async function openDeleteDialog(
-  page: Page,
-  singularLabel: string,
-  rowIndex = 0,
-) {
+export async function openDeleteDialog(page: Page, singularLabel: string, rowIndex = 0) {
   // Wait for table rows to be populated
-  await expect(page.getByRole("row").filter({ has: page.locator("td") }).first()).toBeVisible();
-  const row = page.getByRole("row").filter({ has: page.locator("td") }).nth(rowIndex);
+  await expect(
+    page
+      .getByRole("row")
+      .filter({ has: page.locator("td") })
+      .first(),
+  ).toBeVisible();
+  const row = page
+    .getByRole("row")
+    .filter({ has: page.locator("td") })
+    .nth(rowIndex);
   await row.locator("td").last().getByRole("button").click();
   await page.getByRole("menuitem", { name: "Delete" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
@@ -93,11 +101,7 @@ export async function confirmDelete(page: Page) {
 /**
  * Fills a single form field by its type.
  */
-export async function fillField(
-  page: Page,
-  field: FormFieldDefinition,
-  value: string | boolean,
-) {
+export async function fillField(page: Page, field: FormFieldDefinition, value: string | boolean) {
   switch (field.type) {
     case "text":
     case "textarea":
@@ -173,7 +177,7 @@ export async function fillField(
     case "richtext": {
       // Richtext editor may be in a hidden tab — click the tab first
       const tab = page.getByRole("tab", { name: new RegExp(field.label, "i") });
-      if (await tab.count() > 0) {
+      if ((await tab.count()) > 0) {
         await tab.click();
       }
       // Use the editor's contenteditable area
@@ -261,11 +265,7 @@ export async function editResource(
 /**
  * Navigate → open delete dialog → confirm.
  */
-export async function deleteResource(
-  page: Page,
-  config: ResourceConfig,
-  rowIndex = 0,
-) {
+export async function deleteResource(page: Page, config: ResourceConfig, rowIndex = 0) {
   await page.goto(config.url);
   await expectListPageReady(page, config.pluralLabel, config.singularLabel);
   await openDeleteDialog(page, config.singularLabel, rowIndex);
@@ -278,42 +278,28 @@ export async function deleteResource(
  * Asserts that a row containing the given text exists in the table.
  */
 export async function expectRowVisible(page: Page, text: string) {
-  await expect(
-    page.getByRole("row").filter({ hasText: text }),
-  ).toBeVisible();
+  await expect(page.getByRole("row").filter({ hasText: text })).toBeVisible();
 }
 
 /**
  * Asserts that a row containing the given text does NOT exist.
  */
 export async function expectRowHidden(page: Page, text: string) {
-  await expect(
-    page.getByRole("row").filter({ hasText: text }),
-  ).toHaveCount(0);
+  await expect(page.getByRole("row").filter({ hasText: text })).toHaveCount(0);
 }
 
 /**
  * Asserts the list page heading and "+ New" button are visible.
  */
-export async function expectListPageReady(
-  page: Page,
-  heading: string,
-  singularLabel: string,
-) {
+export async function expectListPageReady(page: Page, heading: string, singularLabel: string) {
   await expect(page.getByRole("heading", { name: heading })).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: `+ New ${singularLabel}` }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: `+ New ${singularLabel}` })).toBeVisible();
 }
 
 /**
  * Asserts a field-level validation error is visible.
  */
-export async function expectFieldError(
-  page: Page,
-  fieldLabel: string,
-  errorPattern?: RegExp,
-) {
+export async function expectFieldError(page: Page, fieldLabel: string, errorPattern?: RegExp) {
   const label = page.getByLabel(fieldLabel);
   const error = label.locator("~ p.text-destructive").first();
   if (errorPattern) {

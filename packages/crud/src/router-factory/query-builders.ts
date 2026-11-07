@@ -39,7 +39,11 @@ export function buildWhere(
         const [from, to] = String(value).split("|");
         const clause: Record<string, unknown> = {};
         if (from) clause.gte = new Date(from);
-        if (to) { const d = new Date(to); d.setHours(23, 59, 59, 999); clause.lte = d; }
+        if (to) {
+          const d = new Date(to);
+          d.setHours(23, 59, 59, 999);
+          clause.lte = d;
+        }
         if (Object.keys(clause).length) andClauses.push({ [fieldName]: clause });
       } else if (field.type === "number" || field.type === "range") {
         const numberValue = Number(value);

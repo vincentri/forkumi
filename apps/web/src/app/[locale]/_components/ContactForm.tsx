@@ -53,11 +53,7 @@ export function ContactForm({
       });
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        setError(
-          typeof body?.error === "string" && body.error.trim()
-            ? body.error
-            : errorMessage,
-        );
+        setError(typeof body?.error === "string" && body.error.trim() ? body.error : errorMessage);
         setState("error");
         return;
       }
@@ -78,7 +74,12 @@ export function ContactForm({
         <div style={{ fontWeight: 800, fontSize: "20px", marginBottom: "4px" }}>{formHeading}</div>
         <p
           role="status"
-          style={{ fontWeight: 800, fontSize: "18px", marginBottom: "16px", color: "var(--purple)" }}
+          style={{
+            fontWeight: 800,
+            fontSize: "18px",
+            marginBottom: "16px",
+            color: "var(--purple)",
+          }}
         >
           {successMessage}
         </p>
@@ -107,7 +108,9 @@ export function ContactForm({
           <select name="cpkg" value={pkg} onChange={(e) => setPkg(e.target.value)}>
             <option value={pkgPlaceholder}>{pkgPlaceholder}</option>
             {pkgOptions.map((option) => (
-              <option key={option} value={option}>{option}</option>
+              <option key={option} value={option}>
+                {option}
+              </option>
             ))}
           </select>
         </label>
@@ -120,10 +123,7 @@ export function ContactForm({
             onChange={(e) => setMessage(e.target.value)}
           />
         </label>
-        <button
-          type="submit"
-          className="btn primary"
-        >
+        <button type="submit" className="btn primary">
           {submitLabel} <span className="ar">➔</span>
         </button>
       </form>
@@ -158,7 +158,9 @@ export function ContactForm({
         <select name="cpkg" value={pkg} onChange={(e) => setPkg(e.target.value)}>
           <option value={pkgPlaceholder}>{pkgPlaceholder}</option>
           {pkgOptions.map((option) => (
-            <option key={option} value={option}>{option}</option>
+            <option key={option} value={option}>
+              {option}
+            </option>
           ))}
         </select>
       </label>
@@ -171,13 +173,8 @@ export function ContactForm({
           onChange={(e) => setMessage(e.target.value)}
         />
       </label>
-      <button
-        type="submit"
-        className="btn primary"
-        disabled={state === "submitting"}
-      >
-        {state === "submitting" ? "..." : submitLabel}{" "}
-        <span className="ar">➔</span>
+      <button type="submit" className="btn primary" disabled={state === "submitting"}>
+        {state === "submitting" ? "..." : submitLabel} <span className="ar">➔</span>
       </button>
       {state === "error" && error ? (
         <p role="alert" style={{ color: "var(--rose)", marginTop: "8px" }}>

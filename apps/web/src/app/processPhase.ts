@@ -21,7 +21,7 @@ export async function getProcessPhases(locale: "id" | "en"): Promise<ProcessPhas
     if (!response.ok) {
       return [];
     }
-    const payload = await response.json() as {
+    const payload = (await response.json()) as {
       result?: { data?: { json?: ProcessPhaseData[] } };
     };
     return payload.result?.data?.json ?? [];

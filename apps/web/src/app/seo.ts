@@ -155,9 +155,10 @@ export function buildSeoMetadata({
 export function buildOrganizationJsonLd(settings: FrontPageSettings): Record<string, unknown> {
   const baseUrl = new URL(process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000");
   const resolvedLogo = resolveAssetUrl(settings.logo);
-  const logo = resolvedLogo && !/^(data:|blob:)/.test(resolvedLogo)
-    ? new URL(resolvedLogo, baseUrl).toString()
-    : undefined;
+  const logo =
+    resolvedLogo && !/^(data:|blob:)/.test(resolvedLogo)
+      ? new URL(resolvedLogo, baseUrl).toString()
+      : undefined;
   const email =
     firstValue(
       settings.contactEmailLabel,
@@ -170,10 +171,14 @@ export function buildOrganizationJsonLd(settings: FrontPageSettings): Record<str
       settings.contactPhoneUrl?.replace(/^tel:/, ""),
       PHONE_FALLBACK.replace(/^tel:/, ""),
     ) ?? undefined;
-  const sameAs = Array.from(new Set([
-    firstValue(settings.socialInstagramUrl, settings.contactInstagramUrl, INSTAGRAM_FALLBACK),
-    firstValue(settings.socialWhatsappUrl, settings.contactWhatsappUrl, WHATSAPP_FALLBACK),
-  ].filter((value): value is string => typeof value === "string" && /^https?:\/\//.test(value))));
+  const sameAs = Array.from(
+    new Set(
+      [
+        firstValue(settings.socialInstagramUrl, settings.contactInstagramUrl, INSTAGRAM_FALLBACK),
+        firstValue(settings.socialWhatsappUrl, settings.contactWhatsappUrl, WHATSAPP_FALLBACK),
+      ].filter((value): value is string => typeof value === "string" && /^https?:\/\//.test(value)),
+    ),
+  );
 
   return {
     "@context": "https://schema.org",

@@ -16,7 +16,20 @@ export interface FileUploadProps {
 }
 
 const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
-  ({ value, uploadUrl = "/api/upload", fieldName = "file", accept = ".jpg,.jpeg,.png,.gif,.webp,.svg", maxSizeMB = 5, disabled, onChange, onRemove, className }, ref) => {
+  (
+    {
+      value,
+      uploadUrl = "/api/upload",
+      fieldName = "file",
+      accept = ".jpg,.jpeg,.png,.gif,.webp,.svg",
+      maxSizeMB = 5,
+      disabled,
+      onChange,
+      onRemove,
+      className,
+    },
+    ref,
+  ) => {
     const [uploading, setUploading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -104,7 +117,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
         />
       </div>
     );
-  }
+  },
 );
 FileUpload.displayName = "FileUpload";
 

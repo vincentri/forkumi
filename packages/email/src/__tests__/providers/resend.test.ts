@@ -157,7 +157,9 @@ describe("createResendProvider", () => {
     fetchSpy.mockResolvedValue(errorResponse("Invalid API key"));
     const provider = createResendProvider({ apiKey: "bad", defaultFrom: "s@e.com" });
 
-    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow("Invalid API key");
+    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow(
+      "Invalid API key",
+    );
   });
 
   it("falls back to generic message on HTTP error with no message", async () => {
@@ -167,7 +169,9 @@ describe("createResendProvider", () => {
     });
     const provider = createResendProvider({ apiKey: "bad", defaultFrom: "s@e.com" });
 
-    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow("Resend email request failed.");
+    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow(
+      "Resend email request failed.",
+    );
   });
 
   it("uses error name if message is missing", async () => {
@@ -177,7 +181,9 @@ describe("createResendProvider", () => {
     });
     const provider = createResendProvider({ apiKey: "bad", defaultFrom: "s@e.com" });
 
-    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow("validation_error");
+    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow(
+      "validation_error",
+    );
   });
 
   it("throws when response.json fails", async () => {
@@ -187,7 +193,9 @@ describe("createResendProvider", () => {
     });
     const provider = createResendProvider({ apiKey: "bad", defaultFrom: "s@e.com" });
 
-    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow("Resend email request failed.");
+    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow(
+      "Resend email request failed.",
+    );
   });
 
   it("throws when response has no id", async () => {
@@ -197,6 +205,8 @@ describe("createResendProvider", () => {
     });
     const provider = createResendProvider({ apiKey: "key", defaultFrom: "s@e.com" });
 
-    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow("Resend did not return an email id.");
+    await expect(provider.send({ to: "r@e.com", subject: "Hi" })).rejects.toThrow(
+      "Resend did not return an email id.",
+    );
   });
 });

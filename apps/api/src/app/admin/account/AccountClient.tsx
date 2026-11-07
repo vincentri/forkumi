@@ -4,7 +4,17 @@ import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import { api } from "~/lib/trpc/client";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, toast } from "@repo/ui";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  toast,
+} from "@repo/ui";
 
 interface AccountClientProps {
   initialEmail: string;
@@ -84,10 +94,16 @@ export function AccountClient({ initialEmail, initialName }: AccountClientProps)
       <Card>
         <CardHeader>
           <CardTitle>Profile</CardTitle>
-          <CardDescription>Your email is used for login and cannot be changed here.</CardDescription>
+          <CardDescription>
+            Your email is used for login and cannot be changed here.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={profileForm.handleSubmit(handleProfileSubmit)} className="space-y-4" noValidate>
+          <form
+            onSubmit={profileForm.handleSubmit(handleProfileSubmit)}
+            className="space-y-4"
+            noValidate
+          >
             <div className="space-y-2">
               <Label htmlFor="account-email">Email</Label>
               <Input id="account-email" value={email} disabled />
@@ -122,7 +138,11 @@ export function AccountClient({ initialEmail, initialName }: AccountClientProps)
           <CardDescription>Enter your current password before setting a new one.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)} className="space-y-4" noValidate>
+          <form
+            onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)}
+            className="space-y-4"
+            noValidate
+          >
             <div className="space-y-2">
               <Label htmlFor="current-password">Current password</Label>
               <Input

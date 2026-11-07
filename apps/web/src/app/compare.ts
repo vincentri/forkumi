@@ -12,11 +12,14 @@ export type CompareData = {
 export async function getCompareData(locale: "id" | "en"): Promise<CompareData> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.compare.list?input=${input}`, fetchNextOptions(["public:compare"]));
+    const response = await fetch(
+      `${apiOrigin()}/api/trpc/public.compare.list?input=${input}`,
+      fetchNextOptions(["public:compare"]),
+    );
     if (!response.ok) {
       return { categories: [], rows: [] };
     }
-    const payload = await response.json() as { result?: { data?: { json?: CompareData } } };
+    const payload = (await response.json()) as { result?: { data?: { json?: CompareData } } };
     return payload.result?.data?.json ?? { categories: [], rows: [] };
   } catch {
     return { categories: [], rows: [] };

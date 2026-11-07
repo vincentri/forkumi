@@ -39,7 +39,9 @@ describe("SettingsCRUD", () => {
   });
 
   it("email fields have visibleWhen condition on emailEnabled", () => {
-    const emailFields = SettingsCRUD.fields.filter((f) => (f as any).namespace === "email" && f.name !== "emailEnabled");
+    const emailFields = SettingsCRUD.fields.filter(
+      (f) => (f as any).namespace === "email" && f.name !== "emailEnabled",
+    );
     for (const field of emailFields) {
       expect(field.visibleWhen).toEqual({ field: "emailEnabled", equals: true });
     }
@@ -55,5 +57,4 @@ describe("SettingsCRUD", () => {
     const field = SettingsCRUD.fields.find((f) => f.name === "emailEnabled");
     expect(field!.default).toBe(false);
   });
-
 });

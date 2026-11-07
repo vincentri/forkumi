@@ -49,11 +49,14 @@ export function createInviteRouter(
 ) {
   const appUrlOrDefault = getAppUrl(appUrl);
 
-  const inviteProcedure = trpc.permissionProcedure("create", "user")
-    .input(z.object({
-      email: z.string().email(),
-      roleId: z.string().optional(),
-    }))
+  const inviteProcedure = trpc
+    .permissionProcedure("create", "user")
+    .input(
+      z.object({
+        email: z.string().email(),
+        roleId: z.string().optional(),
+      }),
+    )
     .mutation(async ({ ctx, input }: { ctx: any; input: any }) => {
       const existingUser = await db.user.findUnique({ where: { email: input.email } });
       if (existingUser) {
@@ -62,7 +65,10 @@ export function createInviteRouter(
 
       const existingInvite = await db.userInvitation.findUnique({ where: { email: input.email } });
       if (existingInvite && existingInvite.expiresAt > new Date() && !existingInvite.acceptedAt) {
-        throw new TRPCError({ code: "CONFLICT", message: "Invitation already pending for this address." });
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Invitation already pending for this address.",
+        });
       }
       if (existingInvite) {
         await db.userInvitation.delete({ where: { id: existingInvite.id } });
@@ -95,7 +101,8 @@ export function createInviteRouter(
       return { ok: true, inviteUrl };
     });
 
-  const resendInviteProcedure = trpc.permissionProcedure("create", "user")
+  const resendInviteProcedure = trpc
+    .permissionProcedure("create", "user")
     .input(z.object({ email: z.string().email() }))
     .mutation(async ({ ctx, input }: { ctx: any; input: any }) => {
       const existingUser = await db.user.findUnique({ where: { email: input.email } });
@@ -125,14 +132,20 @@ export function createInviteRouter(
       return { ok: true, inviteUrl: `${appUrlOrDefault}/auth/accept-invite?token=${rawToken}` };
     });
 
-  const sendInviteEmailProcedure = trpc.permissionProcedure("create", "user")
-    .input(z.object({
-      email: z.string().email(),
-      inviteUrl: z.string().url(),
-    }))
+  const sendInviteEmailProcedure = trpc
+    .permissionProcedure("create", "user")
+    .input(
+      z.object({
+        email: z.string().email(),
+        inviteUrl: z.string().url(),
+      }),
+    )
     .mutation(async ({ input }: { input: any }) => {
       if (!options?.sendInvitationEmail) {
-        throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Email delivery is not configured." });
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "Email delivery is not configured.",
+        });
       }
 
       const token = new URL(input.inviteUrl).searchParams.get("token");
@@ -142,22 +155,33 @@ export function createInviteRouter(
 
       const invitation = await db.userInvitation.findUnique({ where: { email: input.email } });
       if (!invitation || invitation.acceptedAt || invitation.expiresAt < new Date()) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No active invitation exists for this email." });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No active invitation exists for this email.",
+        });
       }
 
       if (invitation.token !== sha256(token)) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "Invitation URL does not match the active invitation." });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invitation URL does not match the active invitation.",
+        });
       }
 
       await options.sendInvitationEmail({ email: input.email, inviteUrl: input.inviteUrl });
       return { ok: true };
     });
 
-  const revokeInviteProcedure = trpc.permissionProcedure("delete", "user")
+  const revokeInviteProcedure = trpc
+    .permissionProcedure("delete", "user")
     .input(z.object({ email: z.string().email() }))
     .mutation(async ({ input }: { input: any }) => {
       const invite = await db.userInvitation.findUnique({ where: { email: input.email } });
-      if (!invite) throw new TRPCError({ code: "NOT_FOUND", message: "No pending invitation found for this email." });
+      if (!invite)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No pending invitation found for this email.",
+        });
       await db.userInvitation.delete({ where: { email: input.email } });
       return { ok: true };
     });

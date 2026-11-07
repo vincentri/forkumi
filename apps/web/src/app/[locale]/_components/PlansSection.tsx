@@ -40,9 +40,14 @@ function renderPlanCard(plan: PlanItem, locale: "id" | "en"): ReactElement {
   );
 }
 
-export async function PlansSection({ locale, promoTag, promoSub }: PlansSectionProps): Promise<ReactElement> {
+export async function PlansSection({
+  locale,
+  promoTag,
+  promoSub,
+}: PlansSectionProps): Promise<ReactElement> {
   const plans = await getPlans(locale);
-  const hasPromo = (promoTag && promoTag.trim().length > 0) || (promoSub && promoSub.trim().length > 0);
+  const hasPromo =
+    (promoTag && promoTag.trim().length > 0) || (promoSub && promoSub.trim().length > 0);
   if (plans.length === 0 && !hasPromo) {
     return <div className="plans" />;
   }

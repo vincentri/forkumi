@@ -19,11 +19,14 @@ type PackagesPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-const PKG_PAGE_DEFAULTS: Record<"id" | "en", {
-  h1Line1: string;
-  h1Line2: string;
-  lead: string;
-}> = {
+const PKG_PAGE_DEFAULTS: Record<
+  "id" | "en",
+  {
+    h1Line1: string;
+    h1Line2: string;
+    lead: string;
+  }
+> = {
   en: {
     h1Line1: "Pick the",
     h1Line2: "right plan",
@@ -47,11 +50,14 @@ const PKG_PROMO_TAG_DEFAULTS: Record<"id" | "en", string> = {
   id: "Promo Terbatas 🎉",
 };
 
-const INCLUDED_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-}> = {
+const INCLUDED_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+  }
+> = {
   en: {
     eye: "What’s Included",
     headLine1: "Every plan",
@@ -64,11 +70,14 @@ const INCLUDED_DEFAULTS: Record<"id" | "en", {
   },
 };
 
-const TERMS_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-}> = {
+const TERMS_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+  }
+> = {
   en: {
     eye: "Terms",
     headLine1: "Terms &",
@@ -81,11 +90,14 @@ const TERMS_DEFAULTS: Record<"id" | "en", {
   },
 };
 
-const FAQ_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-}> = {
+const FAQ_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+  }
+> = {
   en: { eye: "FAQ", headLine1: "Still", headLine2: "unsure?" },
   id: { eye: "FAQ", headLine1: "Masih", headLine2: "ragu?" },
 };
@@ -109,19 +121,26 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
   const h1L2 = firstValue(settings.packagesH1Line2, pageDef.h1Line2) ?? pageDef.h1Line2;
   const h1Hl = Number.parseInt(settings.packagesH1HighlightIndex ?? PKG_H1_HIGHLIGHT_DEFAULT, 10);
   const lead = firstValue(settings.packagesPageLead, pageDef.lead) ?? pageDef.lead;
-  const pkgNote = firstValue(settings.pkgNote, PKG_NOTE_DEFAULTS[locale]) ?? PKG_NOTE_DEFAULTS[locale];
-  const pkgPromoTag = firstValue(settings.pkgPromoTag, PKG_PROMO_TAG_DEFAULTS[locale]) ?? PKG_PROMO_TAG_DEFAULTS[locale];
+  const pkgNote =
+    firstValue(settings.pkgNote, PKG_NOTE_DEFAULTS[locale]) ?? PKG_NOTE_DEFAULTS[locale];
+  const pkgPromoTag =
+    firstValue(settings.pkgPromoTag, PKG_PROMO_TAG_DEFAULTS[locale]) ??
+    PKG_PROMO_TAG_DEFAULTS[locale];
 
   const inclDef = INCLUDED_DEFAULTS[locale];
   const inclEye = firstValue(settings.packagesIncludedEye, inclDef.eye) ?? inclDef.eye;
-  const inclL1 = firstValue(settings.packagesIncludedHeadLine1, inclDef.headLine1) ?? inclDef.headLine1;
-  const inclL2 = firstValue(settings.packagesIncludedHeadLine2, inclDef.headLine2) ?? inclDef.headLine2;
+  const inclL1 =
+    firstValue(settings.packagesIncludedHeadLine1, inclDef.headLine1) ?? inclDef.headLine1;
+  const inclL2 =
+    firstValue(settings.packagesIncludedHeadLine2, inclDef.headLine2) ?? inclDef.headLine2;
   const inclHl = Number.parseInt(settings.packagesIncludedHeadHighlightIndex ?? "1", 10);
 
   const termsDef = TERMS_DEFAULTS[locale];
   const termsEye = firstValue(settings.packagesTermsEye, termsDef.eye) ?? termsDef.eye;
-  const termsL1 = firstValue(settings.packagesTermsHeadLine1, termsDef.headLine1) ?? termsDef.headLine1;
-  const termsL2 = firstValue(settings.packagesTermsHeadLine2, termsDef.headLine2) ?? termsDef.headLine2;
+  const termsL1 =
+    firstValue(settings.packagesTermsHeadLine1, termsDef.headLine1) ?? termsDef.headLine1;
+  const termsL2 =
+    firstValue(settings.packagesTermsHeadLine2, termsDef.headLine2) ?? termsDef.headLine2;
   const termsHl = Number.parseInt(settings.packagesTermsHeadHighlightIndex ?? "1", 10);
 
   const faqDef = FAQ_DEFAULTS[locale];
@@ -135,7 +154,13 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
   return (
     <>
       <section className="page-hero">
-        <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ top: "40%", right: "10%", width: "46px" }} data-d="0.5" alt="" />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_gold_bright.png"
+          style={{ top: "40%", right: "10%", width: "46px" }}
+          data-d="0.5"
+          alt=""
+        />
         <div className="wrap">
           <Breadcrumb locale={locale} current={PAGE_LABEL[locale]} />
           <h1>

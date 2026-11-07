@@ -17,12 +17,11 @@ export function derivePermissionOptions(
   ];
 
   for (const config of configs) {
-    const actions =
-      config.readOnly
-        ? (["view"] as const)
-        : config.mode === "keyValue"
-          ? (["view", "update"] as const)
-          : STANDARD_ACTIONS;
+    const actions = config.readOnly
+      ? (["view"] as const)
+      : config.mode === "keyValue"
+        ? (["view", "update"] as const)
+        : STANDARD_ACTIONS;
     for (const action of actions) {
       options.push({
         value: `${config.model}:${action}`,

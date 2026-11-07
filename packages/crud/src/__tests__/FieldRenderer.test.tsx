@@ -5,13 +5,7 @@ import { useForm } from "react-hook-form";
 import { FieldRenderer } from "../components/fields/FieldRenderer";
 import type { CRUDField } from "../types";
 
-function TestWrapper({
-  field,
-  readOnly,
-}: {
-  field: CRUDField;
-  readOnly?: boolean;
-}) {
+function TestWrapper({ field, readOnly }: { field: CRUDField; readOnly?: boolean }) {
   const { register, watch, control } = useForm({
     defaultValues: { [field.name]: "" },
   });

@@ -5,11 +5,7 @@ import type { ReactElement, ReactNode } from "react";
 
 import { ForkumiEffects } from "../forkumi-effects";
 import { buildOrganizationJsonLd, buildSeoMetadata, serializeJsonLd } from "../seo";
-import {
-  getFrontPageSettings,
-  normalizeLocale,
-  resolveAssetUrl,
-} from "../front-page-settings";
+import { getFrontPageSettings, normalizeLocale, resolveAssetUrl } from "../front-page-settings";
 import { ExternalHtmlScripts } from "./_components/ExternalHtmlScripts";
 import { SiteFooter } from "./_components/SiteFooter";
 import { SiteNav } from "./_components/SiteNav";
@@ -27,7 +23,9 @@ export function generateStaticParams(): Array<{ locale: string }> {
   return SUPPORTED_LOCALES.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: Pick<LocaleLayoutProps, "params">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: Pick<LocaleLayoutProps, "params">): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   const locale = normalizeLocale(rawLocale);
   const settings = await getFrontPageSettings(locale);
@@ -36,11 +34,13 @@ export async function generateMetadata({ params }: Pick<LocaleLayoutProps, "para
 
   return {
     ...buildSeoMetadata({ locale, pagePath, settings }),
-    icons: favicon ? {
-      icon: favicon,
-      shortcut: favicon,
-      apple: favicon,
-    } : undefined,
+    icons: favicon
+      ? {
+          icon: favicon,
+          shortcut: favicon,
+          apple: favicon,
+        }
+      : undefined,
   };
 }
 
@@ -62,13 +62,11 @@ export default async function LocaleLayout({
     <>
       <SoftNavInterceptor locale={locale} />
       <ForkumiEffects />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: organizationJsonLd }} />
       <ExternalHtmlScripts id="header" html={settings.headerScript} />
       <SiteSplash settings={settings} />
-      <div id="cursor" /><div id="dot" />
+      <div id="cursor" />
+      <div id="dot" />
       <SiteNav locale={locale} settings={settings} />
       {children}
       <SiteFooter locale={locale} settings={settings} />

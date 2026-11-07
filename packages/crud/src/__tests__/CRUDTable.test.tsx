@@ -299,5 +299,4 @@ describe("CRUDTable", () => {
     expect(screen.getByText("Published")).toBeInTheDocument();
     expect(screen.getByText(/no products found/i)).toBeInTheDocument();
   });
-
 });

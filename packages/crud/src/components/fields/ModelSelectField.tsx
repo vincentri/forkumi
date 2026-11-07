@@ -87,9 +87,7 @@ function ModelSelectInner({
     if (!debouncedSearch) return list;
     const term = debouncedSearch.toLowerCase();
     return list.filter(
-      (o) =>
-        o.label.toLowerCase().includes(term) ||
-        o.value.toLowerCase().includes(term),
+      (o) => o.label.toLowerCase().includes(term) || o.value.toLowerCase().includes(term),
     );
   }, [options, debouncedSearch]);
 
@@ -135,14 +133,14 @@ function ModelSelectInner({
           </div>
         </Button>
       </PopoverTrigger>
-        <PopoverContent
-          className="z-[70] w-[var(--radix-popover-trigger-width)] p-0"
-          align="start"
-          onWheel={(event) => event.stopPropagation()}
-          onWheelCapture={(event) => event.stopPropagation()}
-          onTouchMove={(event) => event.stopPropagation()}
-          onTouchMoveCapture={(event) => event.stopPropagation()}
-        >
+      <PopoverContent
+        className="z-[70] w-[var(--radix-popover-trigger-width)] p-0"
+        align="start"
+        onWheel={(event) => event.stopPropagation()}
+        onWheelCapture={(event) => event.stopPropagation()}
+        onTouchMove={(event) => event.stopPropagation()}
+        onTouchMoveCapture={(event) => event.stopPropagation()}
+      >
         <div className="p-2">
           <Input
             placeholder="Search…"
@@ -151,14 +149,12 @@ function ModelSelectInner({
             className="h-9"
           />
         </div>
-          <ScrollArea
-            className="h-60 overscroll-contain"
-            onWheel={(event) => event.stopPropagation()}
-            onTouchMove={(event) => event.stopPropagation()}
-          >
-          {isLoading && (
-            <div className="px-3 py-2 text-sm text-muted-foreground">Loading…</div>
-          )}
+        <ScrollArea
+          className="h-60 overscroll-contain"
+          onWheel={(event) => event.stopPropagation()}
+          onTouchMove={(event) => event.stopPropagation()}
+        >
+          {isLoading && <div className="px-3 py-2 text-sm text-muted-foreground">Loading…</div>}
           {!isLoading && filteredOptions.length === 0 && (
             <div className="px-3 py-2 text-sm text-muted-foreground">No options found.</div>
           )}

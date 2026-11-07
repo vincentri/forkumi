@@ -39,7 +39,9 @@ async function main() {
   }
 
   if (!/^[a-z][a-zA-Z0-9]*$/.test(model)) {
-    console.error("Error: model must start with a lowercase letter and contain only letters/numbers.");
+    console.error(
+      "Error: model must start with a lowercase letter and contain only letters/numbers.",
+    );
     process.exit(1);
   }
 
@@ -72,7 +74,10 @@ async function main() {
 
   if (existsSync(barrelPath)) {
     const barrel = readFileSync(barrelPath, "utf-8");
-    const exportRegex = new RegExp(`^export\\s+\\{\\s*${escapeRegExp(exportName)}\\s*\\}\\s+from\\s+["']\\./${escapeRegExp(model)}["'];\\s*\\n?`, "m");
+    const exportRegex = new RegExp(
+      `^export\\s+\\{\\s*${escapeRegExp(exportName)}\\s*\\}\\s+from\\s+["']\\./${escapeRegExp(model)}["'];\\s*\\n?`,
+      "m",
+    );
     const updatedBarrel = barrel.replace(exportRegex, "");
     if (updatedBarrel !== barrel) {
       writeFileSync(barrelPath, updatedBarrel, "utf-8");
@@ -85,7 +90,10 @@ async function main() {
 
   if (existsSync(schemaPath)) {
     const schema = readFileSync(schemaPath, "utf-8");
-    const modelRegex = new RegExp(`\\n?^model\\s+${escapeRegExp(modelName)}\\s*\\{[\\s\\S]*?^\\}\\s*\\n?`, "m");
+    const modelRegex = new RegExp(
+      `\\n?^model\\s+${escapeRegExp(modelName)}\\s*\\{[\\s\\S]*?^\\}\\s*\\n?`,
+      "m",
+    );
     const updatedSchema = schema.replace(modelRegex, "\n");
     if (updatedSchema !== schema) {
       writeFileSync(schemaPath, updatedSchema.replace(/\n{3,}/g, "\n\n").trimEnd() + "\n", "utf-8");

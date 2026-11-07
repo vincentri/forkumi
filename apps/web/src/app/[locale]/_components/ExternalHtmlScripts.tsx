@@ -9,10 +9,7 @@ type ExternalHtmlScriptsProps = {
 
 // Admin may paste full <script>…</script> or bare JS. Inject as real DOM scripts
 // so React never sees a <script> element in the component tree.
-export function ExternalHtmlScripts({
-  html,
-  id,
-}: ExternalHtmlScriptsProps): ReactElement | null {
+export function ExternalHtmlScripts({ html, id }: ExternalHtmlScriptsProps): ReactElement | null {
   useEffect(() => {
     if (!html?.trim()) {
       return;

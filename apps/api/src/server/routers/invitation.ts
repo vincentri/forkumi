@@ -12,10 +12,16 @@ async function lookupInvitation(token: string) {
   const hashedToken = sha256(token);
   const invitation = await db.userInvitation.findUnique({ where: { token: hashedToken } });
   if (!invitation || invitation.expiresAt < new Date()) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "This invitation has expired. Ask an admin to send a new invite." });
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "This invitation has expired. Ask an admin to send a new invite.",
+    });
   }
   if (invitation.acceptedAt) {
-    throw new TRPCError({ code: "BAD_REQUEST", message: "This invitation link has already been used." });
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "This invitation link has already been used.",
+    });
   }
   return invitation;
 }
@@ -28,11 +34,13 @@ export const getInvitationProcedure = publicProcedure
   });
 
 export const acceptInvitationProcedure = publicProcedure
-  .input(z.object({
-    token: z.string(),
-    name: z.string().min(1, "Name is required"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-  }))
+  .input(
+    z.object({
+      token: z.string(),
+      name: z.string().min(1, "Name is required"),
+      password: z.string().min(8, "Password must be at least 8 characters"),
+    }),
+  )
   .mutation(async ({ input }) => {
     const invitation = await lookupInvitation(input.token);
     const hashed = await bcrypt.hash(input.password, 10);
@@ -51,8 +59,16 @@ export const acceptInvitationProcedure = publicProcedure
         data: { acceptedAt: new Date() },
       });
     } catch (err: unknown) {
-      if (err && typeof err === "object" && "code" in err && (err as { code: string }).code === "P2002") {
-        throw new TRPCError({ code: "CONFLICT", message: "This email address is already registered. Sign in instead." });
+      if (
+        err &&
+        typeof err === "object" &&
+        "code" in err &&
+        (err as { code: string }).code === "P2002"
+      ) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "This email address is already registered. Sign in instead.",
+        });
       }
       throw err;
     }

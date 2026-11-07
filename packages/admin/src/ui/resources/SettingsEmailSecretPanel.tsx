@@ -2,7 +2,18 @@
 
 import { useState } from "react";
 import { useAdminApi } from "../AdminProvider";
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, toast } from "@repo/ui";
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  toast,
+} from "@repo/ui";
 import { getErrorMessage } from "../lib/getErrorMessage";
 
 interface Props {
@@ -61,7 +72,9 @@ export function SettingsEmailSecretPanel({ canUpdate, enabled }: Props) {
           <div>
             <p className="text-sm font-medium">Resend API key status</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {data?.resendApiKeyConfigured ? "A Resend API key is configured." : "No Resend API key has been saved yet."}
+              {data?.resendApiKeyConfigured
+                ? "A Resend API key is configured."
+                : "No Resend API key has been saved yet."}
             </p>
           </div>
           <Badge variant={data?.resendApiKeyConfigured ? "default" : "secondary"}>
@@ -106,7 +119,13 @@ export function SettingsEmailSecretPanel({ canUpdate, enabled }: Props) {
             />
             <Button
               type="button"
-              disabled={!canUpdate || sendTest.isPending || !testRecipient || !data?.enabled || !apiKeyConfigured}
+              disabled={
+                !canUpdate ||
+                sendTest.isPending ||
+                !testRecipient ||
+                !data?.enabled ||
+                !apiKeyConfigured
+              }
               onClick={handleSendTest}
               className="shrink-0"
             >
@@ -115,7 +134,8 @@ export function SettingsEmailSecretPanel({ canUpdate, enabled }: Props) {
           </div>
           {(!data?.enabled || !apiKeyConfigured) && (
             <p className="text-xs text-muted-foreground">
-              Enable email delivery, save the Settings form, and configure the Resend API key before sending a test.
+              Enable email delivery, save the Settings form, and configure the Resend API key before
+              sending a test.
             </p>
           )}
         </div>

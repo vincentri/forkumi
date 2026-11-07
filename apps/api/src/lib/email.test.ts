@@ -9,12 +9,16 @@ vi.mock("@repo/db", () => ({
 }));
 
 vi.mock("./secret-crypto", () => ({
-  isEncryptedSecret: (v: string | null | undefined) => typeof v === "string" && v.startsWith("encrypted:"),
+  isEncryptedSecret: (v: string | null | undefined) =>
+    typeof v === "string" && v.startsWith("encrypted:"),
   decryptSecret: (v: string) => `decrypted:${v}`,
 }));
 
 vi.mock("@repo/email/providers/resend", () => ({
-  createResendProvider: vi.fn((config) => ({ send: vi.fn().mockResolvedValue({ id: "resend-id" }), config })),
+  createResendProvider: vi.fn((config) => ({
+    send: vi.fn().mockResolvedValue({ id: "resend-id" }),
+    config,
+  })),
 }));
 
 import { getEmailSettings, sendEmail } from "./email";

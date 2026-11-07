@@ -55,7 +55,13 @@ describe("createAuthOptions", () => {
     it("maps user fields to token on sign-in", () => {
       const jwt = getJwtCallback();
       const token = {} as any;
-      const result = jwt({ token, user: TEST_USER as any, trigger: "signIn", account: null, session: undefined });
+      const result = jwt({
+        token,
+        user: TEST_USER as any,
+        trigger: "signIn",
+        account: null,
+        session: undefined,
+      });
       expect(result.id).toBe("u1");
       expect(result.email).toBe("test@example.com");
       expect(result.name).toBe("Test");
@@ -68,7 +74,13 @@ describe("createAuthOptions", () => {
       const jwt = getJwtCallback();
       const token = {} as any;
       const minimalUser = { id: "u2", email: "a@b.com" } as any;
-      const result = jwt({ token, user: minimalUser, trigger: "signIn", account: null, session: undefined });
+      const result = jwt({
+        token,
+        user: minimalUser,
+        trigger: "signIn",
+        account: null,
+        session: undefined,
+      });
       expect(result.name).toBeNull();
       expect(result.role).toBeNull();
       expect(result.permissions).toEqual([]);
@@ -78,7 +90,13 @@ describe("createAuthOptions", () => {
     it("preserves token on non-user calls", () => {
       const jwt = getJwtCallback();
       const token = { id: "u1", name: "Test" } as any;
-      const result = jwt({ token, user: undefined, trigger: "signIn", account: null, session: undefined });
+      const result = jwt({
+        token,
+        user: undefined,
+        trigger: "signIn",
+        account: null,
+        session: undefined,
+      });
       expect(result.id).toBe("u1");
       expect(result.name).toBe("Test");
     });
@@ -86,7 +104,13 @@ describe("createAuthOptions", () => {
     it("updates name on trigger=update", () => {
       const jwt = getJwtCallback();
       const token = { id: "u1", name: "Old" } as any;
-      const result = jwt({ token, user: undefined, trigger: "update", account: null, session: { name: "New" } });
+      const result = jwt({
+        token,
+        user: undefined,
+        trigger: "update",
+        account: null,
+        session: { name: "New" },
+      });
       expect(result.name).toBe("New");
     });
 
@@ -173,7 +197,10 @@ describe("createAuthOptions", () => {
       const adapter = mockAdapter(null);
       const opts = createAuthOptions(adapter);
       const provider = opts.providers[0] as any;
-      const result = await provider.options.authorize({ email: "a@b.com", password: "wrong" } as any, {} as any);
+      const result = await provider.options.authorize(
+        { email: "a@b.com", password: "wrong" } as any,
+        {} as any,
+      );
       expect(result).toBeNull();
       expect(adapter.findUserByCredentials).toHaveBeenCalledWith("a@b.com", "wrong");
     });
@@ -182,7 +209,10 @@ describe("createAuthOptions", () => {
       const adapter = mockAdapter(TEST_USER);
       const opts = createAuthOptions(adapter);
       const provider = opts.providers[0] as any;
-      const result = await provider.options.authorize({ email: "test@example.com", password: "pass" } as any, {} as any);
+      const result = await provider.options.authorize(
+        { email: "test@example.com", password: "pass" } as any,
+        {} as any,
+      );
       expect(result).toEqual({
         id: "u1",
         email: "test@example.com",
@@ -198,7 +228,10 @@ describe("createAuthOptions", () => {
       const adapter = mockAdapter(userWithNulls);
       const opts = createAuthOptions(adapter);
       const provider = opts.providers[0] as any;
-      const result = await provider.options.authorize({ email: "x@y.com", password: "pass" } as any, {} as any);
+      const result = await provider.options.authorize(
+        { email: "x@y.com", password: "pass" } as any,
+        {} as any,
+      );
       expect(result!.name).toBeNull();
       expect(result!.role).toBeNull();
       expect(result!.permissions).toEqual([]);

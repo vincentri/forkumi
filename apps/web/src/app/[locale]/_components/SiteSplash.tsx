@@ -29,7 +29,9 @@ export function SiteSplash({ settings }: SiteSplashProps): ReactElement | null {
     <div id="splash">
       <img src="/assets/img/loading.png" alt={brand} />
       <div className="sname">{brand}</div>
-      <div className="bar"><i /></div>
+      <div className="bar">
+        <i />
+      </div>
     </div>
   );
 }

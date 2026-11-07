@@ -24,16 +24,19 @@ type HomePageProps = {
   params: Promise<{ locale: string }>;
 };
 
-const HERO_DEFAULTS: Record<"id" | "en", {
-  stamp: string;
-  titleLine1: string;
-  titleLine2: string;
-  titleLine3: string;
-  subtitle: string;
-  primaryLabel: string;
-  secondaryLabel: string;
-  scrollText: string;
-}> = {
+const HERO_DEFAULTS: Record<
+  "id" | "en",
+  {
+    stamp: string;
+    titleLine1: string;
+    titleLine2: string;
+    titleLine3: string;
+    subtitle: string;
+    primaryLabel: string;
+    secondaryLabel: string;
+    scrollText: string;
+  }
+> = {
   en: {
     stamp: "INDONESIA · WORLDWIDE",
     titleLine1: "Unlimited",
@@ -64,13 +67,16 @@ const HERO_MASCOT_FALLBACK = "/assets/img/mascot.png";
 const HERO_WHATSAPP_FALLBACK =
   "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan.";
 
-const WHY_FORKUMI_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-  labels: [string, string, string, string];
-  units: [string, string, string, string];
-}> = {
+const WHY_FORKUMI_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+    labels: [string, string, string, string];
+    units: [string, string, string, string];
+  }
+> = {
   en: {
     eye: "Why Forkumi",
     headLine1: "Real results,",
@@ -88,15 +94,28 @@ const WHY_FORKUMI_DEFAULTS: Record<"id" | "en", {
 };
 
 const WHY_FORKUMI_NUMS = ["≤24", "∞", "0", "100%"] as const;
-const WHY_FORKUMI_BG_COLORS = ["var(--card-purple)", "var(--card-rose)", "var(--card-yellow)", "var(--card-purple)"] as const;
-const WHY_FORKUMI_TEXT_COLORS = ["var(--purple)", "var(--rose)", "#EFC75E", "var(--purple)"] as const;
+const WHY_FORKUMI_BG_COLORS = [
+  "var(--card-purple)",
+  "var(--card-rose)",
+  "var(--card-yellow)",
+  "var(--card-purple)",
+] as const;
+const WHY_FORKUMI_TEXT_COLORS = [
+  "var(--purple)",
+  "var(--rose)",
+  "#EFC75E",
+  "var(--purple)",
+] as const;
 
-const WORK_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-  intro: string;
-}> = {
+const WORK_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+    intro: string;
+  }
+> = {
   en: {
     eye: "Portfolio",
     headLine1: "Our latest",
@@ -112,13 +131,16 @@ const WORK_DEFAULTS: Record<"id" | "en", {
 };
 
 const WORK_HIGHLIGHT_INDEX_DEFAULT = "1";
-const FEATURED_DEFAULTS: Record<"id" | "en", {
-  badgeFeatured: string;
-  badgeOther: string;
-  ctaVisit: string;
-  ctaDiscuss: string;
-  ctaSeeAll: string;
-}> = {
+const FEATURED_DEFAULTS: Record<
+  "id" | "en",
+  {
+    badgeFeatured: string;
+    badgeOther: string;
+    ctaVisit: string;
+    ctaDiscuss: string;
+    ctaSeeAll: string;
+  }
+> = {
   en: {
     badgeFeatured: "Latest Client",
     badgeOther: "Client",
@@ -136,16 +158,19 @@ const FEATURED_DEFAULTS: Record<"id" | "en", {
 };
 const PKG_HIGHLIGHT_INDEX_DEFAULT = "1";
 
-const CTA_BAND_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-  sub: string;
-  btnPrimary: string;
-  btnSecondary: string;
-  btnPrimaryUrl: string;
-  btnSecondaryUrl: string;
-}> = {
+const CTA_BAND_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+    sub: string;
+    btnPrimary: string;
+    btnSecondary: string;
+    btnPrimaryUrl: string;
+    btnSecondaryUrl: string;
+  }
+> = {
   en: {
     eye: "Let's build",
     headLine1: "Got a project",
@@ -163,31 +188,39 @@ const CTA_BAND_DEFAULTS: Record<"id" | "en", {
     sub: "Konsultasi gratis & respons cepat. Fleksibel & bebas ikatan, bisa mulai minggu ini.",
     btnPrimary: "Ngobrol yuk",
     btnSecondary: "Lihat Paket",
-    btnPrimaryUrl: "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.",
+    btnPrimaryUrl:
+      "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.",
     btnSecondaryUrl: "packages",
   },
 };
 const CTA_BAND_HEAD_HIGHLIGHT_DEFAULT = "1";
-const WHATSAPP_FALLBACK_URL_DEFAULT = "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.";
+const WHATSAPP_FALLBACK_URL_DEFAULT =
+  "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20punya%20proyek%20desain.";
 
-const FAQ_HOME_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-}> = {
+const FAQ_HOME_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+  }
+> = {
   en: { eye: "FAQ", headLine1: "Still", headLine2: "unsure?" },
   id: { eye: "FAQ", headLine1: "Masih", headLine2: "ragu?" },
 };
 const FAQ_HOME_HEAD_HIGHLIGHT_DEFAULT = "1";
 
-const PKG_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-  intro: string;
-  note: string;
-  promoTag: string;
-}> = {
+const PKG_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+    intro: string;
+    note: string;
+    promoTag: string;
+  }
+> = {
   en: {
     eye: "Packages",
     headLine1: "Pick the",
@@ -220,7 +253,8 @@ export async function generateMetadata({ params }: HomePageProps): Promise<Metad
   const settings = await getFrontPageSettings(locale);
   const title = firstValue(settings.homePageSeoMetaTitle, settings.meta_title) ?? DEFAULT_TITLE;
   const description =
-    firstValue(settings.homePageSeoMetaDescription, settings.meta_description) ?? DEFAULT_DESCRIPTION;
+    firstValue(settings.homePageSeoMetaDescription, settings.meta_description) ??
+    DEFAULT_DESCRIPTION;
   const keywords = firstValue(settings.homePageSeoMetaKeywords, settings.meta_keywords);
 
   return buildSeoMetadata({
@@ -258,7 +292,8 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
     firstValue(settings.heroCtaSecondaryLabel, defaults.secondaryLabel) ?? defaults.secondaryLabel;
   const secondaryUrl = settings.heroCtaSecondaryUrl || HERO_SECONDARY_URL_DEFAULT;
   const mascotSrc = resolveAssetUrl(settings.heroImage) ?? HERO_MASCOT_FALLBACK;
-  const scrollText = firstValue(settings.heroScrollText, defaults.scrollText) ?? defaults.scrollText;
+  const scrollText =
+    firstValue(settings.heroScrollText, defaults.scrollText) ?? defaults.scrollText;
   const marqueeItems = await getMarqueeItems(locale);
 
   const workDefaults = WORK_DEFAULTS[locale];
@@ -290,7 +325,8 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
     firstValue(settings.featuredBadgeFeatured, featuredDefaults.badgeFeatured) ??
     featuredDefaults.badgeFeatured;
   const featuredBadgeOther =
-    firstValue(settings.featuredBadgeOther, featuredDefaults.badgeOther) ?? featuredDefaults.badgeOther;
+    firstValue(settings.featuredBadgeOther, featuredDefaults.badgeOther) ??
+    featuredDefaults.badgeOther;
   const featuredCtaVisit =
     firstValue(settings.featuredCtaVisit, featuredDefaults.ctaVisit) ?? featuredDefaults.ctaVisit;
   const featuredCtaDiscuss =
@@ -312,11 +348,9 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
   );
   const ctaSub = firstValue(settings.ctaSub, ctaDefaults.sub) ?? ctaDefaults.sub;
   const ctaBtnPrimary =
-    firstValue(settings.ctaBtnPrimaryLabel, ctaDefaults.btnPrimary) ??
-    ctaDefaults.btnPrimary;
+    firstValue(settings.ctaBtnPrimaryLabel, ctaDefaults.btnPrimary) ?? ctaDefaults.btnPrimary;
   const ctaBtnSecondary =
-    firstValue(settings.ctaBtnSecondaryLabel, ctaDefaults.btnSecondary) ??
-    ctaDefaults.btnSecondary;
+    firstValue(settings.ctaBtnSecondaryLabel, ctaDefaults.btnSecondary) ?? ctaDefaults.btnSecondary;
   const ctaBtnPrimaryUrl = settings.ctaBtnPrimaryUrl || ctaDefaults.btnPrimaryUrl;
   const ctaBtnSecondaryUrl = settings.ctaBtnSecondaryUrl || ctaDefaults.btnSecondaryUrl;
 
@@ -324,21 +358,19 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
     settings.featuredWhatsappFallback || WHATSAPP_FALLBACK_URL_DEFAULT;
 
   const faqHomeDefaults = FAQ_HOME_DEFAULTS[locale];
-  const faqHomeEye =
-    firstValue(settings.faqHomeEye, faqHomeDefaults.eye) ?? faqHomeDefaults.eye;
+  const faqHomeEye = firstValue(settings.faqHomeEye, faqHomeDefaults.eye) ?? faqHomeDefaults.eye;
   const faqHomeHeadLine1 =
-    firstValue(settings.faqHomeHeadLine1, faqHomeDefaults.headLine1) ??
-    faqHomeDefaults.headLine1;
+    firstValue(settings.faqHomeHeadLine1, faqHomeDefaults.headLine1) ?? faqHomeDefaults.headLine1;
   const faqHomeHeadLine2 =
-    firstValue(settings.faqHomeHeadLine2, faqHomeDefaults.headLine2) ??
-    faqHomeDefaults.headLine2;
+    firstValue(settings.faqHomeHeadLine2, faqHomeDefaults.headLine2) ?? faqHomeDefaults.headLine2;
   const faqHomeHeadHighlightIndex = Number.parseInt(
     settings.faqHomeHeadHighlightIndex ?? FAQ_HOME_HEAD_HIGHLIGHT_DEFAULT,
     10,
   );
 
   const pkgNote = firstValue(settings.pkgNote, pkgDefaults.note) ?? pkgDefaults.note;
-  const pkgPromoTag = firstValue(settings.pkgPromoTag, pkgDefaults.promoTag) ?? pkgDefaults.promoTag;
+  const pkgPromoTag =
+    firstValue(settings.pkgPromoTag, pkgDefaults.promoTag) ?? pkgDefaults.promoTag;
 
   const allPortfolios = await getPortfolios(locale);
   const featuredPortfolios = pickFeatured(allPortfolios, settings.homeFeaturedPortfolioId);
@@ -351,8 +383,10 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
 
   const whyDefaults = WHY_FORKUMI_DEFAULTS[locale];
   const whyEye = firstValue(settings.whyForkumiEye, whyDefaults.eye) ?? whyDefaults.eye;
-  const whyHeadLine1 = firstValue(settings.whyForkumiHeadLine1, whyDefaults.headLine1) ?? whyDefaults.headLine1;
-  const whyHeadLine2 = firstValue(settings.whyForkumiHeadLine2, whyDefaults.headLine2) ?? whyDefaults.headLine2;
+  const whyHeadLine1 =
+    firstValue(settings.whyForkumiHeadLine1, whyDefaults.headLine1) ?? whyDefaults.headLine1;
+  const whyHeadLine2 =
+    firstValue(settings.whyForkumiHeadLine2, whyDefaults.headLine2) ?? whyDefaults.headLine2;
   const whyHeadHighlightIndex: number = Number.parseInt(
     settings.whyForkumiHeadHighlightIndex ?? "1",
     10,
@@ -363,8 +397,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
       num: settings[`stat${slot}Num`] || defaultNum,
       unit: settings[`stat${slot}Unit`] ?? whyDefaults.units[i],
       label:
-        firstValue(settings[`stat${slot}Label`], whyDefaults.labels[i]) ??
-        whyDefaults.labels[i],
+        firstValue(settings[`stat${slot}Label`], whyDefaults.labels[i]) ?? whyDefaults.labels[i],
       bgColor: settings[`stat${slot}Color`]?.trim() || WHY_FORKUMI_BG_COLORS[i],
       textColor: settings[`stat${slot}TextColor`]?.trim() || WHY_FORKUMI_TEXT_COLORS[i],
     };
@@ -373,9 +406,27 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
   return (
     <>
       <header className="hero" id="top">
-        <img className="sparkle" src="/assets/img/sparkle_purple.png" style={{ top: "17%", left: "43%", width: "42px" }} data-d="0.5" alt="" />
-        <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ bottom: "26%", left: "30%", width: "32px" }} data-d="0.8" alt="" />
-        <img className="sparkle" src="/assets/img/sparkle_rose.png" style={{ top: "30%", right: "30%", width: "50px" }} data-d="0.6" alt="" />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_purple.png"
+          style={{ top: "17%", left: "43%", width: "42px" }}
+          data-d="0.5"
+          alt=""
+        />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_gold_bright.png"
+          style={{ bottom: "26%", left: "30%", width: "32px" }}
+          data-d="0.8"
+          alt=""
+        />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_rose.png"
+          style={{ top: "30%", right: "30%", width: "50px" }}
+          data-d="0.6"
+          alt=""
+        />
         <div className="stamp">{stamp}</div>
         <div className="wrap">
           <div className="hero-left">
@@ -392,39 +443,72 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
               <a className="btn primary" href={whatsappUrl} target="_blank" rel="noopener">
                 {primaryLabel} <span className="ar">➔</span>
               </a>
-              <a className="btn ghost" href={secondaryUrl}>{secondaryLabel}</a>
+              <a className="btn ghost" href={secondaryUrl}>
+                {secondaryLabel}
+              </a>
             </div>
           </div>
-          <div className="hero-right"><img className="mascot" src={mascotSrc} alt="Forkumi mascot" /></div>
+          <div className="hero-right">
+            <img className="mascot" src={mascotSrc} alt="Forkumi mascot" />
+          </div>
         </div>
-        <a className="scrolldown" href="#stats"><span className="m"></span><span>{scrollText}</span></a>
+        <a className="scrolldown" href="#stats">
+          <span className="m"></span>
+          <span>{scrollText}</span>
+        </a>
       </header>
-      
+
       <div className="strip">
         {marqueeItems.length > 0 ? (
           <div className="t">
-            <span>{marqueeItems.map((item) => `✦ ${item}`).join("\u00A0\u00A0\u00A0") + "\u00A0\u00A0\u00A0"}</span>
-            <span aria-hidden="true">{marqueeItems.map((item) => `✦ ${item}`).join("\u00A0\u00A0\u00A0") + "\u00A0\u00A0\u00A0"}</span>
+            <span>
+              {marqueeItems.map((item) => `✦ ${item}`).join("\u00A0\u00A0\u00A0") +
+                "\u00A0\u00A0\u00A0"}
+            </span>
+            <span aria-hidden="true">
+              {marqueeItems.map((item) => `✦ ${item}`).join("\u00A0\u00A0\u00A0") +
+                "\u00A0\u00A0\u00A0"}
+            </span>
           </div>
         ) : null}
       </div>
-      
+
       <section className="sec g-lav" id="stats">
         <div className="wrap">
-          <div className="sec-top"><div><span className="eyebrow reveal">{whyEye}</span><h2 className="sec-head reveal"><span className={whyHeadHighlightIndex === 0 ? "hl" : undefined}>{whyHeadLine1}</span>{whyHeadLine2 ? <><br /><span className={whyHeadHighlightIndex === 1 ? "hl" : undefined}>{whyHeadLine2}</span></> : null}</h2></div></div>
+          <div className="sec-top">
+            <div>
+              <span className="eyebrow reveal">{whyEye}</span>
+              <h2 className="sec-head reveal">
+                <span className={whyHeadHighlightIndex === 0 ? "hl" : undefined}>
+                  {whyHeadLine1}
+                </span>
+                {whyHeadLine2 ? (
+                  <>
+                    <br />
+                    <span className={whyHeadHighlightIndex === 1 ? "hl" : undefined}>
+                      {whyHeadLine2}
+                    </span>
+                  </>
+                ) : null}
+              </h2>
+            </div>
+          </div>
           <div className="stats">
             {whyStats.map((stat, i) => (
               <div key={i} className="stat reveal" style={{ background: stat.bgColor }}>
-                <div className="num" style={{ color: stat.textColor }}>{stat.num}{stat.unit ? <span style={{ fontSize: ".5em" }}> {stat.unit}</span> : null}</div>
+                <div className="num" style={{ color: stat.textColor }}>
+                  {stat.num}
+                  {stat.unit ? <span style={{ fontSize: ".5em" }}> {stat.unit}</span> : null}
+                </div>
                 <div className="lbl">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
-      
+
       <WhySubscribeSection rawLocale={rawLocale} bg="g-pink" />
-      
+
       <section className="sec g-peach" id="work">
         <div className="wrap">
           <div className="sec-top">
@@ -464,7 +548,12 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
                 {featuredCtaVisit} <span className="ar">➔</span>
               </a>
             ) : (
-              <a className="btn primary sm" href={featuredWhatsappFallback} target="_blank" rel="noopener">
+              <a
+                className="btn primary sm"
+                href={featuredWhatsappFallback}
+                target="_blank"
+                rel="noopener"
+              >
                 {featuredCtaDiscuss} <span className="ar">➔</span>
               </a>
             );
@@ -494,7 +583,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
           })}
         </div>
       </section>
-      
+
       <section className="sec g-blue" id="packages">
         <div className="wrap">
           <div className="sec-top">
@@ -511,16 +600,20 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
           <PlansSection locale={locale} promoTag={pkgPromoTag} promoSub={pkgNote} />
         </div>
       </section>
-      
+
       <section className="sec g-lav" id="faq">
         <div className="wrap">
           <div className="sec-top">
             <div>
               <span className="eyebrow reveal">{faqHomeEye}</span>
               <h2 className="sec-head reveal">
-                <span className={faqHomeHeadHighlightIndex === 0 ? "hl" : undefined}>{faqHomeHeadLine1}</span>
+                <span className={faqHomeHeadHighlightIndex === 0 ? "hl" : undefined}>
+                  {faqHomeHeadLine1}
+                </span>
                 <br />
-                <span className={faqHomeHeadHighlightIndex === 1 ? "hl" : undefined}>{faqHomeHeadLine2}</span>
+                <span className={faqHomeHeadHighlightIndex === 1 ? "hl" : undefined}>
+                  {faqHomeHeadLine2}
+                </span>
               </h2>
             </div>
           </div>
@@ -538,12 +631,29 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
           ) : null}
         </div>
       </section>
-      
+
       <section className="cta-sec">
-        <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ top: "20%", left: "14%", width: "44px" }} data-d="0.6" alt="" />
-        <img className="sparkle" src="/assets/img/sparkle_rose.png" style={{ bottom: "18%", right: "16%", width: "52px" }} data-d="0.7" alt="" />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_gold_bright.png"
+          style={{ top: "20%", left: "14%", width: "44px" }}
+          data-d="0.6"
+          alt=""
+        />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_rose.png"
+          style={{ bottom: "18%", right: "16%", width: "52px" }}
+          data-d="0.7"
+          alt=""
+        />
         <div className="wrap">
-          <span className="eyebrow center reveal" style={{ color: "var(--gold)", justifyContent: "center", width: "100%" }}>{ctaEye}</span>
+          <span
+            className="eyebrow center reveal"
+            style={{ color: "var(--gold)", justifyContent: "center", width: "100%" }}
+          >
+            {ctaEye}
+          </span>
           <h2 className="reveal" style={{ margin: "14px 0 0" }}>
             <span className={ctaHeadHighlightIndex === 0 ? "hl" : undefined}>{ctaHeadLine1}</span>
             <br />
@@ -554,11 +664,13 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
             <a className="btn primary" href={ctaBtnPrimaryUrl} target="_blank" rel="noopener">
               {ctaBtnPrimary} <span className="ar">➔</span>
             </a>
-            <a className="btn ghost" href={ctaBtnSecondaryUrl}>{ctaBtnSecondary}</a>
+            <a className="btn ghost" href={ctaBtnSecondaryUrl}>
+              {ctaBtnSecondary}
+            </a>
           </div>
         </div>
       </section>
-      
+
       <Fab href={whatsappUrl} />
     </>
   );

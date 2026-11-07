@@ -63,7 +63,9 @@ describe("createRoleRouter", () => {
       const ctx = { session: { user: { isProtectedRole: false } } };
       const input = { name: "admin", permissions: [], protected: true };
 
-      await expect(roleRouter.create({ ctx, input })).rejects.toThrow("Cannot create a protected role.");
+      await expect(roleRouter.create({ ctx, input })).rejects.toThrow(
+        "Cannot create a protected role.",
+      );
     });
   });
 
@@ -130,9 +132,9 @@ describe("createRoleRouter", () => {
       (db as any).user.count.mockResolvedValue(0);
       (db as any).role.findUnique.mockResolvedValue({ id: "r1", protected: true });
 
-      await expect(
-        roleRouter.delete({ ctx, input: { id: "r1" } }),
-      ).rejects.toThrow("Cannot delete a protected role.");
+      await expect(roleRouter.delete({ ctx, input: { id: "r1" } })).rejects.toThrow(
+        "Cannot delete a protected role.",
+      );
     });
 
     it("throws BAD_REQUEST when role has assigned users", async () => {
@@ -143,9 +145,9 @@ describe("createRoleRouter", () => {
       (db as any).user.count.mockResolvedValue(3);
       (db as any).role.findUnique.mockResolvedValue({ id: "r1", protected: false });
 
-      await expect(
-        roleRouter.delete({ ctx, input: { id: "r1" } }),
-      ).rejects.toThrow("Cannot delete role — 3 users assigned.");
+      await expect(roleRouter.delete({ ctx, input: { id: "r1" } })).rejects.toThrow(
+        "Cannot delete role — 3 users assigned.",
+      );
     });
 
     it("uses singular 'user' when count is 1", async () => {
@@ -156,9 +158,9 @@ describe("createRoleRouter", () => {
       (db as any).user.count.mockResolvedValue(1);
       (db as any).role.findUnique.mockResolvedValue({ id: "r1", protected: false });
 
-      await expect(
-        roleRouter.delete({ ctx, input: { id: "r1" } }),
-      ).rejects.toThrow("Cannot delete role — 1 user assigned.");
+      await expect(roleRouter.delete({ ctx, input: { id: "r1" } })).rejects.toThrow(
+        "Cannot delete role — 1 user assigned.",
+      );
     });
   });
 });

@@ -88,10 +88,20 @@ export function SiteNav({ locale, settings }: SiteNavProps): ReactElement {
       </div>
       <div className="nav-right">
         <div className="lang">
-          <button type="button" id="lang-id" className={locale === "id" ? "on" : undefined} onClick={() => setLang("id")}>
+          <button
+            type="button"
+            id="lang-id"
+            className={locale === "id" ? "on" : undefined}
+            onClick={() => setLang("id")}
+          >
             ID
           </button>
-          <button type="button" id="lang-en" className={locale === "en" ? "on" : undefined} onClick={() => setLang("en")}>
+          <button
+            type="button"
+            id="lang-en"
+            className={locale === "en" ? "on" : undefined}
+            onClick={() => setLang("en")}
+          >
             EN
           </button>
         </div>
@@ -105,7 +115,9 @@ export function SiteNav({ locale, settings }: SiteNavProps): ReactElement {
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
         >
-          <span /><span /><span />
+          <span />
+          <span />
+          <span />
         </button>
       </div>
     </nav>

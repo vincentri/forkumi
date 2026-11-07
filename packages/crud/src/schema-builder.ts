@@ -1,18 +1,15 @@
 import { z } from "zod";
 import type { CRUDConfig, CRUDField } from "./types";
 
-const assetUrlSchema = z.string().refine(
-  (value) => {
-    if (value.startsWith("/")) return true;
-    try {
-      const url = new URL(value);
-      return url.protocol === "http:" || url.protocol === "https:";
-    } catch {
-      return false;
-    }
-  },
-  "Must be an absolute URL or root-relative path",
-);
+const assetUrlSchema = z.string().refine((value) => {
+  if (value.startsWith("/")) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}, "Must be an absolute URL or root-relative path");
 
 function fieldToZod(field: CRUDField): z.ZodTypeAny {
   // multicheck early-return: value is always string[], never goes through optional transform
@@ -105,7 +102,22 @@ function fieldToZod(field: CRUDField): z.ZodTypeAny {
       return schema.optional();
     }
     // Allow empty string → undefined for non-required string fields
-    if (["text", "textarea", "richtext", "email", "url", "select", "password", "color", "image", "file", "date", "datetime"].includes(field.type)) {
+    if (
+      [
+        "text",
+        "textarea",
+        "richtext",
+        "email",
+        "url",
+        "select",
+        "password",
+        "color",
+        "image",
+        "file",
+        "date",
+        "datetime",
+      ].includes(field.type)
+    ) {
       return z
         .union([z.literal(""), z.null(), schema])
         .optional()

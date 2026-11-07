@@ -4,13 +4,16 @@ import { firstValue, getFrontPageSettings, normalizeLocale } from "../../front-p
 import { getCompareData } from "../../compare";
 import { getWhysubCards } from "../../whysub";
 
-const WHY_SUB_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-  intro: string;
-  line: string;
-}> = {
+const WHY_SUB_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+    intro: string;
+    line: string;
+  }
+> = {
   en: {
     eye: "Why Subscribe",
     headLine1: "Tired of the",
@@ -48,7 +51,8 @@ const WHYSUB_ICONS: Record<string, string> = {
   file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   web: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>',
-  social: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3.5M15.4 6.5l-6.8 4"/>',
+  social:
+    '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 3.5M15.4 6.5l-6.8 4"/>',
   motion: '<polygon points="5 3 19 12 5 21 5 3"/>',
 };
 
@@ -75,10 +79,7 @@ export async function WhySubscribeSection({
   const intro = firstValue(settings.whySubIntro, defaults.intro) ?? defaults.intro;
   const line = firstValue(settings.whySubLine, defaults.line) ?? defaults.line;
 
-  const [compareData, cards] = await Promise.all([
-    getCompareData(locale),
-    getWhysubCards(locale),
-  ]);
+  const [compareData, cards] = await Promise.all([getCompareData(locale), getWhysubCards(locale)]);
 
   const cmp = CMP_DEFAULTS[locale];
   const cols = compareData.categories.length;
@@ -103,7 +104,10 @@ export async function WhySubscribeSection({
             {cards.map((card, i) => (
               <div key={i} className={`gcard ${card.color} reveal`}>
                 <div className="ci">
-                  <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: WHYSUB_ICONS[card.icon] ?? "" }} />
+                  <svg
+                    viewBox="0 0 24 24"
+                    dangerouslySetInnerHTML={{ __html: WHYSUB_ICONS[card.icon] ?? "" }}
+                  />
                 </div>
                 <h4>{card.heading}</h4>
                 <p>{card.paragraph}</p>
@@ -117,7 +121,9 @@ export async function WhySubscribeSection({
         <div className="wrap">
           <div className="sec-top">
             <div>
-              <span className="eyebrow reveal" style={{ color: "var(--gold)" }}>{cmp.eye}</span>
+              <span className="eyebrow reveal" style={{ color: "var(--gold)" }}>
+                {cmp.eye}
+              </span>
               <h2 className="sec-head reveal" style={{ color: "#fff" }}>
                 {cmp.headLine1}
                 <br />
@@ -129,22 +135,35 @@ export async function WhySubscribeSection({
           {cols > 0 && compareData.rows.length > 0 ? (
             <div className="cmp-wrap reveal" style={{ marginTop: "30px" }}>
               <div className="cmp" style={{ gridTemplateColumns: gridTemplate }}>
-                <div className="cmp-row cmp-head" style={{ display: "grid", gridTemplateColumns: gridTemplate }}>
+                <div
+                  className="cmp-row cmp-head"
+                  style={{ display: "grid", gridTemplateColumns: gridTemplate }}
+                >
                   <div className="cmp-c crit"></div>
                   {compareData.categories.map((cat, i) => (
-                    <div key={i} className={i === 0 ? "cmp-c f" : "cmp-c"}>{cat}</div>
+                    <div key={i} className={i === 0 ? "cmp-c f" : "cmp-c"}>
+                      {cat}
+                    </div>
                   ))}
                 </div>
                 {compareData.rows.map((row, ri) => (
-                  <div key={ri} className="cmp-row" style={{ display: "grid", gridTemplateColumns: gridTemplate }}>
+                  <div
+                    key={ri}
+                    className="cmp-row"
+                    style={{ display: "grid", gridTemplateColumns: gridTemplate }}
+                  >
                     <div className="cmp-c crit">{row.label}</div>
                     {row.cells.map((cell, ci) => (
                       <div key={ci} className={ci === 0 ? "cmp-c f" : "cmp-c"}>
-                        {cell === "y" ? <span className="mk yes">✓</span>
-                          : cell === "n" ? <span className="mk no">✕</span>
-                          : cell === "l" ? <span className="mk lim">–</span>
-                          : cell === "?" ? <span className="mk lim">?</span>
-                          : null}
+                        {cell === "y" ? (
+                          <span className="mk yes">✓</span>
+                        ) : cell === "n" ? (
+                          <span className="mk no">✕</span>
+                        ) : cell === "l" ? (
+                          <span className="mk lim">–</span>
+                        ) : cell === "?" ? (
+                          <span className="mk lim">?</span>
+                        ) : null}
                       </div>
                     ))}
                   </div>

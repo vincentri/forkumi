@@ -50,9 +50,14 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
     formState: { errors, isSubmitting },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
-  const rolesQuery = (api.admin as any).role.list.useQuery({ page: 1, pageSize: 100 }, { enabled: open });
+  const rolesQuery = (api.admin as any).role.list.useQuery(
+    { page: 1, pageSize: 100 },
+    { enabled: open },
+  );
   const roles: Array<{ id: string; name: string }> = rolesQuery.data?.items ?? [];
-  const emailSettingsQuery = (api.admin as any).emailSettings.get.useQuery(undefined, { enabled: open });
+  const emailSettingsQuery = (api.admin as any).emailSettings.get.useQuery(undefined, {
+    enabled: open,
+  });
   const emailDeliveryEnabled = emailSettingsQuery?.data?.enabled === true;
 
   const mutation = (api.admin as any).user.invite.useMutation();
@@ -95,7 +100,12 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) handleClose();
+      }}
+    >
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Invite user</DialogTitle>
@@ -119,13 +129,18 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2" noValidate>
             {serverError && (
-              <div role="alert" className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2.5">
+              <div
+                role="alert"
+                className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2.5"
+              >
                 <p className="text-sm text-destructive">{serverError}</p>
               </div>
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="invite-email" className="text-sm font-medium">Email</Label>
+              <Label htmlFor="invite-email" className="text-sm font-medium">
+                Email
+              </Label>
               <Input
                 id="invite-email"
                 type="email"
@@ -150,7 +165,9 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
                 </SelectTrigger>
                 <SelectContent>
                   {roles.map((r) => (
-                    <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                    <SelectItem key={r.id} value={r.id}>
+                      {r.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>

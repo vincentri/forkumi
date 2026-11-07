@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function RangeField({ field, register, watch }: Props) {
-  const value = (watch(field.name) as number) ?? (field.min ?? 0);
+  const value = (watch(field.name) as number) ?? field.min ?? 0;
   return (
     <div className="flex items-center gap-3">
       <input

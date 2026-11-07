@@ -8,7 +8,13 @@ import { resolvePublicDir } from "~/lib/public-files";
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB — images
 const MAX_VIDEO_BYTES = 50 * 1024 * 1024; // 50 MB — videos
-const ALLOWED_MIME = new Set(["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"]);
+const ALLOWED_MIME = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/svg+xml",
+]);
 const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"]);
 const ALLOWED_VIDEO_MIME = new Set(["video/mp4", "video/webm", "video/quicktime"]);
 const ALLOWED_VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov"]);
@@ -28,7 +34,7 @@ function sanitizeSvg(buffer: Buffer): Buffer | null {
     .replace(/\s+on[a-z]+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi, "")
     // javascript: URLs in href/xlink:href/src/etc.
     .replace(/(\s(?:href|xlink:href|src|action)\s*=\s*)(["'])\s*javascript:[^"']*\2/gi, "$1$2$2")
-    .replace(/(\s(?:href|xlink:href|src|action)\s*=\s*)javascript:[^\s>]+/gi, "$1\"\"");
+    .replace(/(\s(?:href|xlink:href|src|action)\s*=\s*)javascript:[^\s>]+/gi, '$1""');
 
   if (!/<svg[\s>]/i.test(clean)) return null;
   return Buffer.from(clean, "utf8") as Buffer;
@@ -36,7 +42,10 @@ function sanitizeSvg(buffer: Buffer): Buffer | null {
 
 function sanitizePath(raw: string | null): string {
   if (!raw) return "uploads";
-  const clean = raw.replace(/[^a-zA-Z0-9/_-]/g, "").replace(/^\/+/, "").slice(0, 80);
+  const clean = raw
+    .replace(/[^a-zA-Z0-9/_-]/g, "")
+    .replace(/^\/+/, "")
+    .slice(0, 80);
   return clean || "uploads";
 }
 
@@ -51,11 +60,10 @@ export async function POST(req: NextRequest) {
   }
 
   const permissions: string[] = (session.user as { permissions?: string[] }).permissions ?? [];
-  const isProtectedRole: boolean = (session.user as { isProtectedRole?: boolean }).isProtectedRole ?? false;
+  const isProtectedRole: boolean =
+    (session.user as { isProtectedRole?: boolean }).isProtectedRole ?? false;
   const canUpload =
-    isProtectedRole ||
-    permissions.includes("settings:update") ||
-    permissions.includes("*:update");
+    isProtectedRole || permissions.includes("settings:update") || permissions.includes("*:update");
 
   if (!canUpload) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -69,11 +77,19 @@ export async function POST(req: NextRequest) {
   }
   const isVideo = ALLOWED_VIDEO_MIME.has(file.type);
   if (!ALLOWED_MIME.has(file.type) && !isVideo) {
-    return NextResponse.json({ error: "Only image (JPEG, PNG, GIF, WebP, SVG) or video (MP4, WebM, MOV) files are allowed" }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: "Only image (JPEG, PNG, GIF, WebP, SVG) or video (MP4, WebM, MOV) files are allowed",
+      },
+      { status: 400 },
+    );
   }
   const maxBytes = isVideo ? MAX_VIDEO_BYTES : MAX_SIZE_BYTES;
   if (file.size > maxBytes) {
-    return NextResponse.json({ error: `File too large. Maximum size is ${maxBytes / (1024 * 1024)} MB.` }, { status: 400 });
+    return NextResponse.json(
+      { error: `File too large. Maximum size is ${maxBytes / (1024 * 1024)} MB.` },
+      { status: 400 },
+    );
   }
 
   const arrayBuffer = await file.arrayBuffer();
@@ -162,8 +178,7 @@ export async function POST(req: NextRequest) {
     console.error("[upload] write failed", { publicDir, filePath, err });
     return NextResponse.json(
       {
-        error:
-          "Failed to save file on server (local disk). On Vercel use STORAGE_PROVIDER=s3.",
+        error: "Failed to save file on server (local disk). On Vercel use STORAGE_PROVIDER=s3.",
       },
       { status: 500 },
     );

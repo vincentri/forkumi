@@ -79,9 +79,9 @@ describe("createInvitationRouter", () => {
         acceptedAt: null,
       });
 
-      await expect(
-        getInvitationProcedure({ input: { token: "expired" } }),
-      ).rejects.toThrow("This invitation has expired.");
+      await expect(getInvitationProcedure({ input: { token: "expired" } })).rejects.toThrow(
+        "This invitation has expired.",
+      );
     });
 
     it("throws for already accepted invitation", async () => {
@@ -97,9 +97,9 @@ describe("createInvitationRouter", () => {
         acceptedAt: new Date(),
       });
 
-      await expect(
-        getInvitationProcedure({ input: { token: "used" } }),
-      ).rejects.toThrow("This invitation link has already been used.");
+      await expect(getInvitationProcedure({ input: { token: "used" } })).rejects.toThrow(
+        "This invitation link has already been used.",
+      );
     });
 
     it("throws for non-existent token", async () => {
@@ -110,9 +110,9 @@ describe("createInvitationRouter", () => {
 
       (db as any).userInvitation.findUnique.mockResolvedValue(null);
 
-      await expect(
-        getInvitationProcedure({ input: { token: "nope" } }),
-      ).rejects.toThrow("This invitation has expired.");
+      await expect(getInvitationProcedure({ input: { token: "nope" } })).rejects.toThrow(
+        "This invitation has expired.",
+      );
     });
   });
 

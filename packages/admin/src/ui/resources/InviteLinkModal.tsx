@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { useAdminApi } from "../AdminProvider";
-import { Button, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, toast } from "@repo/ui";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  toast,
+} from "@repo/ui";
 import { getErrorMessage } from "../lib/getErrorMessage";
 import { InviteLinkDisplay } from "./InviteLinkDisplay";
 
@@ -28,7 +36,9 @@ export function InviteLinkModal({ email, open, onClose }: Props) {
   // oxlint-disable-next-line typescript/no-explicit-any
   const sendInviteEmailMutation = (api.admin as any).user.sendInviteEmail.useMutation();
   // oxlint-disable-next-line typescript/no-explicit-any
-  const emailSettingsQuery = (api.admin as any).emailSettings.get.useQuery(undefined, { enabled: open });
+  const emailSettingsQuery = (api.admin as any).emailSettings.get.useQuery(undefined, {
+    enabled: open,
+  });
   const emailDeliveryEnabled = emailSettingsQuery?.data?.enabled === true;
 
   async function handleGenerate() {
@@ -61,7 +71,12 @@ export function InviteLinkModal({ email, open, onClose }: Props) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) handleClose();
+      }}
+    >
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Invite link</DialogTitle>
@@ -74,7 +89,10 @@ export function InviteLinkModal({ email, open, onClose }: Props) {
 
         <div className="space-y-4 mt-2">
           {error && (
-            <div role="alert" className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2.5">
+            <div
+              role="alert"
+              className="rounded-lg bg-destructive/10 border border-destructive/20 px-3 py-2.5"
+            >
               <p className="text-sm text-destructive">{error}</p>
             </div>
           )}
@@ -90,7 +108,9 @@ export function InviteLinkModal({ email, open, onClose }: Props) {
             />
           ) : (
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={handleClose}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={handleClose}>
+                Cancel
+              </Button>
               <Button type="button" onClick={handleGenerate} disabled={generating}>
                 {generating ? "Generating..." : "Generate link"}
               </Button>

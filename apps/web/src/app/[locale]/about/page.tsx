@@ -18,16 +18,19 @@ type AboutPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-const VM_DEFAULTS: Record<"id" | "en", {
-  h1Line1: string;
-  h1Line2: string;
-  lead: string;
-  eye: string;
-  visionHeading: string;
-  visionParagraph: string;
-  missionHeading: string;
-  missionParagraph: string;
-}> = {
+const VM_DEFAULTS: Record<
+  "id" | "en",
+  {
+    h1Line1: string;
+    h1Line2: string;
+    lead: string;
+    eye: string;
+    visionHeading: string;
+    visionParagraph: string;
+    missionHeading: string;
+    missionParagraph: string;
+  }
+> = {
   en: {
     h1Line1: "Why we",
     h1Line2: "exist",
@@ -54,12 +57,15 @@ const VM_DEFAULTS: Record<"id" | "en", {
   },
 };
 
-const TRUST_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-  intro: string;
-}> = {
+const TRUST_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+    intro: string;
+  }
+> = {
   en: {
     eye: "Guarantees",
     headLine1: "Why you can",
@@ -74,11 +80,14 @@ const TRUST_DEFAULTS: Record<"id" | "en", {
   },
 };
 
-const PROCESS_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-}> = {
+const PROCESS_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+  }
+> = {
   en: {
     eye: "Process",
     headLine1: "A simple,",
@@ -109,10 +118,14 @@ export default async function AboutPage({ params }: AboutPageProps): Promise<Rea
   const h1Hl = Number.parseInt(settings.aboutH1HighlightIndex ?? "1", 10);
   const lead = firstValue(settings.pageAboutLead, vmDef.lead) ?? vmDef.lead;
   const vmEye = firstValue(settings.aboutVisionEye, vmDef.eye) ?? vmDef.eye;
-  const visionH = firstValue(settings.aboutVisionHeading, vmDef.visionHeading) ?? vmDef.visionHeading;
-  const visionP = firstValue(settings.aboutVisionParagraph, vmDef.visionParagraph) ?? vmDef.visionParagraph;
-  const missionH = firstValue(settings.aboutMissionHeading, vmDef.missionHeading) ?? vmDef.missionHeading;
-  const missionP = firstValue(settings.aboutMissionParagraph, vmDef.missionParagraph) ?? vmDef.missionParagraph;
+  const visionH =
+    firstValue(settings.aboutVisionHeading, vmDef.visionHeading) ?? vmDef.visionHeading;
+  const visionP =
+    firstValue(settings.aboutVisionParagraph, vmDef.visionParagraph) ?? vmDef.visionParagraph;
+  const missionH =
+    firstValue(settings.aboutMissionHeading, vmDef.missionHeading) ?? vmDef.missionHeading;
+  const missionP =
+    firstValue(settings.aboutMissionParagraph, vmDef.missionParagraph) ?? vmDef.missionParagraph;
 
   const trDef = TRUST_DEFAULTS[locale];
   const trEye = firstValue(settings.aboutTrustEye, trDef.eye) ?? trDef.eye;
@@ -123,8 +136,10 @@ export default async function AboutPage({ params }: AboutPageProps): Promise<Rea
 
   const procDef = PROCESS_DEFAULTS[locale];
   const procEye = firstValue(settings.processSectionEye, procDef.eye) ?? procDef.eye;
-  const procL1 = firstValue(settings.processSectionHeadLine1, procDef.headLine1) ?? procDef.headLine1;
-  const procL2 = firstValue(settings.processSectionHeadLine2, procDef.headLine2) ?? procDef.headLine2;
+  const procL1 =
+    firstValue(settings.processSectionHeadLine1, procDef.headLine1) ?? procDef.headLine1;
+  const procL2 =
+    firstValue(settings.processSectionHeadLine2, procDef.headLine2) ?? procDef.headLine2;
   const procHl = Number.parseInt(settings.processSectionHeadHighlightIndex ?? "1", 10);
 
   const fabHref = safeHref(settings.contactWhatsappUrl, WHATSAPP_FALLBACK);
@@ -132,7 +147,13 @@ export default async function AboutPage({ params }: AboutPageProps): Promise<Rea
   return (
     <>
       <section className="page-hero">
-        <img className="sparkle" src="/assets/img/sparkle_purple.png" style={{ top: "40%", right: "9%", width: "46px" }} data-d="0.5" alt="" />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_purple.png"
+          style={{ top: "40%", right: "9%", width: "46px" }}
+          data-d="0.5"
+          alt=""
+        />
         <div className="wrap">
           <Breadcrumb locale={locale} current={PAGE_LABEL[locale]} />
           <h1>
@@ -146,10 +167,20 @@ export default async function AboutPage({ params }: AboutPageProps): Promise<Rea
 
       <section className="sec g-lav">
         <div className="wrap">
-          <div className="sec-top"><div><span className="eyebrow reveal">{vmEye}</span></div></div>
+          <div className="sec-top">
+            <div>
+              <span className="eyebrow reveal">{vmEye}</span>
+            </div>
+          </div>
           <div className="vm reveal">
-            <div className="vmc"><h3>{visionH}</h3><p>{visionP}</p></div>
-            <div className="vmc rose"><h3>{missionH}</h3><p>{missionP}</p></div>
+            <div className="vmc">
+              <h3>{visionH}</h3>
+              <p>{visionP}</p>
+            </div>
+            <div className="vmc rose">
+              <h3>{missionH}</h3>
+              <p>{missionP}</p>
+            </div>
           </div>
         </div>
       </section>
@@ -194,7 +225,9 @@ export default async function AboutPage({ params }: AboutPageProps): Promise<Rea
         <div className="wrap">
           <div className="sec-top">
             <div>
-              <span className="eyebrow reveal" style={{ color: "var(--gold)" }}>{procEye}</span>
+              <span className="eyebrow reveal" style={{ color: "var(--gold)" }}>
+                {procEye}
+              </span>
               <h2 className="sec-head reveal" style={{ color: "#fff" }}>
                 <span className={procHl === 0 ? "hl" : undefined}>{procL1}</span>
                 <br />

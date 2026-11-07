@@ -73,7 +73,12 @@ describe("toClientCRUDConfig", () => {
     };
     const result = toClientCRUDConfig(config);
     expect(result.fields).toHaveLength(3);
-    expect(result.fields[0]).toEqual({ name: "title", type: "text", label: "Title", required: true });
+    expect(result.fields[0]).toEqual({
+      name: "title",
+      type: "text",
+      label: "Title",
+      required: true,
+    });
   });
 
   it("preserves optionsFrom fields unchanged", () => {

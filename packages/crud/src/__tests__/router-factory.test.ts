@@ -1,6 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { describe, expect, it } from "vitest";
-import { buildCRUDRouters, createCRUDRouter, createKeyValueRouter, handlePrismaError } from "../router-factory";
+import {
+  buildCRUDRouters,
+  createCRUDRouter,
+  createKeyValueRouter,
+  handlePrismaError,
+} from "../router-factory";
 import type { CRUDConfig } from "../types";
 
 // --- buildCRUDRouters ---
@@ -86,7 +91,10 @@ describe("createCRUDRouter field filters", () => {
     const capturedWhere: unknown[] = [];
     const mockPrisma = {
       user: {
-        findMany: (args: { where: unknown }) => { capturedWhere.push(args.where); return []; },
+        findMany: (args: { where: unknown }) => {
+          capturedWhere.push(args.where);
+          return [];
+        },
         count: () => 0,
       },
     };
@@ -100,7 +108,12 @@ describe("createCRUDRouter field filters", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     await (routerResult as any).list._queryFn({ input: { page: 1, pageSize: 20, search: "test" } });
 
     expect(capturedWhere).toHaveLength(1);
@@ -111,7 +124,10 @@ describe("createCRUDRouter field filters", () => {
     const capturedWhere: unknown[] = [];
     const mockPrisma = {
       user: {
-        findMany: (args: { where: unknown }) => { capturedWhere.push(args.where); return []; },
+        findMany: (args: { where: unknown }) => {
+          capturedWhere.push(args.where);
+          return [];
+        },
         count: () => 0,
       },
     };
@@ -125,7 +141,12 @@ describe("createCRUDRouter field filters", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     await (routerResult as any).list._queryFn({
       input: {
         page: 1,
@@ -144,7 +165,10 @@ describe("createCRUDRouter field filters", () => {
     const capturedWhere: unknown[] = [];
     const mockPrisma = {
       user: {
-        findMany: (args: { where: unknown }) => { capturedWhere.push(args.where); return []; },
+        findMany: (args: { where: unknown }) => {
+          capturedWhere.push(args.where);
+          return [];
+        },
         count: () => 0,
       },
     };
@@ -158,7 +182,12 @@ describe("createCRUDRouter field filters", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     await (routerResult as any).list._queryFn({
       input: {
         page: 1,
@@ -192,12 +221,20 @@ describe("createCRUDRouter field filters", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     await (routerResult as any).update._mutationFn({
       input: { id: "post_1", data: { title: "New Title", slug: "manual-slug" } },
     });
 
-    expect(calls[0]).toEqual({ where: { id: "post_1" }, data: { title: "New Title", slug: "manual-slug" } });
+    expect(calls[0]).toEqual({
+      where: { id: "post_1" },
+      data: { title: "New Title", slug: "manual-slug" },
+    });
   });
 });
 
@@ -234,7 +271,12 @@ describe("createCRUDRouter exportCsv", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     const result = await (routerResult as any).exportCsv._mutationFn({
       input: {
         sortField: "email",
@@ -282,7 +324,9 @@ describe("createCRUDRouter deletePolicy", () => {
     ]);
     const routerResult = createCRUDRouter(config, realRouter as any, realProcedure, mockPrisma);
 
-    await expect((routerResult as any).delete._mutationFn({ input: { id: "cat_1" } })).rejects.toMatchObject({
+    await expect(
+      (routerResult as any).delete._mutationFn({ input: { id: "cat_1" } }),
+    ).rejects.toMatchObject({
       code: "CONFLICT",
       message: "Cannot delete category while posts are using it.",
     });
@@ -311,7 +355,9 @@ describe("createCRUDRouter deletePolicy", () => {
     ]);
     const routerResult = createCRUDRouter(config, realRouter as any, realProcedure, mockPrisma);
 
-    await expect((routerResult as any).delete._mutationFn({ input: { id: "cat_1" } })).resolves.toEqual({ id: "cat_1" });
+    await expect(
+      (routerResult as any).delete._mutationFn({ input: { id: "cat_1" } }),
+    ).resolves.toEqual({ id: "cat_1" });
     expect(calls).toEqual([
       ["count", { where: { categoryId: "cat_1" } }],
       ["delete", { where: { id: "cat_1" } }],
@@ -367,7 +413,12 @@ describe("createCRUDRouter deletePolicy", () => {
       },
     };
     const config = makeDeletePolicyConfig([
-      { referencingModel: "post", referencingField: "categoryId", onDelete: "setValue", value: "fallback_cat" },
+      {
+        referencingModel: "post",
+        referencingField: "categoryId",
+        onDelete: "setValue",
+        value: "fallback_cat",
+      },
     ]);
     const routerResult = createCRUDRouter(config, realRouter as any, realProcedure, mockPrisma);
 
@@ -431,7 +482,9 @@ describe("createCRUDRouter deletePolicy", () => {
     ]);
     const routerResult = createCRUDRouter(config, realRouter as any, realProcedure, mockPrisma);
 
-    await expect((routerResult as any).bulkDelete._mutationFn({ input: { ids: ["cat_1", "cat_2"] } })).resolves.toEqual({ count: 2 });
+    await expect(
+      (routerResult as any).bulkDelete._mutationFn({ input: { ids: ["cat_1", "cat_2"] } }),
+    ).resolves.toEqual({ count: 2 });
     expect(calls).toEqual([
       ["updateMany", { where: { categoryId: "cat_1" }, data: { categoryId: null } }],
       ["updateMany", { where: { categoryId: "cat_2" }, data: { categoryId: null } }],
@@ -538,7 +591,12 @@ describe("createKeyValueRouter", () => {
       ],
     };
 
-    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createKeyValueRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     const result = await (routerResult as any).get._queryFn({ input: undefined });
     expect(result).toEqual({ heading: "Hello", body: "World" });
   });
@@ -546,9 +604,7 @@ describe("createKeyValueRouter", () => {
   it("get returns empty string for null values", async () => {
     const mockPrisma = {
       setting: {
-        findMany: async () => [
-          { key: "heading", value: null },
-        ],
+        findMany: async () => [{ key: "heading", value: null }],
       },
     };
 
@@ -556,12 +612,15 @@ describe("createKeyValueRouter", () => {
       model: "setting",
       label: "Settings",
       mode: "keyValue",
-      fields: [
-        { name: "heading", type: "text", label: "Heading", namespace: "about" },
-      ],
+      fields: [{ name: "heading", type: "text", label: "Heading", namespace: "about" }],
     };
 
-    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createKeyValueRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     const result = await (routerResult as any).get._queryFn({ input: undefined });
     expect(result).toEqual({ heading: "" });
   });
@@ -583,13 +642,18 @@ describe("createKeyValueRouter", () => {
       label: "Settings",
       mode: "keyValue",
       supportedLocales: ["en", "id"],
-      fields: [
-        { name: "heading", type: "text", label: "Heading", namespace: "about" },
-      ],
+      fields: [{ name: "heading", type: "text", label: "Heading", namespace: "about" }],
     };
 
-    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
-    await (routerResult as any).update._mutationFn({ input: { data: { heading: "New" }, locale: "id" } });
+    const routerResult = createKeyValueRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
+    await (routerResult as any).update._mutationFn({
+      input: { data: { heading: "New" }, locale: "id" },
+    });
     expect(calls).toHaveLength(1);
     expect(calls[0]).toEqual({
       where: { key_locale: { key: "heading", locale: "id" } },
@@ -615,7 +679,12 @@ describe("createKeyValueRouter", () => {
       supportedLocales: ["en", "id"],
       fields: [{ name: "heading", type: "text", label: "Heading", namespace: "about" }],
     };
-    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createKeyValueRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     await (routerResult as any).get._queryFn({ input: { locale: "id" } });
     expect(findCalls[0]).toMatchObject({ where: { locale: "id" } });
   });
@@ -640,7 +709,12 @@ describe("createKeyValueRouter", () => {
       ],
     };
 
-    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createKeyValueRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     const result = await (routerResult as any).searchOptions._queryFn({
       input: { field: "theme" },
     });
@@ -656,12 +730,15 @@ describe("createKeyValueRouter", () => {
       model: "setting",
       label: "Settings",
       mode: "keyValue",
-      fields: [
-        { name: "heading", type: "text", label: "Heading", namespace: "about" },
-      ],
+      fields: [{ name: "heading", type: "text", label: "Heading", namespace: "about" }],
     };
 
-    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createKeyValueRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     await expect(
       (routerResult as any).searchOptions._queryFn({ input: { field: "heading" } }),
     ).rejects.toMatchObject({ code: "BAD_REQUEST" });
@@ -673,12 +750,15 @@ describe("createKeyValueRouter", () => {
       model: "setting",
       label: "Settings",
       mode: "keyValue",
-      fields: [
-        { name: "heading", type: "text", label: "Heading", namespace: "about" },
-      ],
+      fields: [{ name: "heading", type: "text", label: "Heading", namespace: "about" }],
     };
 
-    const routerResult = createKeyValueRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createKeyValueRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     await expect(
       (routerResult as any).searchOptions._queryFn({ input: { field: "nonexistent" } }),
     ).rejects.toMatchObject({ code: "BAD_REQUEST" });
@@ -715,7 +795,12 @@ describe("createCRUDRouter searchOptions with ids", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     const result = await (routerResult as any).searchOptions._queryFn({
       input: { field: "categoryId", ids: ["1", "2"] },
     });
@@ -760,7 +845,12 @@ describe("createCRUDRouter searchOptions with ids", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     const result = await (routerResult as any).searchOptions._queryFn({
       input: { field: "categoryId", ids: ["1"], search: "Cat" },
     });
@@ -792,7 +882,12 @@ describe("createCRUDRouter searchOptions for static options", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     const result = await (routerResult as any).searchOptions._queryFn({
       input: { field: "status", search: "pub" },
     });
@@ -817,7 +912,12 @@ describe("createCRUDRouter searchOptions for static options", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     const result = await (routerResult as any).searchOptions._queryFn({
       input: { field: "status" },
     });
@@ -831,9 +931,7 @@ describe("createCRUDRouter exportCsv select label resolution", () => {
   it("resolves select option labels in CSV output", async () => {
     const mockPrisma = {
       product: {
-        findMany: async () => [
-          { name: "Widget", status: "draft" },
-        ],
+        findMany: async () => [{ name: "Widget", status: "draft" }],
       },
     };
 
@@ -854,7 +952,12 @@ describe("createCRUDRouter exportCsv select label resolution", () => {
       ],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     const result = await (routerResult as any).exportCsv._mutationFn({ input: {} });
     expect(result.csv).toBe("Name,Status\nWidget,Draft");
   });
@@ -872,7 +975,12 @@ describe("createCRUDRouter readOnly mode", () => {
       fields: [{ name: "title", type: "text", label: "Title" }],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     expect((routerResult as any).list).toBeDefined();
     expect((routerResult as any).getById).toBeDefined();
     expect((routerResult as any).create).toBeUndefined();
@@ -899,7 +1007,12 @@ describe("createCRUDRouter maxRecords", () => {
       fields: [{ name: "title", type: "text", label: "Title", required: true }],
     };
 
-    const routerResult = createCRUDRouter(config, realRouter as any, realProcedure as any, mockPrisma);
+    const routerResult = createCRUDRouter(
+      config,
+      realRouter as any,
+      realProcedure as any,
+      mockPrisma,
+    );
     await expect(
       (routerResult as any).create._mutationFn({ input: { title: "New" } }),
     ).rejects.toMatchObject({

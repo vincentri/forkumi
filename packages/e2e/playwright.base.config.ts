@@ -14,9 +14,7 @@ export const baseConfig = {
   forbidOnly: !!process.env.CI,
   retries: 0,
   workers: 1,
-  reporter: process.env.E2E_NO_REPORT
-    ? [["list"]]
-    : [["list"], ["html", { open: "never" }]],
+  reporter: process.env.E2E_NO_REPORT ? [["list"]] : [["list"], ["html", { open: "never" }]],
   timeout: 30_000,
   expect: { timeout: 10_000 },
 

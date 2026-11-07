@@ -10,7 +10,11 @@ export default async function AcceptInvitePage() {
   const logoDarkUrl = settings["brandingLogoDarkUrl"];
   return (
     <Suspense>
-      <AcceptInviteForm logoLightUrl={logoLightUrl} logoDarkUrl={logoDarkUrl} appName={settings["brandingAppName"]} />
+      <AcceptInviteForm
+        logoLightUrl={logoLightUrl}
+        logoDarkUrl={logoDarkUrl}
+        appName={settings["brandingAppName"]}
+      />
     </Suspense>
   );
 }

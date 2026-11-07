@@ -5,7 +5,5 @@ export function isCacheDisabled(): boolean {
 export function fetchNextOptions(
   tags: string[],
 ): { cache: "no-store" } | { next: { revalidate: number; tags: string[] } } {
-  return isCacheDisabled()
-    ? { cache: "no-store" }
-    : { next: { revalidate: 60, tags } };
+  return isCacheDisabled() ? { cache: "no-store" } : { next: { revalidate: 60, tags } };
 }

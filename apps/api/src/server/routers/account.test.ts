@@ -45,10 +45,12 @@ describe("updateProfile schema", () => {
 
 describe("updatePassword schema", () => {
   it("accepts valid passwords", () => {
-    expect(updatePasswordSchema.safeParse({
-      currentPassword: "oldpass",
-      newPassword: "newpassword123",
-    }).success).toBe(true);
+    expect(
+      updatePasswordSchema.safeParse({
+        currentPassword: "oldpass",
+        newPassword: "newpassword123",
+      }).success,
+    ).toBe(true);
   });
 
   it("rejects empty current password", () => {

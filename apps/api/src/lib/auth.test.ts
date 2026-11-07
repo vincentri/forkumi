@@ -55,20 +55,30 @@ describe("auth.ts module", () => {
 
     it("returns user when password valid", async () => {
       mockFindUnique.mockResolvedValue({
-        id: "1", email: "a@b.com", name: "Test", password: "hashed",
+        id: "1",
+        email: "a@b.com",
+        name: "Test",
+        password: "hashed",
         role: { name: "admin", permissions: ["user:view"], protected: true },
       });
       mockCompare.mockResolvedValue(true);
       const result = await adapter().findUserByCredentials("a@b.com", "correct");
       expect(result).toEqual({
-        id: "1", email: "a@b.com", name: "Test",
-        role: "admin", permissions: ["user:view"], isProtectedRole: true,
+        id: "1",
+        email: "a@b.com",
+        name: "Test",
+        role: "admin",
+        permissions: ["user:view"],
+        isProtectedRole: true,
       });
     });
 
     it("returns null when password invalid", async () => {
       mockFindUnique.mockResolvedValue({
-        id: "1", email: "a@b.com", password: "hashed", role: null,
+        id: "1",
+        email: "a@b.com",
+        password: "hashed",
+        role: null,
       });
       mockCompare.mockResolvedValue(false);
       const result = await adapter().findUserByCredentials("a@b.com", "wrong");
@@ -77,13 +87,21 @@ describe("auth.ts module", () => {
 
     it("handles missing role", async () => {
       mockFindUnique.mockResolvedValue({
-        id: "2", email: "b@b.com", name: null, password: "hashed", role: null,
+        id: "2",
+        email: "b@b.com",
+        name: null,
+        password: "hashed",
+        role: null,
       });
       mockCompare.mockResolvedValue(true);
       const result = await adapter().findUserByCredentials("b@b.com", "pass");
       expect(result).toEqual({
-        id: "2", email: "b@b.com", name: null,
-        role: null, permissions: [], isProtectedRole: false,
+        id: "2",
+        email: "b@b.com",
+        name: null,
+        role: null,
+        permissions: [],
+        isProtectedRole: false,
       });
     });
   });

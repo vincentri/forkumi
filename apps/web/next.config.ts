@@ -15,7 +15,9 @@ try {
       if (!process.env[key]) process.env[key] = val;
     }
   }
-} catch { /* .env not present — env vars provided externally (production) */ }
+} catch {
+  /* .env not present — env vars provided externally (production) */
+}
 
 const apiHost = (() => {
   try {
@@ -27,7 +29,10 @@ const apiHost = (() => {
 
 const apiProtocol = (() => {
   try {
-    return new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").protocol.replace(":", "") as "http" | "https";
+    return new URL(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001").protocol.replace(
+      ":",
+      "",
+    ) as "http" | "https";
   } catch {
     return "http";
   }

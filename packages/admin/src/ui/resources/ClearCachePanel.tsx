@@ -32,8 +32,9 @@ export function ClearCachePanel({ canUpdate }: Props) {
       <CardHeader>
         <CardTitle>Clear cache</CardTitle>
         <CardDescription>
-          Resets server in-memory caches: login rate-limit counters and the upload-directory resolve cache.
-          Use this if you locked an IP from too many login attempts, or after changing upload paths.
+          Resets server in-memory caches: login rate-limit counters and the upload-directory resolve
+          cache. Use this if you locked an IP from too many login attempts, or after changing upload
+          paths.
         </CardDescription>
       </CardHeader>
       <CardContent>

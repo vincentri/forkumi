@@ -7,10 +7,7 @@ import { protectedProcedure, router } from "../trpc";
 async function getCurrentUser(sessionUser: { id: string; email?: string | null }) {
   const user = await prisma.user.findFirst({
     where: {
-      OR: [
-        { id: sessionUser.id },
-        ...(sessionUser.email ? [{ email: sessionUser.email }] : []),
-      ],
+      OR: [{ id: sessionUser.id }, ...(sessionUser.email ? [{ email: sessionUser.email }] : [])],
     },
     select: { id: true, name: true, email: true, password: true },
   });
@@ -32,7 +29,9 @@ export const accountRouter = router({
   }),
 
   updateProfile: protectedProcedure
-    .input(z.object({ name: z.string().trim().min(1, "Name is required").max(100, "Name is too long") }))
+    .input(
+      z.object({ name: z.string().trim().min(1, "Name is required").max(100, "Name is too long") }),
+    )
     .mutation(async ({ ctx, input }) => {
       const currentUser = await getCurrentUser(ctx.session.user);
       const user = await prisma.user.update({
@@ -45,15 +44,20 @@ export const accountRouter = router({
     }),
 
   updatePassword: protectedProcedure
-    .input(z.object({
-      currentPassword: z.string().min(1, "Current password is required"),
-      newPassword: z.string().min(8, "New password must be at least 8 characters"),
-    }))
+    .input(
+      z.object({
+        currentPassword: z.string().min(1, "Current password is required"),
+        newPassword: z.string().min(8, "New password must be at least 8 characters"),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const user = await getCurrentUser(ctx.session.user);
 
       if (!user?.password) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "This account does not have a password set." });
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "This account does not have a password set.",
+        });
       }
 
       const isValid = await bcrypt.compare(input.currentPassword, user.password);

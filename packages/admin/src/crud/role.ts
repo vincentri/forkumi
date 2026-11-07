@@ -1,9 +1,7 @@
 import { defineCRUD } from "@repo/crud";
 import type { CRUDConfig, SelectOption } from "@repo/crud";
 
-export function createRoleCRUD(
-  permissionOptions: SelectOption[],
-): CRUDConfig {
+export function createRoleCRUD(permissionOptions: SelectOption[]): CRUDConfig {
   return defineCRUD({
     model: "role",
     label: "Roles",

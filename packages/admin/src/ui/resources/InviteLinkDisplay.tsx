@@ -56,21 +56,24 @@ export function InviteLinkDisplay({
             className="h-10 text-xs font-mono bg-muted"
             onFocus={(e) => e.target.select()}
           />
-          <Button type="button" variant="outline" size="sm" onClick={handleCopy} className="shrink-0">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleCopy}
+            className="shrink-0"
+          >
             {copied ? "Copied!" : "Copy"}
           </Button>
         </div>
       </div>
       <p className="text-xs text-muted-foreground">
-        This link expires in 7 days. Share it with the user — they will set their own password on sign-up.
+        This link expires in 7 days. Share it with the user — they will set their own password on
+        sign-up.
       </p>
       <div className="flex justify-end gap-2">
         {emailDeliveryEnabled && (
-          <Button
-            type="button"
-            onClick={handleSendEmail}
-            disabled={sendingEmail}
-          >
+          <Button type="button" onClick={handleSendEmail} disabled={sendingEmail}>
             {sendingEmail ? "Sending..." : "Send email invitation"}
           </Button>
         )}

@@ -12,9 +12,7 @@ export type ServiceCategoryData = {
   items: string[];
 };
 
-export async function getServiceCategories(
-  locale: "id" | "en",
-): Promise<ServiceCategoryData[]> {
+export async function getServiceCategories(locale: "id" | "en"): Promise<ServiceCategoryData[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
     const response = await fetch(
@@ -24,7 +22,7 @@ export async function getServiceCategories(
     if (!response.ok) {
       return [];
     }
-    const payload = await response.json() as {
+    const payload = (await response.json()) as {
       result?: { data?: { json?: ServiceCategoryData[] } };
     };
     return payload.result?.data?.json ?? [];

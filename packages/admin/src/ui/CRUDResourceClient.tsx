@@ -19,7 +19,12 @@ export interface CRUDResourceClientProps {
  * (keyValue for settings-style single-form resources, table+form for everything else).
  * The views live in `./resources/`.
  */
-export function CRUDResourceClient({ config, permissions, isProtectedRole, currentUserEmail }: CRUDResourceClientProps) {
+export function CRUDResourceClient({
+  config,
+  permissions,
+  isProtectedRole,
+  currentUserEmail,
+}: CRUDResourceClientProps) {
   const api = useAdminApi();
   const m = (api.admin as Record<string, unknown>)[config.model] as CRUDRouter | undefined;
 
@@ -31,7 +36,8 @@ export function CRUDResourceClient({ config, permissions, isProtectedRole, curre
           <h2 className="text-xl font-semibold text-foreground">Model not registered</h2>
           <p className="text-sm text-muted-foreground">
             The &ldquo;{config.model}&rdquo; admin router is not set up. Did you run{" "}
-            <code className="font-mono">pnpm crud:scaffold {config.model}</code> and restart the dev server?
+            <code className="font-mono">pnpm crud:scaffold {config.model}</code> and restart the dev
+            server?
           </p>
         </div>
       </div>
@@ -39,8 +45,23 @@ export function CRUDResourceClient({ config, permissions, isProtectedRole, curre
   }
 
   if (config.mode === "keyValue") {
-    return <KeyValueResourceView config={config} m={m} permissions={permissions} isProtectedRole={isProtectedRole} />;
+    return (
+      <KeyValueResourceView
+        config={config}
+        m={m}
+        permissions={permissions}
+        isProtectedRole={isProtectedRole}
+      />
+    );
   }
 
-  return <CrudResourceView config={config} m={m} permissions={permissions} isProtectedRole={isProtectedRole} currentUserEmail={currentUserEmail} />;
+  return (
+    <CrudResourceView
+      config={config}
+      m={m}
+      permissions={permissions}
+      isProtectedRole={isProtectedRole}
+      currentUserEmail={currentUserEmail}
+    />
+  );
 }

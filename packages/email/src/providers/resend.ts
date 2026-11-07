@@ -33,7 +33,11 @@ export function createResendProvider(options: ResendProviderOptions): EmailProvi
         }),
       });
 
-      const payload = await response.json().catch(() => null) as { id?: string; message?: string; name?: string } | null;
+      const payload = (await response.json().catch(() => null)) as {
+        id?: string;
+        message?: string;
+        name?: string;
+      } | null;
 
       if (!response.ok) {
         const message = payload?.message ?? payload?.name ?? "Resend email request failed.";

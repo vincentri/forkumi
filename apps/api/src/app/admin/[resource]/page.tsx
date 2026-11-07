@@ -24,9 +24,7 @@ export function generateStaticParams(): Array<{ resource: string }> {
   return configs.map((config) => ({ resource: crudModelToSlug(config.model) }));
 }
 
-export async function generateMetadata({
-  params,
-}: ResourcePageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ResourcePageProps): Promise<Metadata> {
   const { resource } = await params;
   const config = findConfig(resource);
 

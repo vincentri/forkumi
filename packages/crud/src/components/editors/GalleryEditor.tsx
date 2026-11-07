@@ -70,11 +70,7 @@ export function GalleryEditor({
               className="flex items-start gap-3 rounded-md border border-border p-2"
             >
               <div className="h-20 w-20 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
-                <img
-                  src={item.url}
-                  alt={item.alt ?? ""}
-                  className="h-full w-full object-cover"
-                />
+                <img src={item.url} alt={item.alt ?? ""} className="h-full w-full object-cover" />
               </div>
               <div className="flex-1 space-y-2">
                 <div className="space-y-1">

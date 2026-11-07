@@ -2,13 +2,7 @@
 
 import { Controller, type Control } from "react-hook-form";
 import type { CRUDFieldSelect } from "../../types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@repo/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui";
 
 interface Props {
   field: CRUDFieldSelect;

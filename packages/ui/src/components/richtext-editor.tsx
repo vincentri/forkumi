@@ -7,12 +7,26 @@ import Image from "@tiptap/extension-image";
 import TextAlign from "@tiptap/extension-text-align";
 import { useEffect, useState } from "react";
 import {
-  Bold, Italic, Strikethrough,
-  Heading1, Heading2, Heading3,
-  List, ListOrdered,
-  Quote, Code, Code2, Minus,
-  Undo2, Redo2, Youtube, Image as ImageIcon,
-  AlignLeft, AlignCenter, AlignRight, AlignJustify,
+  Bold,
+  Italic,
+  Strikethrough,
+  Heading1,
+  Heading2,
+  Heading3,
+  List,
+  ListOrdered,
+  Quote,
+  Code,
+  Code2,
+  Minus,
+  Undo2,
+  Redo2,
+  Youtube,
+  Image as ImageIcon,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { Button } from "./button";
@@ -70,17 +84,21 @@ function parsePixelValue(value: string | null): number | null {
 const ResizableYouTube = YouTube.extend({
   renderHTML({ node, HTMLAttributes }) {
     const textAlign = node.attrs.textAlign as string | null;
-    const wrapperStyle = textAlign === "center"
-      ? "display:flex;justify-content:center"
-      : textAlign === "right"
-      ? "display:flex;justify-content:flex-end"
-      : "";
+    const wrapperStyle =
+      textAlign === "center"
+        ? "display:flex;justify-content:center"
+        : textAlign === "right"
+          ? "display:flex;justify-content:flex-end"
+          : "";
     return [
       "div",
       mergeAttributes(HTMLAttributes, { style: wrapperStyle }),
       [
         "div",
-        { "data-youtube-video": "", style: `position:relative;width:${node.attrs.width || 640}px;aspect-ratio:16/9` },
+        {
+          "data-youtube-video": "",
+          style: `position:relative;width:${node.attrs.width || 640}px;aspect-ratio:16/9`,
+        },
         [
           "iframe",
           {
@@ -102,7 +120,8 @@ const ResizableYouTube = YouTube.extend({
             })(),
             allowfullscreen: "true",
             frameborder: "0",
-            allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+            allow:
+              "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
             style: "position:absolute;inset:0;width:100%;height:100%;border:0",
           },
         ],
@@ -118,7 +137,10 @@ const ResizableYouTube = YouTube.extend({
       const iframe = document.createElement("iframe");
       iframe.setAttribute("allowfullscreen", "true");
       iframe.setAttribute("frameborder", "0");
-      iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
+      iframe.setAttribute(
+        "allow",
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture",
+      );
       iframe.style.width = "100%";
       iframe.style.height = "100%";
       iframe.style.position = "absolute";
@@ -184,7 +206,10 @@ const ResizableYouTube = YouTube.extend({
         },
         onUpdate: (updatedNode) => {
           if (updatedNode.type !== node.type) return false;
-          applyAlignmentStyle(nodeView.dom as HTMLElement, updatedNode.attrs.textAlign as string | null);
+          applyAlignmentStyle(
+            nodeView.dom as HTMLElement,
+            updatedNode.attrs.textAlign as string | null,
+          );
           return false;
         },
         options: {
@@ -207,13 +232,15 @@ const ResizableImage = Image.extend({
       ...this.parent?.(),
       width: {
         default: null,
-        parseHTML: (element) => parsePixelValue(element.getAttribute("width") ?? element.style.width),
-        renderHTML: (attributes) => attributes.width ? { width: attributes.width } : {},
+        parseHTML: (element) =>
+          parsePixelValue(element.getAttribute("width") ?? element.style.width),
+        renderHTML: (attributes) => (attributes.width ? { width: attributes.width } : {}),
       },
       height: {
         default: null,
-        parseHTML: (element) => parsePixelValue(element.getAttribute("height") ?? element.style.height),
-        renderHTML: (attributes) => attributes.height ? { height: attributes.height } : {},
+        parseHTML: (element) =>
+          parsePixelValue(element.getAttribute("height") ?? element.style.height),
+        renderHTML: (attributes) => (attributes.height ? { height: attributes.height } : {}),
       },
       textAlign: {
         default: null,
@@ -226,19 +253,21 @@ const ResizableImage = Image.extend({
           if (parent?.style.justifyContent === "flex-end") return "right";
           return null;
         },
-        renderHTML: (attributes) => attributes.textAlign
-          ? { "data-align": attributes.textAlign, style: `text-align:${attributes.textAlign}` }
-          : {},
+        renderHTML: (attributes) =>
+          attributes.textAlign
+            ? { "data-align": attributes.textAlign, style: `text-align:${attributes.textAlign}` }
+            : {},
       },
     };
   },
   renderHTML({ node, HTMLAttributes }) {
     const textAlign = node.attrs.textAlign as string | null;
-    const wrapperStyle = textAlign === "center"
-      ? "display:flex;justify-content:center"
-      : textAlign === "right"
-      ? "display:flex;justify-content:flex-end"
-      : "";
+    const wrapperStyle =
+      textAlign === "center"
+        ? "display:flex;justify-content:center"
+        : textAlign === "right"
+          ? "display:flex;justify-content:flex-end"
+          : "";
     const imgStyle = [
       "border-radius:0.375rem",
       "max-width:100%",
@@ -246,11 +275,22 @@ const ResizableImage = Image.extend({
       textAlign === "center" ? "display:block;margin-left:auto;margin-right:auto" : "",
       textAlign === "right" ? "display:block;margin-left:auto" : "",
       node.attrs.width ? `width:${node.attrs.width}px` : "",
-    ].filter(Boolean).join(";");
+    ]
+      .filter(Boolean)
+      .join(";");
     return [
       "div",
       { style: wrapperStyle, "data-align": textAlign || undefined },
-      ["img", mergeAttributes(HTMLAttributes, { src: node.attrs.src, alt: node.attrs.alt || "", title: node.attrs.title || "", style: imgStyle, "data-align": textAlign || undefined })],
+      [
+        "img",
+        mergeAttributes(HTMLAttributes, {
+          src: node.attrs.src,
+          alt: node.attrs.alt || "",
+          title: node.attrs.title || "",
+          style: imgStyle,
+          "data-align": textAlign || undefined,
+        }),
+      ],
     ];
   },
   addNodeView() {
@@ -304,7 +344,10 @@ const ResizableImage = Image.extend({
         },
         onUpdate: (updatedNode) => {
           if (updatedNode.type !== node.type) return false;
-          applyAlignmentStyle(nodeView.dom as HTMLElement, updatedNode.attrs.textAlign as string | null);
+          applyAlignmentStyle(
+            nodeView.dom as HTMLElement,
+            updatedNode.attrs.textAlign as string | null,
+          );
           return false;
         },
         options: {
@@ -321,7 +364,13 @@ const ResizableImage = Image.extend({
   },
 });
 
-export function RichTextEditor({ value, onChange, placeholder, readOnly, className }: RichTextEditorProps) {
+export function RichTextEditor({
+  value,
+  onChange,
+  placeholder,
+  readOnly,
+  className,
+}: RichTextEditorProps) {
   const [youtubeOpen, setYoutubeOpen] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [youtubeError, setYoutubeError] = useState<string | null>(null);
@@ -367,50 +416,166 @@ export function RichTextEditor({ value, onChange, placeholder, readOnly, classNa
   }, [value, editor]);
 
   return (
-    <div className={cn("border border-input rounded-md flex flex-col max-h-[50vh] overflow-y-auto", className)}>
+    <div
+      className={cn(
+        "border border-input rounded-md flex flex-col max-h-[50vh] overflow-y-auto",
+        className,
+      )}
+    >
       {!readOnly && (
         <div className="flex flex-wrap items-center gap-0.5 p-1.5 border-b border-input bg-muted sticky top-0 z-10 shrink-0">
-          <ToolbarButton onClick={() => editor?.chain().focus().undo().run()} disabled={!editor?.can().undo()} title="Undo"><Undo2 className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().redo().run()} disabled={!editor?.can().redo()} title="Redo"><Redo2 className="h-3.5 w-3.5" /></ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().undo().run()}
+            disabled={!editor?.can().undo()}
+            title="Undo"
+          >
+            <Undo2 className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().redo().run()}
+            disabled={!editor?.can().redo()}
+            title="Redo"
+          >
+            <Redo2 className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
           <Divider />
 
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleBold().run()} active={editor?.isActive("bold")} title="Bold"><Bold className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleItalic().run()} active={editor?.isActive("italic")} title="Italic"><Italic className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleStrike().run()} active={editor?.isActive("strike")} title="Strikethrough"><Strikethrough className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleCode().run()} active={editor?.isActive("code")} title="Inline code"><Code className="h-3.5 w-3.5" /></ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleBold().run()}
+            active={editor?.isActive("bold")}
+            title="Bold"
+          >
+            <Bold className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleItalic().run()}
+            active={editor?.isActive("italic")}
+            title="Italic"
+          >
+            <Italic className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleStrike().run()}
+            active={editor?.isActive("strike")}
+            title="Strikethrough"
+          >
+            <Strikethrough className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleCode().run()}
+            active={editor?.isActive("code")}
+            title="Inline code"
+          >
+            <Code className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
           <Divider />
 
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()} active={editor?.isActive("heading", { level: 1 })} title="Heading 1"><Heading1 className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} active={editor?.isActive("heading", { level: 2 })} title="Heading 2"><Heading2 className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()} active={editor?.isActive("heading", { level: 3 })} title="Heading 3"><Heading3 className="h-3.5 w-3.5" /></ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+            active={editor?.isActive("heading", { level: 1 })}
+            title="Heading 1"
+          >
+            <Heading1 className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
+            active={editor?.isActive("heading", { level: 2 })}
+            title="Heading 2"
+          >
+            <Heading2 className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 3 }).run()}
+            active={editor?.isActive("heading", { level: 3 })}
+            title="Heading 3"
+          >
+            <Heading3 className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
           <Divider />
 
-          <ToolbarButton onClick={() => editor?.chain().focus().setTextAlign("left").run()} active={editor?.isActive({ textAlign: "left" })} title="Align left"><AlignLeft className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().setTextAlign("center").run()} active={editor?.isActive({ textAlign: "center" })} title="Align center"><AlignCenter className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().setTextAlign("right").run()} active={editor?.isActive({ textAlign: "right" })} title="Align right"><AlignRight className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().setTextAlign("justify").run()} active={editor?.isActive({ textAlign: "justify" })} title="Justify"><AlignJustify className="h-3.5 w-3.5" /></ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().setTextAlign("left").run()}
+            active={editor?.isActive({ textAlign: "left" })}
+            title="Align left"
+          >
+            <AlignLeft className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().setTextAlign("center").run()}
+            active={editor?.isActive({ textAlign: "center" })}
+            title="Align center"
+          >
+            <AlignCenter className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().setTextAlign("right").run()}
+            active={editor?.isActive({ textAlign: "right" })}
+            title="Align right"
+          >
+            <AlignRight className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().setTextAlign("justify").run()}
+            active={editor?.isActive({ textAlign: "justify" })}
+            title="Justify"
+          >
+            <AlignJustify className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
           <Divider />
 
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleBulletList().run()} active={editor?.isActive("bulletList")} title="Bullet list"><List className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleOrderedList().run()} active={editor?.isActive("orderedList")} title="Ordered list"><ListOrdered className="h-3.5 w-3.5" /></ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleBulletList().run()}
+            active={editor?.isActive("bulletList")}
+            title="Bullet list"
+          >
+            <List className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+            active={editor?.isActive("orderedList")}
+            title="Ordered list"
+          >
+            <ListOrdered className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
           <Divider />
 
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleBlockquote().run()} active={editor?.isActive("blockquote")} title="Blockquote"><Quote className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().toggleCodeBlock().run()} active={editor?.isActive("codeBlock")} title="Code block"><Code2 className="h-3.5 w-3.5" /></ToolbarButton>
-          <ToolbarButton onClick={() => editor?.chain().focus().setHorizontalRule().run()} title="Horizontal rule"><Minus className="h-3.5 w-3.5" /></ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+            active={editor?.isActive("blockquote")}
+            title="Blockquote"
+          >
+            <Quote className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+            active={editor?.isActive("codeBlock")}
+            title="Code block"
+          >
+            <Code2 className="h-3.5 w-3.5" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor?.chain().focus().setHorizontalRule().run()}
+            title="Horizontal rule"
+          >
+            <Minus className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
           <Divider />
 
-          <ToolbarButton onClick={() => setYoutubeOpen(true)} title="Embed YouTube video"><Youtube className="h-3.5 w-3.5" /></ToolbarButton>
+          <ToolbarButton onClick={() => setYoutubeOpen(true)} title="Embed YouTube video">
+            <Youtube className="h-3.5 w-3.5" />
+          </ToolbarButton>
 
           <Divider />
 
-          <ToolbarButton onClick={() => setImageOpen(true)} title="Insert image"><ImageIcon className="h-3.5 w-3.5" /></ToolbarButton>
+          <ToolbarButton onClick={() => setImageOpen(true)} title="Insert image">
+            <ImageIcon className="h-3.5 w-3.5" />
+          </ToolbarButton>
         </div>
       )}
       <EditorContent
@@ -436,14 +601,18 @@ export function RichTextEditor({ value, onChange, placeholder, readOnly, classNa
           "[&_[data-resize-handle='bottom-right']]:-bottom-1.5 [&_[data-resize-handle='bottom-right']]:-right-1.5 [&_[data-resize-handle='bottom-right']]:cursor-se-resize",
           "[&_[data-resize-handle='bottom-left']]:-bottom-1.5 [&_[data-resize-handle='bottom-left']]:-right-auto [&_[data-resize-handle='bottom-left']]:-left-1.5 [&_[data-resize-handle='bottom-left']]:cursor-sw-resize",
           "[&_.ProseMirror_p]:my-1",
-          placeholder && "[&_.ProseMirror.is-editor-empty:first-child::before]:content-[var(--placeholder)]",
-          placeholder && "[&_.ProseMirror.is-editor-empty:first-child::before]:text-muted-foreground",
+          placeholder &&
+            "[&_.ProseMirror.is-editor-empty:first-child::before]:content-[var(--placeholder)]",
+          placeholder &&
+            "[&_.ProseMirror.is-editor-empty:first-child::before]:text-muted-foreground",
           placeholder && "[&_.ProseMirror.is-editor-empty:first-child::before]:pointer-events-none",
           placeholder && "[&_.ProseMirror.is-editor-empty:first-child::before]:float-left",
           placeholder && "[&_.ProseMirror.is-editor-empty:first-child::before]:h-0",
           readOnly && "bg-muted/20",
         )}
-        style={placeholder ? { "--placeholder": `"${placeholder}"` } as React.CSSProperties : undefined}
+        style={
+          placeholder ? ({ "--placeholder": `"${placeholder}"` } as React.CSSProperties) : undefined
+        }
       />
 
       <Dialog open={youtubeOpen} onOpenChange={setYoutubeOpen}>
@@ -458,11 +627,7 @@ export function RichTextEditor({ value, onChange, placeholder, readOnly, classNa
                 setYoutubeError("Enter a valid YouTube URL.");
                 return;
               }
-              editor
-                ?.chain()
-                .focus()
-                .setYoutubeVideo({ src: youtubeUrl.trim() })
-                .run();
+              editor?.chain().focus().setYoutubeVideo({ src: youtubeUrl.trim() }).run();
               setYoutubeUrl("");
               setYoutubeOpen(false);
             }}
@@ -484,21 +649,30 @@ export function RichTextEditor({ value, onChange, placeholder, readOnly, classNa
               {youtubeError ? <p className="text-xs text-destructive">{youtubeError}</p> : null}
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setYoutubeOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={!editor || !youtubeUrl.trim()}>Embed</Button>
+              <Button type="button" variant="outline" onClick={() => setYoutubeOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!editor || !youtubeUrl.trim()}>
+                Embed
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={imageOpen} onOpenChange={(open) => {
-        setImageOpen(open);
-        if (!open) setImageUrl(null);
-      }}>
+      <Dialog
+        open={imageOpen}
+        onOpenChange={(open) => {
+          setImageOpen(open);
+          if (!open) setImageUrl(null);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Insert image</DialogTitle>
-            <DialogDescription>Upload an image or paste a URL to embed it in the editor.</DialogDescription>
+            <DialogDescription>
+              Upload an image or paste a URL to embed it in the editor.
+            </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <ImageUpload
@@ -508,7 +682,16 @@ export function RichTextEditor({ value, onChange, placeholder, readOnly, classNa
             />
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => { setImageOpen(false); setImageUrl(null); }}>Cancel</Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setImageOpen(false);
+                setImageUrl(null);
+              }}
+            >
+              Cancel
+            </Button>
             <Button
               type="button"
               disabled={!editor || !imageUrl}
@@ -554,7 +737,9 @@ function ToolbarButton({
       disabled={disabled}
       className={cn(
         "p-1.5 rounded transition-colors",
-        active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        active
+          ? "bg-primary text-primary-foreground"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
         disabled && "opacity-30 pointer-events-none",
       )}
     >

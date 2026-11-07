@@ -12,13 +12,17 @@ const contactSchema = z.object({
 });
 
 function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-  })[c] ?? c);
+  return value.replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[c] ?? c,
+  );
 }
 
 function escapeAttribute(value: string): string {
@@ -58,10 +62,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   try {
     payload = await request.json();
   } catch {
-    return withCors(
-      request,
-      NextResponse.json({ error: "Invalid JSON body." }, { status: 400 }),
-    );
+    return withCors(request, NextResponse.json({ error: "Invalid JSON body." }, { status: 400 }));
   }
 
   const parsed = contactSchema.safeParse(payload);

@@ -8,7 +8,9 @@ type OpenGraphImageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function OpenGraphImage({ params }: OpenGraphImageProps): Promise<ImageResponse> {
+export default async function OpenGraphImage({
+  params,
+}: OpenGraphImageProps): Promise<ImageResponse> {
   const { locale } = await params;
 
   return renderOgImage(locale);

@@ -18,8 +18,8 @@ export function createAuthOptions(adapter: AuthAdapter): NextAuthOptions {
   return {
     session: {
       strategy: "jwt",
-      maxAge: 24 * 60 * 60,      // 24 hours
-      updateAge: 60 * 60,        // re-issue JWT once per hour if active
+      maxAge: 24 * 60 * 60, // 24 hours
+      updateAge: 60 * 60, // re-issue JWT once per hour if active
     },
     pages: {
       signIn: "/auth/signin",

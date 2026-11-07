@@ -61,13 +61,16 @@ export function resolveAssetUrl(value: string | null | undefined): string | unde
 export async function getFrontPageSettings(locale: "id" | "en"): Promise<FrontPageSettings> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.frontPageSettings.get?input=${input}`, fetchNextOptions(["public:frontPageSettings"]));
+    const response = await fetch(
+      `${apiOrigin()}/api/trpc/public.frontPageSettings.get?input=${input}`,
+      fetchNextOptions(["public:frontPageSettings"]),
+    );
 
     if (!response.ok) {
       return {};
     }
 
-    const payload = await response.json() as {
+    const payload = (await response.json()) as {
       result?: { data?: { json?: FrontPageSettings } };
     };
 

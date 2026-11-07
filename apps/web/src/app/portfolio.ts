@@ -26,11 +26,14 @@ function apiOrigin(): string {
 export async function getPortfolios(locale: "id" | "en"): Promise<PortfolioItem[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.portfolio.list?input=${input}`, fetchNextOptions(["public:portfolio"]));
+    const response = await fetch(
+      `${apiOrigin()}/api/trpc/public.portfolio.list?input=${input}`,
+      fetchNextOptions(["public:portfolio"]),
+    );
     if (!response.ok) {
       return [];
     }
-    const payload = await response.json() as { result?: { data?: { json?: PortfolioItem[] } } };
+    const payload = (await response.json()) as { result?: { data?: { json?: PortfolioItem[] } } };
     return payload.result?.data?.json ?? [];
   } catch {
     return [];

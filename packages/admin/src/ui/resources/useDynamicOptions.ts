@@ -13,7 +13,11 @@ interface ModelWithOptions {
     useQuery: (
       input: undefined,
       opts: { enabled: boolean; refetchOnMount: "always" | boolean; gcTime: number },
-    ) => { data?: Record<string, Array<{ value: string; label: string }>>; isLoading: boolean; isError: boolean };
+    ) => {
+      data?: Record<string, Array<{ value: string; label: string }>>;
+      isLoading: boolean;
+      isError: boolean;
+    };
   };
 }
 

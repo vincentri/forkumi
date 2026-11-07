@@ -11,7 +11,8 @@ export function prismaModelKey(model: string): string {
 
 function relationSelectFields(config: CRUDConfig): CRUDFieldSelect[] {
   return config.fields.filter(
-    (f): f is CRUDFieldSelect => f.type === "select" && !!(f as CRUDFieldSelect).multiple && !!(f as CRUDFieldSelect).relation,
+    (f): f is CRUDFieldSelect =>
+      f.type === "select" && !!(f as CRUDFieldSelect).multiple && !!(f as CRUDFieldSelect).relation,
   );
 }
 
@@ -31,7 +32,8 @@ export function buildRelationInclude(config: CRUDConfig): Record<string, unknown
   const relFields = relationSelectFields(config);
   const schedFields = scheduleFields(config);
   const galleryFlds = galleryFields(config);
-  if (relFields.length === 0 && schedFields.length === 0 && galleryFlds.length === 0) return undefined;
+  if (relFields.length === 0 && schedFields.length === 0 && galleryFlds.length === 0)
+    return undefined;
   return {
     ...Object.fromEntries(
       relFields.map((f) => {
@@ -43,8 +45,12 @@ export function buildRelationInclude(config: CRUDConfig): Record<string, unknown
         return [f.relation!.field, { select: { id: true } }];
       }),
     ),
-    ...Object.fromEntries(schedFields.map((f) => [f.name, { orderBy: { dayOfWeek: "asc" as const } }])),
-    ...Object.fromEntries(galleryFlds.map((f) => [f.name, { orderBy: { position: "asc" as const } }])),
+    ...Object.fromEntries(
+      schedFields.map((f) => [f.name, { orderBy: { dayOfWeek: "asc" as const } }]),
+    ),
+    ...Object.fromEntries(
+      galleryFlds.map((f) => [f.name, { orderBy: { position: "asc" as const } }]),
+    ),
   };
 }
 
@@ -52,7 +58,10 @@ export function buildRelationInclude(config: CRUDConfig): Record<string, unknown
  * Convert a Prisma row's relation `include` data into the ID arrays the frontend
  * expects. E.g. `{ tags: [{ id: "1" }, { id: "2" }] }` → `{ tagIds: ["1","2"] }`.
  */
-export function flattenRelations(config: CRUDConfig, row: Record<string, unknown>): Record<string, unknown> {
+export function flattenRelations(
+  config: CRUDConfig,
+  row: Record<string, unknown>,
+): Record<string, unknown> {
   const relFields = relationSelectFields(config);
   if (relFields.length === 0) return row;
   const result = { ...row };
@@ -62,14 +71,18 @@ export function flattenRelations(config: CRUDConfig, row: Record<string, unknown
       const joinThatField = field.relation!.model + "Id";
       const relValue = result[joinAccessor];
       if (Array.isArray(relValue)) {
-        result[field.name] = relValue.map((r: Record<string, unknown>) => String(r[joinThatField] ?? "")).filter(Boolean);
+        result[field.name] = relValue
+          .map((r: Record<string, unknown>) => String(r[joinThatField] ?? ""))
+          .filter(Boolean);
       }
       delete result[joinAccessor];
     } else {
       const relKey = field.relation!.field;
       const relValue = result[relKey];
       if (Array.isArray(relValue)) {
-        result[field.name] = relValue.map((r: Record<string, unknown>) => String(r.id ?? "")).filter(Boolean);
+        result[field.name] = relValue
+          .map((r: Record<string, unknown>) => String(r.id ?? ""))
+          .filter(Boolean);
       }
       delete result[relKey];
     }
@@ -94,7 +107,9 @@ export function applyRelationWrites(
     if (!sel.multiple || !sel.relation) continue;
     const ids = result[sel.name];
     delete result[sel.name];
-    const idArray = Array.isArray(ids) ? ids.filter((v): v is string => typeof v === "string" && v !== "") : [];
+    const idArray = Array.isArray(ids)
+      ? ids.filter((v): v is string => typeof v === "string" && v !== "")
+      : [];
     if (sel.relation.through) {
       const joinAccessor = sel.relation.through + "s";
       const joinThatField = sel.relation.model + "Id";

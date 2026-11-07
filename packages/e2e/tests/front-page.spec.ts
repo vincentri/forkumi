@@ -1,8 +1,5 @@
 import { test, expect } from "@playwright/test";
-import {
-  saveKeyValuePage,
-  switchTab,
-} from "../helpers/crud";
+import { saveKeyValuePage, switchTab } from "../helpers/crud";
 
 test.describe("Front Page Settings (keyValue)", () => {
   let siteNameBefore: string;
@@ -24,7 +21,11 @@ test.describe("Front Page Settings (keyValue)", () => {
   });
 
   test("page renders with tabs", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: /front page/i }).or(page.getByRole("heading", { name: /settings/i }))).toBeVisible();
+    await expect(
+      page
+        .getByRole("heading", { name: /front page/i })
+        .or(page.getByRole("heading", { name: /settings/i })),
+    ).toBeVisible();
     await expect(page.getByRole("tab").first()).toBeVisible();
   });
 

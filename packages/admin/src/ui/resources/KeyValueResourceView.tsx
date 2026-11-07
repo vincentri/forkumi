@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { KeyValuePage, type CRUDConfig } from "@repo/crud";
-import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, toast } from "@repo/ui";
+import {
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  toast,
+} from "@repo/ui";
 import { getErrorMessage } from "../lib/getErrorMessage";
 import { SettingsEmailSecretPanel } from "./SettingsEmailSecretPanel";
 import { ClearCachePanel } from "./ClearCachePanel";
@@ -37,7 +45,10 @@ export function KeyValueResourceView({ config, m, permissions, isProtectedRole }
   });
   // oxlint-disable-next-line typescript/no-explicit-any
   const updateMutation = (m as any).update.useMutation();
-  const canUpdate = isProtectedRole || permissions.includes(`${config.model}:update`) || permissions.includes("*:update");
+  const canUpdate =
+    isProtectedRole ||
+    permissions.includes(`${config.model}:update`) ||
+    permissions.includes("*:update");
 
   const { runtimeConfig, optionsLoading } = useDynamicOptions(config, m);
 
@@ -77,10 +88,7 @@ export function KeyValueResourceView({ config, m, permissions, isProtectedRole }
           config.model === "settings"
             ? {
                 Email: (values) => (
-                  <SettingsEmailSecretPanel
-                    canUpdate={canUpdate}
-                    enabled={values.emailEnabled}
-                  />
+                  <SettingsEmailSecretPanel canUpdate={canUpdate} enabled={values.emailEnabled} />
                 ),
               }
             : config.model === "frontPageSettings"

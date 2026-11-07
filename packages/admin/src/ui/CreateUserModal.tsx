@@ -70,7 +70,12 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
   }
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) handleClose();
+      }}
+    >
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>New user</DialogTitle>
@@ -79,7 +84,9 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-2" noValidate>
           <div className="space-y-1.5">
-            <Label htmlFor="cu-name" className="text-sm font-medium">Name</Label>
+            <Label htmlFor="cu-name" className="text-sm font-medium">
+              Name
+            </Label>
             <Input
               id="cu-name"
               type="text"
@@ -93,7 +100,9 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cu-email" className="text-sm font-medium">Email</Label>
+            <Label htmlFor="cu-email" className="text-sm font-medium">
+              Email
+            </Label>
             <Input
               id="cu-email"
               type="email"
@@ -103,11 +112,15 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
               autoComplete="email"
               disabled={isSubmitting}
             />
-            {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cu-password" className="text-sm font-medium">Password</Label>
+            <Label htmlFor="cu-password" className="text-sm font-medium">
+              Password
+            </Label>
             <Input
               id="cu-password"
               type="password"
@@ -116,11 +129,15 @@ export function CreateUserModal({ open, onClose, onSuccess }: CreateUserModalPro
               autoComplete="new-password"
               disabled={isSubmitting}
             />
-            {errors.password && <p className="text-xs text-destructive mt-1">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-xs text-destructive mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cu-confirm" className="text-sm font-medium">Confirm password</Label>
+            <Label htmlFor="cu-confirm" className="text-sm font-medium">
+              Confirm password
+            </Label>
             <Input
               id="cu-confirm"
               type="password"

@@ -25,6 +25,9 @@ export function isFieldVisible(field: CRUDField, values: Record<string, unknown>
   return true;
 }
 
-export function visibleFieldsForValues(fields: CRUDField[], values: Record<string, unknown>): CRUDField[] {
+export function visibleFieldsForValues(
+  fields: CRUDField[],
+  values: Record<string, unknown>,
+): CRUDField[] {
   return fields.filter((field) => isFieldVisible(field, values));
 }

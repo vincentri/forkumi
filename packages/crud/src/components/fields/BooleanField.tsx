@@ -16,11 +16,7 @@ export function BooleanField({ field, control }: Props) {
       name={field.name}
       control={control}
       render={({ field: f }) => (
-        <Switch
-          id={field.name}
-          checked={!!f.value}
-          onCheckedChange={f.onChange}
-        />
+        <Switch id={field.name} checked={!!f.value} onCheckedChange={f.onChange} />
       )}
     />
   );

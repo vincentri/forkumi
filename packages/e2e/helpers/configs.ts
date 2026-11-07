@@ -47,10 +47,6 @@ export const tableEntries = ALL_ENTRIES.filter(
   (entry) => entry.mode === "crud" && entry.tableFields.length > 0,
 );
 
-export const readOnlyEntries = ALL_ENTRIES.filter(
-  (entry) => entry.config.readOnly === true,
-);
+export const readOnlyEntries = ALL_ENTRIES.filter((entry) => entry.config.readOnly === true);
 
-export const keyValueEntries = ALL_ENTRIES.filter(
-  (entry) => entry.mode === "keyValue",
-);
+export const keyValueEntries = ALL_ENTRIES.filter((entry) => entry.mode === "keyValue");

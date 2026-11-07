@@ -18,11 +18,14 @@ type ServicesPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-const SVC_DEFAULTS: Record<"id" | "en", {
-  h1Line1: string;
-  h1Line2: string;
-  lead: string;
-}> = {
+const SVC_DEFAULTS: Record<
+  "id" | "en",
+  {
+    h1Line1: string;
+    h1Line2: string;
+    lead: string;
+  }
+> = {
   en: {
     h1Line1: "What we",
     h1Line2: "deliver",
@@ -35,11 +38,14 @@ const SVC_DEFAULTS: Record<"id" | "en", {
   },
 };
 
-const CATALOG_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-}> = {
+const CATALOG_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+  }
+> = {
   en: {
     eye: "Full Services",
     headLine1: "Every design need,",
@@ -52,12 +58,15 @@ const CATALOG_DEFAULTS: Record<"id" | "en", {
   },
 };
 
-const IND_DEFAULTS: Record<"id" | "en", {
-  eye: string;
-  headLine1: string;
-  headLine2: string;
-  intro: string;
-}> = {
+const IND_DEFAULTS: Record<
+  "id" | "en",
+  {
+    eye: string;
+    headLine1: string;
+    headLine2: string;
+    intro: string;
+  }
+> = {
   en: {
     eye: "Industries",
     headLine1: "Industries",
@@ -97,8 +106,10 @@ export default async function ServicesPage({ params }: ServicesPageProps): Promi
 
   const indDef = IND_DEFAULTS[locale];
   const indEye = firstValue(settings.servicesIndustriesEye, indDef.eye) ?? indDef.eye;
-  const indL1 = firstValue(settings.servicesIndustriesHeadLine1, indDef.headLine1) ?? indDef.headLine1;
-  const indL2 = firstValue(settings.servicesIndustriesHeadLine2, indDef.headLine2) ?? indDef.headLine2;
+  const indL1 =
+    firstValue(settings.servicesIndustriesHeadLine1, indDef.headLine1) ?? indDef.headLine1;
+  const indL2 =
+    firstValue(settings.servicesIndustriesHeadLine2, indDef.headLine2) ?? indDef.headLine2;
   const indHl = Number.parseInt(settings.servicesIndustriesHeadHighlightIndex ?? "1", 10);
   const indIntro = firstValue(settings.servicesIndustriesIntro, indDef.intro) ?? indDef.intro;
 
@@ -107,8 +118,20 @@ export default async function ServicesPage({ params }: ServicesPageProps): Promi
   return (
     <>
       <section className="page-hero">
-        <img className="sparkle" src="/assets/img/sparkle_purple.png" style={{ top: "40%", right: "8%", width: "46px" }} data-d="0.5" alt="" />
-        <img className="sparkle" src="/assets/img/sparkle_gold_bright.png" style={{ bottom: "14%", right: "22%", width: "30px" }} data-d="0.8" alt="" />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_purple.png"
+          style={{ top: "40%", right: "8%", width: "46px" }}
+          data-d="0.5"
+          alt=""
+        />
+        <img
+          className="sparkle"
+          src="/assets/img/sparkle_gold_bright.png"
+          style={{ bottom: "14%", right: "22%", width: "30px" }}
+          data-d="0.8"
+          alt=""
+        />
         <div className="wrap">
           <Breadcrumb locale={locale} current={PAGE_LABEL[locale]} />
           <h1>
@@ -178,7 +201,9 @@ export default async function ServicesPage({ params }: ServicesPageProps): Promi
                   <div className="tag">
                     <span className="txt">{item.tag}</span>
                     <span className="go">
-                      <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                      <svg viewBox="0 0 24 24">
+                        <path d="M5 12h14M13 6l6 6-6 6" />
+                      </svg>
                     </span>
                   </div>
                 </div>

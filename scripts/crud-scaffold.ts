@@ -18,7 +18,13 @@ import { resolve, join } from "path";
 import { pathToFileURL } from "url";
 import { spawnSync } from "child_process";
 import { config as dotenvConfig } from "dotenv";
-import type { CRUDConfig, CRUDFieldGallery, CRUDFieldSchedule, CRUDFieldSelect, FieldType } from "../packages/crud/src/types";
+import type {
+  CRUDConfig,
+  CRUDFieldGallery,
+  CRUDFieldSchedule,
+  CRUDFieldSelect,
+  FieldType,
+} from "../packages/crud/src/types";
 
 const RESERVED_FIELDS = new Set(["id", "createdAt", "updatedAt"]);
 
@@ -81,16 +87,16 @@ function fkFieldToRelationName(fieldName: string): string {
 /** Build the explicit join model block for a many-to-many relation with `through` set */
 function buildJoinModel(config: CRUDConfig, relField: CRUDFieldSelect): string {
   const through = relField.relation!.through!;
-  const joinModelName = toPascalCase(through);                       // "BlogTag"
-  const sourceModelName = toPascalCase(config.model);                // "Blog"
-  const targetModelName = toPascalCase(relField.relation!.model);    // "Tag"
-  const joinTableName = toSnakePlural(through);                      // "blog_tags"
-  const joinThisField = config.model + "Id";                         // "blogId"
-  const joinThatField = relField.relation!.model + "Id";             // "tagId"
-  const snakeThisField = toSnakeCase(joinThisField);                 // "blog_id"
-  const snakeThatField = toSnakeCase(joinThatField);                 // "tag_id"
-  const sourceAccessor = config.model;                               // "blog"
-  const targetAccessor = relField.relation!.model;                   // "tag"
+  const joinModelName = toPascalCase(through); // "BlogTag"
+  const sourceModelName = toPascalCase(config.model); // "Blog"
+  const targetModelName = toPascalCase(relField.relation!.model); // "Tag"
+  const joinTableName = toSnakePlural(through); // "blog_tags"
+  const joinThisField = config.model + "Id"; // "blogId"
+  const joinThatField = relField.relation!.model + "Id"; // "tagId"
+  const snakeThisField = toSnakeCase(joinThisField); // "blog_id"
+  const snakeThatField = toSnakeCase(joinThatField); // "tag_id"
+  const sourceAccessor = config.model; // "blog"
+  const targetAccessor = relField.relation!.model; // "tag"
 
   const pad = (name: string) => name + " ".repeat(Math.max(2, 8 - name.length));
   return [
@@ -107,7 +113,7 @@ function buildJoinModel(config: CRUDConfig, relField: CRUDFieldSelect): string {
 }
 
 function formatDefault(value: unknown, prismaType: string): string {
-  if (value === "now" && (prismaType === "DateTime")) return "@default(now())";
+  if (value === "now" && prismaType === "DateTime") return "@default(now())";
   if (typeof value === "string") return `@default("${value}")`;
   if (typeof value === "boolean") return `@default(${value})`;
   if (typeof value === "number") return `@default(${value})`;
@@ -269,12 +275,14 @@ function buildPrismaModel(config: CRUDConfig): string {
         lines.push(`  ${field.name}${colPadding}${typeStr}${mapStr}`);
 
         // Emit the @relation line: e.g. blogCategory BlogCategory? @relation(...)
-        const relName = fkFieldToRelationName(field.name);  // "blogCategory"
+        const relName = fkFieldToRelationName(field.name); // "blogCategory"
         const relModel = toPascalCase(sel.optionsFrom.model); // "BlogCategory"
         const relType = optional ? `${relModel}?` : relModel;
         const relPadding = " ".repeat(Math.max(1, 10 - relName.length));
         const onDelete = optional ? ", onDelete: SetNull" : "";
-        lines.push(`  ${relName}${relPadding}${relType} @relation(fields: [${field.name}], references: [id]${onDelete})`);
+        lines.push(
+          `  ${relName}${relPadding}${relType} @relation(fields: [${field.name}], references: [id]${onDelete})`,
+        );
         continue;
       }
     }
@@ -341,7 +349,9 @@ async function main() {
   try {
     const mod = await import(pathToFileURL(configPath).href);
     const exportName = `${toPascalCase(model)}CRUD`;
-    config = mod[exportName] ?? Object.values(mod).find((v) => v && typeof v === "object" && "model" in (v as object));
+    config =
+      mod[exportName] ??
+      Object.values(mod).find((v) => v && typeof v === "object" && "model" in (v as object));
     if (!config) {
       console.error(
         `Error: Could not find a CRUDConfig export in ${configPath}.\n` +
@@ -358,7 +368,9 @@ async function main() {
   }
 
   if (!config.fields || config.fields.length === 0) {
-    console.error("Error: defineCRUD config has no fields. Add at least one field before scaffolding.");
+    console.error(
+      "Error: defineCRUD config has no fields. Add at least one field before scaffolding.",
+    );
     process.exit(1);
   }
 
@@ -371,8 +383,8 @@ async function main() {
     if (missingNamespace.length > 0) {
       console.error(
         `Error: keyValue fields must have a namespace.\n` +
-        `Missing namespace on: ${missingNamespace.map((f) => `"${f.name}"`).join(", ")}\n` +
-        `Add namespace: "..." to each field in your defineCRUD config.`,
+          `Missing namespace on: ${missingNamespace.map((f) => `"${f.name}"`).join(", ")}\n` +
+          `Add namespace: "..." to each field in your defineCRUD config.`,
       );
       process.exit(1);
     }
@@ -382,10 +394,7 @@ async function main() {
   let updatedSchema = readFileSync(schemaPath, "utf-8");
   const modelBlock = isKeyValue ? buildKeyValuePrismaModel(config) : buildPrismaModel(config);
 
-  const existingModelRegex = new RegExp(
-    `(^model\\s+${modelName}\\s*\\{[^}]*\\})`,
-    "ms",
-  );
+  const existingModelRegex = new RegExp(`(^model\\s+${modelName}\\s*\\{[^}]*\\})`, "ms");
 
   if (existingModelRegex.test(updatedSchema)) {
     updatedSchema = updatedSchema.replace(existingModelRegex, modelBlock);
@@ -405,12 +414,12 @@ async function main() {
 
   for (const relField of relationFields) {
     const sel = relField as CRUDFieldSelect;
-    const targetModelName = toPascalCase(sel.relation!.model);   // e.g. "Tag"
+    const targetModelName = toPascalCase(sel.relation!.model); // e.g. "Tag"
 
     if (sel.relation!.through) {
       // Explicit join model: inject join model into schema + back-relation on target model
-      const joinModelName = toPascalCase(sel.relation!.through);  // "BlogTag"
-      const joinAccessor = sel.relation!.through + "s";            // "blogTags"
+      const joinModelName = toPascalCase(sel.relation!.through); // "BlogTag"
+      const joinAccessor = sel.relation!.through + "s"; // "blogTags"
 
       // 1. Append join model if not already present
       updatedSchema = readFileSync(schemaPath, "utf-8");
@@ -419,7 +428,9 @@ async function main() {
         const joinModelBlock = buildJoinModel(config, sel);
         updatedSchema = updatedSchema.trimEnd() + "\n\n" + joinModelBlock + "\n";
         writeFileSync(schemaPath, updatedSchema, "utf-8");
-        console.log(`✓  Added join model ${joinModelName} (@@map("${toSnakePlural(sel.relation!.through)}")) to schema.prisma`);
+        console.log(
+          `✓  Added join model ${joinModelName} (@@map("${toSnakePlural(sel.relation!.through)}")) to schema.prisma`,
+        );
       } else {
         console.log(`⚠  Join model ${joinModelName} already in schema.prisma — skipping.`);
       }
@@ -428,23 +439,32 @@ async function main() {
       updatedSchema = readFileSync(schemaPath, "utf-8");
       const targetModelRegex = new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*\\}`, "ms");
       if (!targetModelRegex.test(updatedSchema)) {
-        console.warn(`⚠  Target model ${targetModelName} not found in schema.prisma — add back-relation ${joinAccessor} ${joinModelName}[] manually.`);
+        console.warn(
+          `⚠  Target model ${targetModelName} not found in schema.prisma — add back-relation ${joinAccessor} ${joinModelName}[] manually.`,
+        );
         continue;
       }
-      if (updatedSchema.match(new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*${joinModelName}\\[\\]`, "ms"))) {
-        console.log(`⚠  Back-relation ${joinAccessor} ${joinModelName}[] already in model ${targetModelName} — skipping.`);
+      if (
+        updatedSchema.match(
+          new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*${joinModelName}\\[\\]`, "ms"),
+        )
+      ) {
+        console.log(
+          `⚠  Back-relation ${joinAccessor} ${joinModelName}[] already in model ${targetModelName} — skipping.`,
+        );
         continue;
       }
       const padding = " ".repeat(Math.max(1, 10 - joinAccessor.length));
       const backRelLine = `  ${joinAccessor}${padding}${joinModelName}[]`;
       updatedSchema = insertIntoModelBlock(updatedSchema, targetModelName, backRelLine);
       writeFileSync(schemaPath, updatedSchema, "utf-8");
-      console.log(`✓  Added back-relation ${joinAccessor} ${joinModelName}[] to model ${targetModelName}`);
-
+      console.log(
+        `✓  Added back-relation ${joinAccessor} ${joinModelName}[] to model ${targetModelName}`,
+      );
     } else {
       // Implicit m2m: inject back-relation pointing directly at source model
-      const backRelField = toSnakePlural(config.model);             // e.g. "blogs"
-      const sourceModelName = toPascalCase(config.model);           // e.g. "Blog"
+      const backRelField = toSnakePlural(config.model); // e.g. "blogs"
+      const sourceModelName = toPascalCase(config.model); // e.g. "Blog"
       const padding = " ".repeat(Math.max(1, 10 - backRelField.length));
       const backRelLine = `  ${backRelField}${padding}${sourceModelName}[]`;
 
@@ -452,25 +472,37 @@ async function main() {
 
       const targetModelRegex = new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*\\}`, "ms");
       if (!targetModelRegex.test(updatedSchema)) {
-        console.warn(`⚠  Target model ${targetModelName} not found in schema.prisma — add back-relation ${backRelField} ${sourceModelName}[] manually.`);
+        console.warn(
+          `⚠  Target model ${targetModelName} not found in schema.prisma — add back-relation ${backRelField} ${sourceModelName}[] manually.`,
+        );
         continue;
       }
 
-      if (updatedSchema.match(new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*${sourceModelName}\\[\\]`, "ms"))) {
-        console.log(`⚠  Back-relation ${backRelField} ${sourceModelName}[] already in model ${targetModelName} — skipping.`);
+      if (
+        updatedSchema.match(
+          new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*${sourceModelName}\\[\\]`, "ms"),
+        )
+      ) {
+        console.log(
+          `⚠  Back-relation ${backRelField} ${sourceModelName}[] already in model ${targetModelName} — skipping.`,
+        );
         continue;
       }
 
       updatedSchema = insertIntoModelBlock(updatedSchema, targetModelName, backRelLine);
       writeFileSync(schemaPath, updatedSchema, "utf-8");
-      console.log(`✓  Added back-relation ${backRelField} ${sourceModelName}[] to model ${targetModelName}`);
+      console.log(
+        `✓  Added back-relation ${backRelField} ${sourceModelName}[] to model ${targetModelName}`,
+      );
     }
   }
 
   // --- Patch back-relations into target models for single-select FKs (optionsFrom) ---
   const fkFields = config.fields.filter(
     (f): f is CRUDFieldSelect =>
-      f.type === "select" && !!(f as CRUDFieldSelect).optionsFrom && !(f as CRUDFieldSelect).multiple,
+      f.type === "select" &&
+      !!(f as CRUDFieldSelect).optionsFrom &&
+      !(f as CRUDFieldSelect).multiple,
   );
 
   for (const fkField of fkFields) {
@@ -482,24 +514,32 @@ async function main() {
     updatedSchema = readFileSync(schemaPath, "utf-8");
     const targetModelRegex = new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*\\}`, "ms");
     if (!targetModelRegex.test(updatedSchema)) {
-      console.warn(`⚠  Target model ${targetModelName} not found in schema.prisma — add back-relation ${backRelField} ${sourceModelName}[] manually.`);
+      console.warn(
+        `⚠  Target model ${targetModelName} not found in schema.prisma — add back-relation ${backRelField} ${sourceModelName}[] manually.`,
+      );
       continue;
     }
-    if (updatedSchema.match(new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*${sourceModelName}\\[\\]`, "ms"))) {
-      console.log(`⚠  Back-relation ${backRelField} ${sourceModelName}[] already in model ${targetModelName} — skipping.`);
+    if (
+      updatedSchema.match(
+        new RegExp(`model\\s+${targetModelName}\\s*\\{[^}]*${sourceModelName}\\[\\]`, "ms"),
+      )
+    ) {
+      console.log(
+        `⚠  Back-relation ${backRelField} ${sourceModelName}[] already in model ${targetModelName} — skipping.`,
+      );
       continue;
     }
     const padding = " ".repeat(Math.max(1, 10 - backRelField.length));
     const backRelLine = `  ${backRelField}${padding}${sourceModelName}[]`;
     updatedSchema = insertIntoModelBlock(updatedSchema, targetModelName, backRelLine);
     writeFileSync(schemaPath, updatedSchema, "utf-8");
-    console.log(`✓  Added back-relation ${backRelField} ${sourceModelName}[] to model ${targetModelName}`);
+    console.log(
+      `✓  Added back-relation ${backRelField} ${sourceModelName}[] to model ${targetModelName}`,
+    );
   }
 
   // --- Append child models for schedule fields ---
-  const scheduleFields = config.fields.filter(
-    (f): f is CRUDFieldSchedule => f.type === "schedule",
-  );
+  const scheduleFields = config.fields.filter((f): f is CRUDFieldSchedule => f.type === "schedule");
   for (const sched of scheduleFields) {
     const childModelName = deriveChildModelName(config, sched);
     updatedSchema = readFileSync(schemaPath, "utf-8");
@@ -515,9 +555,7 @@ async function main() {
   }
 
   // --- Append child models for gallery fields ---
-  const galleryFlds = config.fields.filter(
-    (f): f is CRUDFieldGallery => f.type === "gallery",
-  );
+  const galleryFlds = config.fields.filter((f): f is CRUDFieldGallery => f.type === "gallery");
   for (const gal of galleryFlds) {
     const childModelName = deriveGalleryChildModelName(config, gal);
     updatedSchema = readFileSync(schemaPath, "utf-8");
@@ -548,11 +586,11 @@ async function main() {
   const migrationName = `scaffold_${model}`;
   const prismaDir = join(root, "apps/api/prisma");
   console.log(`\nRunning prisma migrate dev --name ${migrationName} ...`);
-  const result = spawnSync(
-    "npx",
-    ["prisma", "migrate", "dev", "--name", migrationName],
-    { cwd: prismaDir, stdio: "inherit", env: process.env },
-  );
+  const result = spawnSync("npx", ["prisma", "migrate", "dev", "--name", migrationName], {
+    cwd: prismaDir,
+    stdio: "inherit",
+    env: process.env,
+  });
   if (result.status !== 0) {
     console.error("\nMigration failed. Fix schema errors and re-run scaffold.");
     process.exit(result.status ?? 1);
@@ -560,17 +598,19 @@ async function main() {
 
   // Regenerate Prisma client so the running dev server picks up new models
   console.log("\nRunning prisma generate ...");
-  const genResult = spawnSync(
-    "npx",
-    ["prisma", "generate"],
-    { cwd: prismaDir, stdio: "inherit", env: process.env },
-  );
+  const genResult = spawnSync("npx", ["prisma", "generate"], {
+    cwd: prismaDir,
+    stdio: "inherit",
+    env: process.env,
+  });
   if (genResult.status !== 0) {
     console.error("\nprisma generate failed.");
     process.exit(genResult.status ?? 1);
   }
 
-  console.log(`\nDone! Nav link, tRPC routes (admin.${config.model}.*), and admin page are automatic.`);
+  console.log(
+    `\nDone! Nav link, tRPC routes (admin.${config.model}.*), and admin page are automatic.`,
+  );
   console.log(`Admin URL: /admin/${toKebabCase(config.model)}`);
 }
 

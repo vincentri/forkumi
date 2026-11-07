@@ -13,9 +13,7 @@ const ts = () => Date.now();
  * Returns a data record with a valid value for every fillable field.
  * Fields that require external data (model-select, image, file) are skipped.
  */
-export function generateValidData(
-  fields: CRUDField[],
-): Record<string, string | boolean> {
+export function generateValidData(fields: CRUDField[]): Record<string, string | boolean> {
   const data: Record<string, string | boolean> = {};
 
   for (const field of fields) {
@@ -84,10 +82,7 @@ export function pickIdentifier(
   prefix: string,
 ): { field: CRUDField; value: string } {
   const field = fields.find(
-    (f) =>
-      ["text", "email"].includes(f.type) &&
-      !f.slugFrom &&
-      f.showInForm !== false,
+    (f) => ["text", "email"].includes(f.type) && !f.slugFrom && f.showInForm !== false,
   );
   if (!field) throw new Error("No text/email field found for identifier");
   return { field, value: `${prefix} ${ts()}` };

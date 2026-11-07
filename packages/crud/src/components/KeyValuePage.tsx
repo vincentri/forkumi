@@ -20,7 +20,10 @@ interface KeyValuePageProps {
   locale?: string;
 }
 
-function normalizeDataForFields(fields: CRUDField[], data: Record<string, string>): Record<string, unknown> {
+function normalizeDataForFields(
+  fields: CRUDField[],
+  data: Record<string, string>,
+): Record<string, unknown> {
   return Object.fromEntries(
     fields
       .filter((field) => field.type !== "separator")
@@ -29,7 +32,7 @@ function normalizeDataForFields(fields: CRUDField[], data: Record<string, string
         const value: unknown =
           (storedValue === "" || storedValue == null) && field.default !== undefined
             ? field.default
-            : storedValue ?? "";
+            : (storedValue ?? "");
         if (field.type === "boolean") return [field.name, value === true || value === "true"];
         return [field.name, value];
       }),
@@ -43,8 +46,19 @@ function renderExtraTabContent(
   return typeof content === "function" ? content(values) : content;
 }
 
-export function KeyValuePage({ config, data, onSave, saving, extraTabContent, modelApi, locale }: KeyValuePageProps) {
-  const fields = useMemo(() => config.fields.filter((f) => f.showInForm !== false), [config.fields]);
+export function KeyValuePage({
+  config,
+  data,
+  onSave,
+  saving,
+  extraTabContent,
+  modelApi,
+  locale,
+}: KeyValuePageProps) {
+  const fields = useMemo(
+    () => config.fields.filter((f) => f.showInForm !== false),
+    [config.fields],
+  );
   const hasTabs = fields.some((f) => (f as CRUDField & { tab?: string }).tab);
   const defaultValues = useMemo(() => normalizeDataForFields(fields, data), [fields, data]);
 
@@ -62,7 +76,14 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent, mo
 
   // Schema scoped to the active tab's fields only (or all fields when no tabs)
   const activeFields = hasTabs ? (tabMap[activeTab] ?? []) : fields;
-  const { register, watch, control, handleSubmit, reset, formState: { errors } } = useForm<Record<string, unknown>>({
+  const {
+    register,
+    watch,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Record<string, unknown>>({
     resolver: async (values, context, options) => {
       const schema = buildZodSchema({
         ...config,
@@ -141,7 +162,14 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent, mo
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
-      <FieldList fields={visibleFieldsForValues(fields, watchedValues)} register={register} watch={watch} control={control} errors={errors} modelApi={modelApi} />
+      <FieldList
+        fields={visibleFieldsForValues(fields, watchedValues)}
+        register={register}
+        watch={watch}
+        control={control}
+        errors={errors}
+        modelApi={modelApi}
+      />
       <div>
         <Button type="submit" disabled={saving}>
           {saving ? "Saving…" : "Save"}
@@ -151,7 +179,14 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent, mo
   );
 }
 
-function FieldList({ fields, register, watch, control, errors, modelApi }: {
+function FieldList({
+  fields,
+  register,
+  watch,
+  control,
+  errors,
+  modelApi,
+}: {
   fields: CRUDField[];
   register: ReturnType<typeof useForm>["register"];
   watch: ReturnType<typeof useForm>["watch"];
@@ -178,7 +213,10 @@ function FieldList({ fields, register, watch, control, errors, modelApi }: {
           return (
             <div
               key={field.name}
-              className={cn("space-y-1.5", field.width === "half" ? "md:col-span-1" : "md:col-span-2")}
+              className={cn(
+                "space-y-1.5",
+                field.width === "half" ? "md:col-span-1" : "md:col-span-2",
+              )}
             >
               <div className="flex items-center gap-3">
                 <FieldRenderer
@@ -202,7 +240,10 @@ function FieldList({ fields, register, watch, control, errors, modelApi }: {
         return (
           <div
             key={field.name}
-            className={cn("space-y-1.5", field.width === "half" ? "md:col-span-1" : "md:col-span-2")}
+            className={cn(
+              "space-y-1.5",
+              field.width === "half" ? "md:col-span-1" : "md:col-span-2",
+            )}
           >
             <Label htmlFor={field.name}>
               {field.label}

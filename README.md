@@ -18,6 +18,7 @@ pnpm dev
 ```
 
 Open:
+
 - `http://localhost:3001/admin` — admin panel (admin@example.com / password)
 - `http://localhost:3000` — public frontend
 
@@ -133,18 +134,18 @@ pnpm crud:new
 
 ```typescript
 // apps/api/src/crud/product.ts
-import { defineCRUD } from '@repo/crud'
+import { defineCRUD } from "@repo/crud";
 
 export const ProductCRUD = defineCRUD({
-  model: 'product',
-  label: 'Products',
+  model: "product",
+  label: "Products",
   fields: [
-    { name: 'title',       type: 'text',     label: 'Title',       required: true },
-    { name: 'price',       type: 'number',   label: 'Price',       required: true },
-    { name: 'published',   type: 'boolean',  label: 'Published',   default: false },
-    { name: 'description', type: 'textarea', label: 'Description' },
+    { name: "title", type: "text", label: "Title", required: true },
+    { name: "price", type: "number", label: "Price", required: true },
+    { name: "published", type: "boolean", label: "Published", default: false },
+    { name: "description", type: "textarea", label: "Description" },
   ],
-})
+});
 ```
 
 ```bash
@@ -167,7 +168,7 @@ export const customLinks: AdminNavLink[] = [
     label: "Analytics",
     href: "/admin/analytics",
     icon: "BarChart3",
-    permissions: ["analytics:view"],  // optional — omit to show to all users
+    permissions: ["analytics:view"], // optional — omit to show to all users
   },
 ];
 ```
@@ -176,23 +177,23 @@ If `permissions` is set, the first entry gates sidebar visibility and all entrie
 
 ## Field Types
 
-| Type         | Prisma   | UI Control     | Notes                                                          |
-|--------------|----------|----------------|----------------------------------------------------------------|
-| `text`       | String   | Text input     |                                                                |
-| `textarea`   | String   | Textarea       |                                                                |
-| `email`      | String   | Email input    | Validates format                                               |
-| `url`        | String   | URL input      | Validates format                                               |
-| `password`   | String   | Password input | Hidden in table by default                                     |
-| `color`      | String   | Color picker   | Saves as hex (#rrggbb)                                         |
-| `select`     | String   | Dropdown       | Requires `options: [{label, value}]`                           |
-| `multicheck` | String[] | Checkbox group | Requires `options: [{label, value}]`; stored as Postgres array |
-| `number`     | Float    | Number input   | Decimals supported                                             |
-| `range`      | Int      | Range slider   | Use `min`, `max`, `step`                                       |
-| `boolean`    | Boolean  | Checkbox       | Defaults to `false`                                            |
-| `date`       | DateTime | Date picker    |                                                                |
-| `image`      | String   | Image upload   | Use `uploadUrl` like `/api/upload?path=uploads/<folder>`; JPEG, PNG, GIF, and WebP uploads are accepted |
-| `file`       | String   | File upload    | Use `uploadUrl`, `accept`, `maxSizeMB`; keep local paths under `uploads/` |
-| `richtext`   | String   | Rich text editor | HTML stored as string                                        |
+| Type         | Prisma   | UI Control       | Notes                                                                                                   |
+| ------------ | -------- | ---------------- | ------------------------------------------------------------------------------------------------------- |
+| `text`       | String   | Text input       |                                                                                                         |
+| `textarea`   | String   | Textarea         |                                                                                                         |
+| `email`      | String   | Email input      | Validates format                                                                                        |
+| `url`        | String   | URL input        | Validates format                                                                                        |
+| `password`   | String   | Password input   | Hidden in table by default                                                                              |
+| `color`      | String   | Color picker     | Saves as hex (#rrggbb)                                                                                  |
+| `select`     | String   | Dropdown         | Requires `options: [{label, value}]`                                                                    |
+| `multicheck` | String[] | Checkbox group   | Requires `options: [{label, value}]`; stored as Postgres array                                          |
+| `number`     | Float    | Number input     | Decimals supported                                                                                      |
+| `range`      | Int      | Range slider     | Use `min`, `max`, `step`                                                                                |
+| `boolean`    | Boolean  | Checkbox         | Defaults to `false`                                                                                     |
+| `date`       | DateTime | Date picker      |                                                                                                         |
+| `image`      | String   | Image upload     | Use `uploadUrl` like `/api/upload?path=uploads/<folder>`; JPEG, PNG, GIF, and WebP uploads are accepted |
+| `file`       | String   | File upload      | Use `uploadUrl`, `accept`, `maxSizeMB`; keep local paths under `uploads/`                               |
+| `richtext`   | String   | Rich text editor | HTML stored as string                                                                                   |
 
 Add `filterable: true` to any field to show a column filter in the table header. Supported on `boolean`, `select`, `date`, and text-based fields.
 
@@ -231,21 +232,21 @@ S3 uploads do not set object ACLs. Make `uploads/*` and `defaults/*` publicly re
 
 ## Scripts
 
-| Command              | Description                                      |
-|----------------------|--------------------------------------------------|
-| `pnpm dev`           | Start both apps via Turbo                       |
-| `pnpm dev:api`       | Start `apps/api` only (admin panel, port 3001) |
-| `pnpm dev:web`       | Start `apps/web` only (frontend, port 3000)     |
-| `pnpm build`         | Build all packages and apps                     |
-| `pnpm lint`          | Run oxlint across the repo                      |
-| `pnpm format`        | Format with oxfmt (`format:check` for CI)       |
-| `pnpm db:migrate`    | Generate and apply a local Prisma migration file         |
-| `pnpm db:seed`       | Create seed data (admin@example.com / password)          |
-| `pnpm db:studio`     | Open Prisma Studio                                       |
-| `pnpm dev:reset`     | Wipe DB + re-seed; uploads default assets to S3 when enabled |
+| Command                                    | Description                                                          |
+| ------------------------------------------ | -------------------------------------------------------------------- |
+| `pnpm dev`                                 | Start both apps via Turbo                                            |
+| `pnpm dev:api`                             | Start `apps/api` only (admin panel, port 3001)                       |
+| `pnpm dev:web`                             | Start `apps/web` only (frontend, port 3000)                          |
+| `pnpm build`                               | Build all packages and apps                                          |
+| `pnpm lint`                                | Run oxlint across the repo                                           |
+| `pnpm format`                              | Format with oxfmt (`format:check` for CI)                            |
+| `pnpm db:migrate`                          | Generate and apply a local Prisma migration file                     |
+| `pnpm db:seed`                             | Create seed data (admin@example.com / password)                      |
+| `pnpm db:studio`                           | Open Prisma Studio                                                   |
+| `pnpm dev:reset`                           | Wipe DB + re-seed; uploads default assets to S3 when enabled         |
 | `pnpm --filter api assets:upload-defaults` | Upload seeded `/defaults/...` files to S3 when `STORAGE_PROVIDER=s3` |
-| `pnpm crud:new`      | Interactive: create a new CRUD resource         |
-| `pnpm crud:scaffold` | Non-interactive: sync config → schema + barrel  |
+| `pnpm crud:new`                            | Interactive: create a new CRUD resource                              |
+| `pnpm crud:scaffold`                       | Non-interactive: sync config → schema + barrel                       |
 
 ## Split-Mode Cookie Notes
 
@@ -277,15 +278,15 @@ Use `pnpm db:migrate` to generate migration files. Commit the generated files in
 
 ### Required environment variables
 
-| Variable | Value |
-| --- | --- |
-| `NEXTAUTH_URL` | Full URL of your app (e.g. `https://admin.yourapp.com`) |
-| `NEXTAUTH_SECRET` | Random 32-byte secret: `openssl rand -base64 32` |
-| `DATABASE_URL` | Postgres connection string for the app and Prisma Client |
-| `DIRECT_URL` | (optional) Direct Postgres connection string for Prisma migrations/introspection; falls back to `DATABASE_URL` |
-| `STORAGE_PROVIDER` | Use `s3` for durable production uploads on serverless hosts |
-| `AWS_REGION` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_S3_BUCKET` | Required when `STORAGE_PROVIDER=s3`; credentials need `s3:PutObject` |
-| `NEXT_PUBLIC_STORAGE_BASE_URL` | Optional public CDN/S3 base URL for uploaded files |
+| Variable                                                                       | Value                                                                                                          |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `NEXTAUTH_URL`                                                                 | Full URL of your app (e.g. `https://admin.yourapp.com`)                                                        |
+| `NEXTAUTH_SECRET`                                                              | Random 32-byte secret: `openssl rand -base64 32`                                                               |
+| `DATABASE_URL`                                                                 | Postgres connection string for the app and Prisma Client                                                       |
+| `DIRECT_URL`                                                                   | (optional) Direct Postgres connection string for Prisma migrations/introspection; falls back to `DATABASE_URL` |
+| `STORAGE_PROVIDER`                                                             | Use `s3` for durable production uploads on serverless hosts                                                    |
+| `AWS_REGION` / `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_S3_BUCKET` | Required when `STORAGE_PROVIDER=s3`; credentials need `s3:PutObject`                                           |
+| `NEXT_PUBLIC_STORAGE_BASE_URL`                                                 | Optional public CDN/S3 base URL for uploaded files                                                             |
 
 ### Deploy targets
 

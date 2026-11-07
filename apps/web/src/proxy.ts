@@ -5,10 +5,7 @@ export function proxy(request: NextRequest): NextResponse {
   const [locale, ...segments] = request.nextUrl.pathname.split("/").filter(Boolean);
 
   requestHeaders.set("x-forkumi-locale", locale === "en" ? "en" : "id");
-  requestHeaders.set(
-    "x-forkumi-page-path",
-    segments.length > 0 ? `${segments.join("/")}/` : "",
-  );
+  requestHeaders.set("x-forkumi-page-path", segments.length > 0 ? `${segments.join("/")}/` : "");
 
   return NextResponse.next({ request: { headers: requestHeaders } });
 }

@@ -1,6 +1,12 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import type { CRUDConfig, CRUDFieldSelect, CRUDRouterOptions, PrismaLikeClient, SelectOption } from "../types";
+import type {
+  CRUDConfig,
+  CRUDFieldSelect,
+  CRUDRouterOptions,
+  PrismaLikeClient,
+  SelectOption,
+} from "../types";
 import { cleanupReplacedAssets } from "./assets";
 import { prismaModelKey } from "./relations";
 import { resolveSelectOptions, resolveSelectOptionsForSearch } from "./select-options";
@@ -45,26 +51,53 @@ export function createKeyValueRouter(
         const rows = await db[model].findMany({
           where: { key: { in: fieldKeys }, locale },
         });
-        return Object.fromEntries(rows.map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]));
+        return Object.fromEntries(
+          rows.map((r: { key: string; value: string | null }) => [r.key, r.value ?? ""]),
+        );
       }),
     options: procedure.query(async ({ ctx }: { ctx?: unknown }) => {
       const selectFields = config.fields.filter(
         (field): field is CRUDFieldSelect => field.type === "select" && !!field.optionsQuery,
       );
       const entries = await Promise.all(
-        selectFields.map(async (field) => [field.name, await resolveSelectOptions(db, ctx, field)] as const),
+        selectFields.map(
+          async (field) => [field.name, await resolveSelectOptions(db, ctx, field)] as const,
+        ),
       );
       return Object.fromEntries(entries) as Record<string, SelectOption[]>;
     }),
     searchOptions: procedure
-      .input(z.object({ field: z.string(), search: z.string().optional(), selected: z.string().optional(), ids: z.array(z.string()).optional() }))
+      .input(
+        z.object({
+          field: z.string(),
+          search: z.string().optional(),
+          selected: z.string().optional(),
+          ids: z.array(z.string()).optional(),
+        }),
+      )
       .query(
-        async ({ input, ctx }: { input: { field: string; search?: string; selected?: string; ids?: string[] }; ctx?: unknown }) => {
+        async ({
+          input,
+          ctx,
+        }: {
+          input: { field: string; search?: string; selected?: string; ids?: string[] };
+          ctx?: unknown;
+        }) => {
           const field = config.fields.find((f) => f.name === input.field);
           if (!field || field.type !== "select") {
-            throw new TRPCError({ code: "BAD_REQUEST", message: `Invalid select field "${input.field}".` });
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: `Invalid select field "${input.field}".`,
+            });
           }
-          return resolveSelectOptionsForSearch(db, ctx, field, input.search, input.selected, input.ids);
+          return resolveSelectOptionsForSearch(
+            db,
+            ctx,
+            field,
+            input.search,
+            input.selected,
+            input.ids,
+          );
         },
       ),
     update: procedure
@@ -74,7 +107,9 @@ export function createKeyValueRouter(
         const previousRows = await db[model].findMany({
           where: { key: { in: Object.keys(input.data) }, locale },
         });
-        const previousValues = Object.fromEntries(previousRows.map((row: { key: string; value: unknown }) => [row.key, row.value]));
+        const previousValues = Object.fromEntries(
+          previousRows.map((row: { key: string; value: unknown }) => [row.key, row.value]),
+        );
 
         await Promise.all(
           Object.entries(input.data).map(([key, value]) => {

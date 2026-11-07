@@ -18,11 +18,14 @@ export type PlanItem = {
 export async function getPlans(locale: "id" | "en"): Promise<PlanItem[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.plan.list?input=${input}`, fetchNextOptions(["public:plan"]));
+    const response = await fetch(
+      `${apiOrigin()}/api/trpc/public.plan.list?input=${input}`,
+      fetchNextOptions(["public:plan"]),
+    );
     if (!response.ok) {
       return [];
     }
-    const payload = await response.json() as { result?: { data?: { json?: PlanItem[] } } };
+    const payload = (await response.json()) as { result?: { data?: { json?: PlanItem[] } } };
     return payload.result?.data?.json ?? [];
   } catch {
     return [];

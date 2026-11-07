@@ -72,7 +72,9 @@ async function promptField(index) {
 
   // Validate name
   if (!/^[a-z][a-zA-Z0-9]*$/.test(rawName)) {
-    console.log("    ✗  Field name must start with a lowercase letter and contain only letters/numbers. Try again.");
+    console.log(
+      "    ✗  Field name must start with a lowercase letter and contain only letters/numbers. Try again.",
+    );
     return promptField(index);
   }
 
@@ -99,7 +101,9 @@ async function promptField(index) {
       .map((s) => s.trim())
       .filter(Boolean);
     if (options.length === 0) {
-      console.log(`    ✗  ${type} fields require at least one option. Using ['option1', 'option2'].`);
+      console.log(
+        `    ✗  ${type} fields require at least one option. Using ['option1', 'option2'].`,
+      );
       options = ["option1", "option2"];
     }
   }
@@ -176,7 +180,9 @@ async function main() {
 
   if (existsSync(configPath)) {
     console.log(`\n⚠  apps/api/src/crud/${model}.ts already exists — not overwriting.`);
-    console.log(`   Delete it and re-run, or use pnpm crud:scaffold ${model} to scaffold without re-creating the config.`);
+    console.log(
+      `   Delete it and re-run, or use pnpm crud:scaffold ${model} to scaffold without re-creating the config.`,
+    );
     process.exit(1);
   }
 

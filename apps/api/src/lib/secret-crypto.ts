@@ -16,7 +16,9 @@ function getEncryptionKey(): Buffer {
   const utf8Key = Buffer.from(secret, "utf8");
   if (utf8Key.length === KEY_LENGTH) return utf8Key;
 
-  throw new Error("APP_ENCRYPTION_KEY must be 32 bytes. Generate one with: openssl rand -base64 32");
+  throw new Error(
+    "APP_ENCRYPTION_KEY must be 32 bytes. Generate one with: openssl rand -base64 32",
+  );
 }
 
 export function isEncryptedSecret(value: string | null | undefined): value is string {

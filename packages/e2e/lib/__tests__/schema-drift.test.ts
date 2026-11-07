@@ -64,15 +64,17 @@ function loadSchema(path: string): string {
 }
 
 function stripNoise(src: string): string {
-  return src
-    // Strip inline and full-line // comments (preserve non-comment content)
-    .replace(/\/\/.*$/gm, "")
-    // Strip /* ... */ block comments
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    // Strip generator blocks
-    .replace(/generator\s+\w+\s*\{[^}]*\}/g, "")
-    // Strip datasource blocks
-    .replace(/datasource\s+\w+\s*\{[^}]*\}/g, "");
+  return (
+    src
+      // Strip inline and full-line // comments (preserve non-comment content)
+      .replace(/\/\/.*$/gm, "")
+      // Strip /* ... */ block comments
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      // Strip generator blocks
+      .replace(/generator\s+\w+\s*\{[^}]*\}/g, "")
+      // Strip datasource blocks
+      .replace(/datasource\s+\w+\s*\{[^}]*\}/g, "")
+  );
 }
 
 function extractModels(src: string): Map<string, string> {
@@ -97,10 +99,7 @@ function extractModels(src: string): Map<string, string> {
  * relation fields pointing to other models that e2e doesn't declare — those
  * would otherwise cause spurious field-signature mismatches.
  */
-function stripRelationsToMissingModels(
-  body: string,
-  e2eModelNames: Set<string>,
-): string {
+function stripRelationsToMissingModels(body: string, e2eModelNames: Set<string>): string {
   return body
     .split("\n")
     .filter((line) => {
@@ -133,10 +132,9 @@ describe("e2e schema drift", () => {
       ).toBeDefined();
       const e2eBody = stripRelationsToMissingModels(body, e2eModelNames);
       const normalizedProd = stripRelationsToMissingModels(prodBody!, e2eModelNames);
-      expect(
-        e2eBody,
-        `model "${name}" field signatures differ between e2e and prod schemas`,
-      ).toBe(normalizedProd);
+      expect(e2eBody, `model "${name}" field signatures differ between e2e and prod schemas`).toBe(
+        normalizedProd,
+      );
     });
   }
 

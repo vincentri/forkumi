@@ -870,7 +870,9 @@ async function seedPlans(prisma: PrismaClient): Promise<void> {
       }
     }
   }
-  console.log(`Seeded ${SEED_PLANS.length * 2} plans (en+id) and ${featuresInserted} plan features.`);
+  console.log(
+    `Seeded ${SEED_PLANS.length * 2} plans (en+id) and ${featuresInserted} plan features.`,
+  );
 }
 
 const SEED_PLAN_OF_INTEREST: Record<SeededLocale, string[]> = {

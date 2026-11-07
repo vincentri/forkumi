@@ -15,7 +15,9 @@ export function handlePrismaError(err: unknown): never {
       const fields = (err as { meta?: { target?: string[] } }).meta?.target?.join(", ");
       throw new TRPCError({
         code: "CONFLICT",
-        message: fields ? `A record with this ${fields} already exists.` : "A record with these values already exists.",
+        message: fields
+          ? `A record with this ${fields} already exists.`
+          : "A record with these values already exists.",
       });
     }
     if (code === PRISMA_NOT_FOUND) {
@@ -23,5 +25,8 @@ export function handlePrismaError(err: unknown): never {
     }
   }
   if (err instanceof TRPCError) throw err;
-  throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Something went wrong. Please try again." });
+  throw new TRPCError({
+    code: "INTERNAL_SERVER_ERROR",
+    message: "Something went wrong. Please try again.",
+  });
 }

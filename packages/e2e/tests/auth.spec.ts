@@ -7,7 +7,9 @@ test.describe("authentication", () => {
     await page.locator("#password").fill("wrong-password");
     await page.getByRole("button", { name: "Sign in" }).click();
 
-    await expect(page.getByRole("alert").filter({ hasText: "Invalid email or password." })).toBeVisible();
+    await expect(
+      page.getByRole("alert").filter({ hasText: "Invalid email or password." }),
+    ).toBeVisible();
     await expect(page).toHaveURL(/\/auth\/signin/);
   });
 

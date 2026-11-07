@@ -13,11 +13,14 @@ export type FaqItemData = {
 export async function getFaqItems(locale: "id" | "en"): Promise<FaqItemData[]> {
   try {
     const input = encodeURIComponent(JSON.stringify({ json: { locale } }));
-    const response = await fetch(`${apiOrigin()}/api/trpc/public.faq.list?input=${input}`, fetchNextOptions(["public:faq"]));
+    const response = await fetch(
+      `${apiOrigin()}/api/trpc/public.faq.list?input=${input}`,
+      fetchNextOptions(["public:faq"]),
+    );
     if (!response.ok) {
       return [];
     }
-    const payload = await response.json() as { result?: { data?: { json?: FaqItemData[] } } };
+    const payload = (await response.json()) as { result?: { data?: { json?: FaqItemData[] } } };
     return payload.result?.data?.json ?? [];
   } catch {
     return [];

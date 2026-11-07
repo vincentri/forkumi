@@ -33,16 +33,15 @@ const template = readFileSync(envExample, "utf-8");
 
 // --- Inject generated secret ---
 const secret = randomBytes(32).toString("base64");
-const env = template.replace(
-  /^NEXTAUTH_SECRET=.*$/m,
-  `NEXTAUTH_SECRET="${secret}"`,
-);
+const env = template.replace(/^NEXTAUTH_SECRET=.*$/m, `NEXTAUTH_SECRET="${secret}"`);
 
 writeFileSync(envFile, env, "utf-8");
 console.log("✓  Created .env with a generated NEXTAUTH_SECRET");
 console.log("");
 console.log("Next steps:");
-console.log("  1. Edit .env — set DATABASE_URL (and optionally DIRECT_URL) if your DB credentials differ from the defaults");
+console.log(
+  "  1. Edit .env — set DATABASE_URL (and optionally DIRECT_URL) if your DB credentials differ from the defaults",
+);
 console.log("     Defaults: postgresql://postgres:postgres@localhost:5432/quantyx");
 console.log("");
 console.log("  2. Start Postgres (if using Docker):");

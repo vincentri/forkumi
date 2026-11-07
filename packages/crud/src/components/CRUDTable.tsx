@@ -1,12 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  type ColumnDef,
-} from "@tanstack/react-table";
+import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -85,7 +80,15 @@ interface CRUDTableProps {
   modelApi?: ModelSelectApi;
 }
 
-function SortIcon({ field, sortField, sortDir }: { field: CRUDField; sortField?: string; sortDir?: "asc" | "desc" }) {
+function SortIcon({
+  field,
+  sortField,
+  sortDir,
+}: {
+  field: CRUDField;
+  sortField?: string;
+  sortDir?: "asc" | "desc";
+}) {
   if (field.sortable === false) return null;
   if (sortField === field.name) {
     const Icon = sortDir === "asc" ? ChevronUp : ChevronDown;
@@ -108,7 +111,10 @@ function FilterCell({
   if (field.type === "boolean") {
     const strVal = value === true ? "true" : value === false ? "false" : "";
     return (
-      <Select value={strVal || ALL_FILTER_VALUE} onValueChange={(v) => onChange(v === ALL_FILTER_VALUE ? null : v === "true")}>
+      <Select
+        value={strVal || ALL_FILTER_VALUE}
+        onValueChange={(v) => onChange(v === ALL_FILTER_VALUE ? null : v === "true")}
+      >
         <SelectTrigger className="h-7 text-xs w-full">
           <SelectValue placeholder="All" />
         </SelectTrigger>
@@ -135,14 +141,19 @@ function FilterCell({
     }
     const options = selectField.options ?? [];
     return (
-      <Select value={typeof value === "string" && value ? value : ALL_FILTER_VALUE} onValueChange={(v) => onChange(v === ALL_FILTER_VALUE ? null : v)}>
+      <Select
+        value={typeof value === "string" && value ? value : ALL_FILTER_VALUE}
+        onValueChange={(v) => onChange(v === ALL_FILTER_VALUE ? null : v)}
+      >
         <SelectTrigger className="h-7 text-xs w-full">
           <SelectValue placeholder="All" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={ALL_FILTER_VALUE}>All</SelectItem>
           {options.map((o) => (
-            <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            <SelectItem key={o.value} value={o.value}>
+              {o.label}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -154,13 +165,26 @@ function FilterCell({
     const from = parts[0] ?? "";
     const to = parts[1] ?? "";
     const emit = (newFrom: string, newTo: string) => {
-      if (!newFrom && !newTo) { onChange(null); return; }
+      if (!newFrom && !newTo) {
+        onChange(null);
+        return;
+      }
       onChange(`${newFrom}|${newTo}`);
     };
     return (
       <div className="flex gap-1">
-        <Input type="date" value={from} onChange={(e) => emit(e.target.value, to)} className="h-7 text-xs px-1 w-full" />
-        <Input type="date" value={to} onChange={(e) => emit(from, e.target.value)} className="h-7 text-xs px-1 w-full" />
+        <Input
+          type="date"
+          value={from}
+          onChange={(e) => emit(e.target.value, to)}
+          className="h-7 text-xs px-1 w-full"
+        />
+        <Input
+          type="date"
+          value={to}
+          onChange={(e) => emit(from, e.target.value)}
+          className="h-7 text-xs px-1 w-full"
+        />
       </div>
     );
   }
@@ -188,7 +212,11 @@ function FilterCell({
   );
 }
 
-function getSelectLabel(field: CRUDFieldSelect, value: unknown, dynamicLabels?: Map<string, string>): string | null {
+function getSelectLabel(
+  field: CRUDFieldSelect,
+  value: unknown,
+  dynamicLabels?: Map<string, string>,
+): string | null {
   if (value === null || value === undefined) return null;
   if (Array.isArray(value)) {
     if (value.length === 0) return null;
@@ -200,7 +228,9 @@ function getSelectLabel(field: CRUDFieldSelect, value: unknown, dynamicLabels?: 
       .join(", ");
   }
   const raw = String(value);
-  return dynamicLabels?.get(raw) ?? field.options?.find((option) => option.value === raw)?.label ?? raw;
+  return (
+    dynamicLabels?.get(raw) ?? field.options?.find((option) => option.value === raw)?.label ?? raw
+  );
 }
 
 function collectSelectIds(field: CRUDFieldSelect, rows: Record<string, unknown>[]): Set<string> {
@@ -292,15 +322,24 @@ export function CRUDTable({
   onFilterChange,
   modelApi,
 }: CRUDTableProps) {
-  const tableFields = config.fields.filter((f) => f.showInTable !== false && f.type !== "separator");
+  const tableFields = config.fields.filter(
+    (f) => f.showInTable !== false && f.type !== "separator",
+  );
   const hasFilterableFields = tableFields.some(isFilterableField);
-  const hasActions = !!(onEdit || (onDelete && config.deletable !== false) || onRowAction || onDuplicate);
+  const hasActions = !!(
+    onEdit ||
+    (onDelete && config.deletable !== false) ||
+    onRowAction ||
+    onDuplicate
+  );
   const selectLabelMap = useSelectLabelMap(tableFields, data, modelApi);
 
   function isInteractiveTarget(e: React.MouseEvent | React.KeyboardEvent): boolean {
     const target = e.target as HTMLElement | null;
     if (!target) return false;
-    return !!target.closest("button, a, input, select, textarea, [role='button'], [role='checkbox'], [role='menuitem']");
+    return !!target.closest(
+      "button, a, input, select, textarea, [role='button'], [role='checkbox'], [role='menuitem']",
+    );
   }
 
   function handleRowActivate(row: Record<string, unknown>) {
@@ -363,11 +402,7 @@ export function CRUDTable({
         const value = getValue();
 
         if (field.type === "boolean") {
-          return (
-            <Badge variant={value ? "success" : "muted"}>
-              {value ? "Yes" : "No"}
-            </Badge>
-          );
+          return <Badge variant={value ? "success" : "muted"}>{value ? "Yes" : "No"}</Badge>;
         }
 
         if (field.type === "color" && typeof value === "string") {
@@ -387,8 +422,15 @@ export function CRUDTable({
         }
 
         if ((field.type === "richtext" || field.type === "textarea") && typeof value === "string") {
-          const plain = value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-          return <span className="text-muted-foreground text-sm line-clamp-2 max-w-[240px] inline-block">{plain.slice(0, 120) || "—"}</span>;
+          const plain = value
+            .replace(/<[^>]*>/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+          return (
+            <span className="text-muted-foreground text-sm line-clamp-2 max-w-[240px] inline-block">
+              {plain.slice(0, 120) || "—"}
+            </span>
+          );
         }
 
         if (field.type === "image" && typeof value === "string") {
@@ -404,14 +446,22 @@ export function CRUDTable({
         if (field.type === "file" && typeof value === "string") {
           const name = value.split("/").pop() ?? "File";
           return (
-            <a href={value} target="_blank" rel="noopener noreferrer" className="text-sm text-primary underline underline-offset-4 hover:text-primary/80 truncate max-w-[180px] inline-block">
+            <a
+              href={value}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-primary underline underline-offset-4 hover:text-primary/80 truncate max-w-[180px] inline-block"
+            >
               {name}
             </a>
           );
         }
 
         if ((field.type === "date" || field.type === "datetime") && value != null) {
-          return new Date(value as string).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+          return new Date(value as string).toLocaleString(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short",
+          });
         }
 
         if (field.type === "select") {
@@ -435,7 +485,8 @@ export function CRUDTable({
             id: "actions",
             header: "",
             cell: ({ row }: { row: { original: Record<string, unknown> } }) => {
-              const canDelete = onDelete &&
+              const canDelete =
+                onDelete &&
                 config.deletable !== false &&
                 isRowDeletable(row.original, currentUserEmail);
               return (
@@ -504,16 +555,25 @@ export function CRUDTable({
                   <TableHead
                     key={header.id}
                     onClick={() => field && handleSort(field)}
-                    onKeyDown={(e) => { if (isSortable && field && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); handleSort(field); } }}
+                    onKeyDown={(e) => {
+                      if (isSortable && field && (e.key === "Enter" || e.key === " ")) {
+                        e.preventDefault();
+                        handleSort(field);
+                      }
+                    }}
                     tabIndex={isSortable ? 0 : undefined}
-                    aria-sort={isSortable && sortField === field?.name ? (sortDir === "asc" ? "ascending" : "descending") : undefined}
+                    aria-sort={
+                      isSortable && sortField === field?.name
+                        ? sortDir === "asc"
+                          ? "ascending"
+                          : "descending"
+                        : undefined
+                    }
                     className={isSortable ? "cursor-pointer select-none hover:text-foreground" : ""}
                   >
                     <span className="flex items-center">
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                      {field && (
-                        <SortIcon field={field} sortField={sortField} sortDir={sortDir} />
-                      )}
+                      {field && <SortIcon field={field} sortField={sortField} sortDir={sortDir} />}
                     </span>
                   </TableHead>
                 );
@@ -535,9 +595,7 @@ export function CRUDTable({
                   ) : null}
                 </TableHead>
               ))}
-              {hasActions && (
-                <TableHead className="py-1" />
-              )}
+              {hasActions && <TableHead className="py-1" />}
             </TableRow>
           )}
         </TableHeader>
@@ -545,10 +603,17 @@ export function CRUDTable({
           {isLoading ? (
             Array.from({ length: 5 }).map((_, i) => (
               <TableRow key={i}>
-                {showCheckboxes && <TableCell><Skeleton className="h-4 w-4" /></TableCell>}
+                {showCheckboxes && (
+                  <TableCell>
+                    <Skeleton className="h-4 w-4" />
+                  </TableCell>
+                )}
                 {tableFields.map((f) => (
                   <TableCell key={f.name}>
-                    <Skeleton className="h-4" style={{ width: `${60 + (i * 17 + f.name.length * 5) % 30}%` }} />
+                    <Skeleton
+                      className="h-4"
+                      style={{ width: `${60 + ((i * 17 + f.name.length * 5) % 30)}%` }}
+                    />
                   </TableCell>
                 ))}
                 {hasActions && (
@@ -562,53 +627,69 @@ export function CRUDTable({
             <TableRow>
               <TableCell colSpan={columns.length} className="h-[300px] text-center">
                 {emptyState ?? (
-                  <p className="text-sm text-muted-foreground">No {config.label.toLowerCase()} found.</p>
+                  <p className="text-sm text-muted-foreground">
+                    No {config.label.toLowerCase()} found.
+                  </p>
                 )}
               </TableCell>
             </TableRow>
-          ) : table.getRowModel().rows.map((row) => {
-            const isCurrentUser = currentUserEmail
-              ? row.original.email === currentUserEmail
-              : false;
-            const isNew = lastCreatedId && row.original.id === lastCreatedId;
-            const isSelected = selectedIds?.has(String(row.original.id));
-            const rowClickable = !!(onEdit && !row.original.isPendingInvite);
-            const rowClassName = [
-              isNew ? "animate-highlight" : "",
-              isSelected ? "bg-primary/5" : "",
-              isCurrentUser ? "bg-muted/30" : "",
-              rowClickable ? "cursor-pointer" : "",
-            ].filter(Boolean).join(" ");
-            return (
-              <TableRow
-                key={row.id}
-                className={rowClassName}
-                onClick={rowClickable ? (e) => {
-                  if (isInteractiveTarget(e)) return;
-                  handleRowActivate(row.original);
-                } : undefined}
-                onKeyDown={rowClickable ? (e) => {
-                  if (e.key !== "Enter" && e.key !== " ") return;
-                  if (isInteractiveTarget(e)) return;
-                  e.preventDefault();
-                  handleRowActivate(row.original);
-                } : undefined}
-                tabIndex={rowClickable ? 0 : undefined}
-              >
-                {row.getVisibleCells().map((cell, cellIdx) => {
-                  const dataColIdx = showCheckboxes ? cellIdx - 1 : cellIdx;
-                  return (
-                    <TableCell key={cell.id} className="align-top">
-                      {dataColIdx === 0 && isCurrentUser && (
-                        <Badge variant="outline" className="mr-2 text-xs font-normal">You</Badge>
-                      )}
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            );
-          })}
+          ) : (
+            table.getRowModel().rows.map((row) => {
+              const isCurrentUser = currentUserEmail
+                ? row.original.email === currentUserEmail
+                : false;
+              const isNew = lastCreatedId && row.original.id === lastCreatedId;
+              const isSelected = selectedIds?.has(String(row.original.id));
+              const rowClickable = !!(onEdit && !row.original.isPendingInvite);
+              const rowClassName = [
+                isNew ? "animate-highlight" : "",
+                isSelected ? "bg-primary/5" : "",
+                isCurrentUser ? "bg-muted/30" : "",
+                rowClickable ? "cursor-pointer" : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
+              return (
+                <TableRow
+                  key={row.id}
+                  className={rowClassName}
+                  onClick={
+                    rowClickable
+                      ? (e) => {
+                          if (isInteractiveTarget(e)) return;
+                          handleRowActivate(row.original);
+                        }
+                      : undefined
+                  }
+                  onKeyDown={
+                    rowClickable
+                      ? (e) => {
+                          if (e.key !== "Enter" && e.key !== " ") return;
+                          if (isInteractiveTarget(e)) return;
+                          e.preventDefault();
+                          handleRowActivate(row.original);
+                        }
+                      : undefined
+                  }
+                  tabIndex={rowClickable ? 0 : undefined}
+                >
+                  {row.getVisibleCells().map((cell, cellIdx) => {
+                    const dataColIdx = showCheckboxes ? cellIdx - 1 : cellIdx;
+                    return (
+                      <TableCell key={cell.id} className="align-top">
+                        {dataColIdx === 0 && isCurrentUser && (
+                          <Badge variant="outline" className="mr-2 text-xs font-normal">
+                            You
+                          </Badge>
+                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })
+          )}
         </TableBody>
       </Table>
     </div>

@@ -2,7 +2,11 @@ import type { CRUDFieldSelect, SelectOption } from "../types";
 import { prismaModelKey } from "./relations";
 
 // oxlint-disable-next-line typescript/no-explicit-any
-export async function resolveSelectOptions(db: any, ctx: any, field: CRUDFieldSelect): Promise<SelectOption[]> {
+export async function resolveSelectOptions(
+  db: any,
+  ctx: any,
+  field: CRUDFieldSelect,
+): Promise<SelectOption[]> {
   if (field.optionsQuery) {
     return field.optionsQuery({ db, ctx });
   }
@@ -57,9 +61,7 @@ export async function resolveSelectOptionsForSearch(
     const searchWhere = search
       ? { OR: searchFields.map((f) => ({ [f]: { contains: search, mode: "insensitive" } })) }
       : undefined;
-    const idsWhere = ids && ids.length > 0
-      ? { [source.valueField]: { in: ids } }
-      : undefined;
+    const idsWhere = ids && ids.length > 0 ? { [source.valueField]: { in: ids } } : undefined;
 
     const [selectedRows, idsRows, searchRows] = await Promise.all([
       selected
@@ -108,5 +110,7 @@ export async function resolveSelectOptionsForSearch(
   const opts = field.options ?? [];
   if (!search) return opts;
   const term = search.toLowerCase();
-  return opts.filter((o) => o.label.toLowerCase().includes(term) || o.value.toLowerCase().includes(term));
+  return opts.filter(
+    (o) => o.label.toLowerCase().includes(term) || o.value.toLowerCase().includes(term),
+  );
 }

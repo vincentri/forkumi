@@ -41,9 +41,9 @@ function PermissionMatrix({
       actionSet.add(action);
     });
     const actionOrder = ["view", "read", "create", "update", "delete"];
-    const actions = actionOrder.filter((a) => actionSet.has(a)).concat(
-      [...actionSet].filter((a) => !actionOrder.includes(a)).sort()
-    );
+    const actions = actionOrder
+      .filter((a) => actionSet.has(a))
+      .concat([...actionSet].filter((a) => !actionOrder.includes(a)).sort());
     resourceSet.forEach((resource) => {
       const rowValues = actions
         .map((a) => `${resource}:${a}`)
@@ -66,9 +66,9 @@ function PermissionMatrix({
 
   // Canonical action column order
   const actionOrder = ["view", "read", "create", "update", "delete"];
-  const actions = actionOrder.filter((a) => actionSet.has(a)).concat(
-    [...actionSet].filter((a) => !actionOrder.includes(a)).sort()
-  );
+  const actions = actionOrder
+    .filter((a) => actionSet.has(a))
+    .concat([...actionSet].filter((a) => !actionOrder.includes(a)).sort());
 
   // Resources: wildcard (*) first, then alphabetical
   const resources = [...resourceSet].sort((a, b) => {
@@ -84,9 +84,7 @@ function PermissionMatrix({
   };
 
   const rowValues = (resource: string) =>
-    actions
-      .map((a) => `${resource}:${a}`)
-      .filter((v) => options.some((o) => o.value === v));
+    actions.map((a) => `${resource}:${a}`).filter((v) => options.some((o) => o.value === v));
 
   const toggle = (value: string, on: boolean) => {
     const next = on ? [...checked, value] : checked.filter((v) => v !== value);
@@ -128,7 +126,10 @@ function PermissionMatrix({
           <tr className="border-b border-border bg-muted/50">
             <th className="px-3 py-2 text-left font-medium text-muted-foreground w-36">Resource</th>
             {actions.map((action) => (
-              <th key={action} className="px-2 py-2 text-center font-medium text-muted-foreground capitalize min-w-[60px]">
+              <th
+                key={action}
+                className="px-2 py-2 text-center font-medium text-muted-foreground capitalize min-w-[60px]"
+              >
                 {action}
               </th>
             ))}
@@ -146,9 +147,7 @@ function PermissionMatrix({
                   resource === "*" ? "bg-primary/5" : i % 2 === 0 ? "" : "bg-muted/20",
                 ].join(" ")}
               >
-                <td className="px-3 py-2 font-medium text-foreground">
-                  {resourceLabel(resource)}
-                </td>
+                <td className="px-3 py-2 font-medium text-foreground">{resourceLabel(resource)}</td>
                 {actions.map((action) => {
                   const val = `${resource}:${action}`;
                   const exists = options.some((o) => o.value === val);
@@ -160,7 +159,11 @@ function PermissionMatrix({
                           id={`${fieldName}-${val}`}
                           className={[
                             "h-4 w-4 rounded border border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                            readOnly ? "cursor-not-allowed opacity-50" : isLocked ? "pointer-events-none cursor-not-allowed" : "cursor-pointer",
+                            readOnly
+                              ? "cursor-not-allowed opacity-50"
+                              : isLocked
+                                ? "pointer-events-none cursor-not-allowed"
+                                : "cursor-pointer",
                           ].join(" ")}
                           checked={checked.includes(val)}
                           disabled={readOnly}
@@ -225,7 +228,13 @@ export function MulticheckField({ field, control, readOnly }: Props) {
           <fieldset className="space-y-2 border-none p-0 m-0">
             <legend className="sr-only">{field.label}</legend>
             {field.options.map((opt) => (
-              <label key={opt.value} className={["flex items-center gap-2", readOnly ? "cursor-not-allowed" : "cursor-pointer"].join(" ")}>
+              <label
+                key={opt.value}
+                className={[
+                  "flex items-center gap-2",
+                  readOnly ? "cursor-not-allowed" : "cursor-pointer",
+                ].join(" ")}
+              >
                 <input
                   type="checkbox"
                   id={`${field.name}-${opt.value}`}

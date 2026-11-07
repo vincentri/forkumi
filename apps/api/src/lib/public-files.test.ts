@@ -53,7 +53,9 @@ describe("resolvePublicFile", () => {
   });
 
   it("throws when segment escapes the root", () => {
-    expect(() => resolvePublicFile("uploads", "subdir", "../../etc/passwd")).toThrow("Invalid path");
+    expect(() => resolvePublicFile("uploads", "subdir", "../../etc/passwd")).toThrow(
+      "Invalid path",
+    );
   });
 
   it("allows nested paths within root", () => {

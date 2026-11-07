@@ -6,11 +6,7 @@ import { AdminNav, ThemeProvider } from "@repo/admin/ui";
 import { hasPermission } from "@repo/admin";
 import { getPublicSettings } from "~/lib/getPublicSettings";
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const [session, publicSettings] = await Promise.all([
     getServerAuthSession(),
     getPublicSettings(),
@@ -27,16 +23,14 @@ export default async function AdminLayout({
   const permissions: string[] = session.user.permissions ?? [];
   const isProtectedRole: boolean = session.user.isProtectedRole ?? false;
 
-  const canViewModel = (model: string) => hasPermission(permissions, isProtectedRole, model, "view");
+  const canViewModel = (model: string) =>
+    hasPermission(permissions, isProtectedRole, model, "view");
 
   const allConfigs = Object.values(CRUDConfigs).filter(
-    (v): v is CRUDConfig =>
-      typeof v === "object" && v !== null && "model" in v && "label" in v,
+    (v): v is CRUDConfig => typeof v === "object" && v !== null && "model" in v && "label" in v,
   );
 
-  const navItems = [
-    ...allConfigs.map(toClientCRUDConfig),
-  ];
+  const navItems = [...allConfigs.map(toClientCRUDConfig)];
 
   return (
     <ThemeProvider>

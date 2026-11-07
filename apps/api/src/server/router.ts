@@ -27,10 +27,7 @@ import {
 } from "@repo/crud";
 import { accountRouter } from "./routers/account";
 import { emailSettingsRouter } from "./routers/emailSettings";
-import {
-  acceptInvitationProcedure,
-  getInvitationProcedure,
-} from "./routers/invitation";
+import { acceptInvitationProcedure, getInvitationProcedure } from "./routers/invitation";
 import { roleRouter } from "./routers/role";
 import { userRouter } from "./routers/user";
 import { clearLoginAttempts } from "../proxy";
@@ -48,13 +45,15 @@ function createFrontPageSettingsRouter(config: CRUDConfig) {
   );
   const fieldKeys = config.fields.map((field) => field.name);
   const defaultLocale = config.defaultLocale ?? config.supportedLocales?.[0] ?? "en";
-  const supportedLocales = config.supportedLocales?.length ? config.supportedLocales : [defaultLocale];
-  const localePriority = (locale: string) => Array.from(new Set([
-    locale,
-    defaultLocale,
-    ...supportedLocales,
-  ]));
-  const rowsToSettings = (rows: Array<{ key: string; locale?: string; value: string | null }>, locale: string) => {
+  const supportedLocales = config.supportedLocales?.length
+    ? config.supportedLocales
+    : [defaultLocale];
+  const localePriority = (locale: string) =>
+    Array.from(new Set([locale, defaultLocale, ...supportedLocales]));
+  const rowsToSettings = (
+    rows: Array<{ key: string; locale?: string; value: string | null }>,
+    locale: string,
+  ) => {
     const priority = localePriority(locale);
     const priorityIndex = new Map(priority.map((loc, index) => [loc, index]));
     const sortedRows = [...rows].sort((a, b) => {
@@ -73,12 +72,12 @@ function createFrontPageSettingsRouter(config: CRUDConfig) {
   };
 
   // ponytail: @repo/crud exports only the public surface from "./index".
-// prismaModelKey is 3 lines (lowercase first letter), inline rather than reach into a submodule.
-function prismaModelKey(model: string): string {
-  return model.charAt(0).toLowerCase() + model.slice(1);
-}
+  // prismaModelKey is 3 lines (lowercase first letter), inline rather than reach into a submodule.
+  function prismaModelKey(model: string): string {
+    return model.charAt(0).toLowerCase() + model.slice(1);
+  }
 
-// ponytail: hand-rolled router (locale fallback + non-localized fan-out) skips
+  // ponytail: hand-rolled router (locale fallback + non-localized fan-out) skips
   // the createKeyValueRouter factory. Re-add the factory's options/searchOptions
   // procs inline so admin autocomplete fields can resolve against optionsFrom sources.
   const resolveFieldOptions = async (
@@ -102,10 +101,17 @@ function prismaModelKey(model: string): string {
       const searchFields = source.searchFields?.length ? source.searchFields : [source.labelField];
       const baseWhere = source.where ?? {};
       const searchWhere = search
-        ? { OR: searchFields.map((f) => ({ [f]: { contains: search, mode: "insensitive" as const } })) }
+        ? {
+            OR: searchFields.map((f) => ({
+              [f]: { contains: search, mode: "insensitive" as const },
+            })),
+          }
         : undefined;
       const idsWhere = ids && ids.length > 0 ? { [source.valueField]: { in: ids } } : undefined;
-      const db = prisma as unknown as Record<string, { findMany: (a: unknown) => Promise<unknown[]> }>;
+      const db = prisma as unknown as Record<
+        string,
+        { findMany: (a: unknown) => Promise<unknown[]> }
+      >;
 
       const [selectedRows, idsRows, searchRows] = await Promise.all([
         selected
@@ -139,7 +145,9 @@ function prismaModelKey(model: string): string {
 
       const seen = new Set<string>();
       const options: SelectOption[] = [];
-      for (const row of [...selectedRows, ...idsRows, ...searchRows] as Array<Record<string, unknown>>) {
+      for (const row of [...selectedRows, ...idsRows, ...searchRows] as Array<
+        Record<string, unknown>
+      >) {
         const value = String(row[source.valueField] ?? "");
         if (seen.has(value)) continue;
         seen.add(value);
@@ -153,7 +161,9 @@ function prismaModelKey(model: string): string {
     const opts = field.options ?? [];
     if (!search) return opts;
     const term = search.toLowerCase();
-    return opts.filter((o) => o.label.toLowerCase().includes(term) || o.value.toLowerCase().includes(term));
+    return opts.filter(
+      (o) => o.label.toLowerCase().includes(term) || o.value.toLowerCase().includes(term),
+    );
   };
 
   return router({
@@ -186,7 +196,14 @@ function prismaModelKey(model: string): string {
     // ponytail: cast prisma to PrismaLikeClient at the boundary — same reason as
     // createCRUDRouter calls above (Prisma 7 client lacks the index signature).
     searchOptions: permissionProcedure("view", config.model)
-      .input(z.object({ field: z.string(), search: z.string().optional(), selected: z.string().optional(), ids: z.array(z.string()).optional() }))
+      .input(
+        z.object({
+          field: z.string(),
+          search: z.string().optional(),
+          selected: z.string().optional(),
+          ids: z.array(z.string()).optional(),
+        }),
+      )
       .query(async ({ input }) => {
         const field = config.fields.find((f) => f.name === input.field);
         if (!field || field.type !== "select") {
@@ -195,7 +212,12 @@ function prismaModelKey(model: string): string {
         return resolveFieldOptions(field, input.search, input.selected, input.ids);
       }),
     update: permissionProcedure("update", config.model)
-      .input(z.object({ data: z.record(z.string(), z.string().nullable()), locale: z.string().optional() }))
+      .input(
+        z.object({
+          data: z.record(z.string(), z.string().nullable()),
+          locale: z.string().optional(),
+        }),
+      )
       .mutation(async ({ input }) => {
         const locale = input.locale ?? defaultLocale;
         // Parallel upserts (same as @repo/crud createKeyValueRouter). A single
@@ -203,20 +225,21 @@ function prismaModelKey(model: string): string {
         // Each row is independent (unique key_locale) so no interactive tx needed.
         await Promise.all(
           Object.entries(input.data).flatMap(([key, value]) =>
-            (fieldMeta[key]?.localized === false ? supportedLocales : [locale]).map((targetLocale) =>
-              prisma.frontPageSettings.upsert({
-                where: { key_locale: { key, locale: targetLocale } },
-                update: {
-                  namespace: fieldMeta[key]?.namespace ?? null,
-                  value,
-                },
-                create: {
-                  key,
-                  locale: targetLocale,
-                  namespace: fieldMeta[key]?.namespace ?? null,
-                  value,
-                },
-              }),
+            (fieldMeta[key]?.localized === false ? supportedLocales : [locale]).map(
+              (targetLocale) =>
+                prisma.frontPageSettings.upsert({
+                  where: { key_locale: { key, locale: targetLocale } },
+                  update: {
+                    namespace: fieldMeta[key]?.namespace ?? null,
+                    value,
+                  },
+                  create: {
+                    key,
+                    locale: targetLocale,
+                    namespace: fieldMeta[key]?.namespace ?? null,
+                    value,
+                  },
+                }),
             ),
           ),
         );
@@ -280,40 +303,34 @@ const frontPageSettingsRouter = createFrontPageSettingsRouter(FrontPageSettingsC
 const localeInput = z.object({ locale: z.enum(["id", "en"]).optional() }).optional();
 
 const publicFrontPageSettingsRouter = router({
-  get: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const defaultLocale = FrontPageSettingsCRUD.defaultLocale ?? "en";
-      const supportedLocales = FrontPageSettingsCRUD.supportedLocales ?? [defaultLocale];
-      const localePriority = Array.from(new Set([
-        locale,
-        defaultLocale,
-        ...supportedLocales,
-      ]));
-      const priorityIndex = new Map(localePriority.map((loc, index) => [loc, index]));
-      const rows = await prisma.frontPageSettings.findMany({
-        where: {
-          locale: {
-            in: localePriority,
-          },
+  get: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const defaultLocale = FrontPageSettingsCRUD.defaultLocale ?? "en";
+    const supportedLocales = FrontPageSettingsCRUD.supportedLocales ?? [defaultLocale];
+    const localePriority = Array.from(new Set([locale, defaultLocale, ...supportedLocales]));
+    const priorityIndex = new Map(localePriority.map((loc, index) => [loc, index]));
+    const rows = await prisma.frontPageSettings.findMany({
+      where: {
+        locale: {
+          in: localePriority,
         },
-      });
+      },
+    });
 
-      return [...rows]
-        .sort((a, b) => {
-          const aIndex = priorityIndex.get(a.locale) ?? localePriority.length;
-          const bIndex = priorityIndex.get(b.locale) ?? localePriority.length;
-          return aIndex - bIndex;
-        })
-        .reduce<Record<string, string>>((settings, row) => {
-          if (settings[row.key]?.trim()) {
-            return settings;
-          }
-          settings[row.key] = row.value ?? "";
+    return [...rows]
+      .sort((a, b) => {
+        const aIndex = priorityIndex.get(a.locale) ?? localePriority.length;
+        const bIndex = priorityIndex.get(b.locale) ?? localePriority.length;
+        return aIndex - bIndex;
+      })
+      .reduce<Record<string, string>>((settings, row) => {
+        if (settings[row.key]?.trim()) {
           return settings;
-        }, {});
-    }),
+        }
+        settings[row.key] = row.value ?? "";
+        return settings;
+      }, {});
+  }),
 });
 
 const marqueeItemRouter = createCRUDRouter(
@@ -501,167 +518,153 @@ const planOfInterestRouter = createCRUDRouter(
 );
 
 const publicMarqueeRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const rows = await prisma.marqueeItem.findMany({
-        where: { locale },
-        orderBy: { position: "asc" },
-      });
-      return rows.map((row) => row.text);
-    }),
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const rows = await prisma.marqueeItem.findMany({
+      where: { locale },
+      orderBy: { position: "asc" },
+    });
+    return rows.map((row) => row.text);
+  }),
 });
 
 const publicWhysubRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const rows = await prisma.whysubCard.findMany({
-        where: { locale },
-        orderBy: { position: "asc" },
-      });
-      return rows.map((row) => ({
-        icon: row.icon,
-        color: row.color,
-        heading: row.heading,
-        paragraph: row.paragraph,
-      }));
-    }),
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const rows = await prisma.whysubCard.findMany({
+      where: { locale },
+      orderBy: { position: "asc" },
+    });
+    return rows.map((row) => ({
+      icon: row.icon,
+      color: row.color,
+      heading: row.heading,
+      paragraph: row.paragraph,
+    }));
+  }),
 });
 
 const publicCompareRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const [categories, criteria] = await Promise.all([
-        prisma.compareCategory.findMany({
-          where: { locale },
-          orderBy: { position: "asc" },
-          select: { name: true },
-        }),
-        prisma.compareCriterion.findMany({
-          where: { locale },
-          orderBy: { position: "asc" },
-          select: { label: true, cells: true },
-        }),
-      ]);
-      return {
-        categories: categories.map((row) => row.name),
-        rows: criteria.map((row) => ({
-          label: row.label,
-          cells: row.cells.split(",").map((cell) => cell.trim()),
-        })),
-      };
-    }),
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const [categories, criteria] = await Promise.all([
+      prisma.compareCategory.findMany({
+        where: { locale },
+        orderBy: { position: "asc" },
+        select: { name: true },
+      }),
+      prisma.compareCriterion.findMany({
+        where: { locale },
+        orderBy: { position: "asc" },
+        select: { label: true, cells: true },
+      }),
+    ]);
+    return {
+      categories: categories.map((row) => row.name),
+      rows: criteria.map((row) => ({
+        label: row.label,
+        cells: row.cells.split(",").map((cell) => cell.trim()),
+      })),
+    };
+  }),
 });
 
 const publicPortfolioRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const rows = await prisma.portfolio.findMany({
-        where: { active: true },
-        orderBy: { position: "asc" },
-      });
-      const fallbackBlurb = locale === "id" ? "" : "";
-      return rows.map((row) => ({
-        id: row.id,
-        name: row.name,
-        sub: row.sub,
-        blurb: (locale === "id" ? row.blurbId : row.blurbEn) ?? fallbackBlurb,
-        image: row.image,
-        logoBg: row.logoBg,
-        tags: row.tags
-          ? row.tags
-              .split(",")
-              .map((tag) => tag.trim())
-              .filter(Boolean)
-          : [],
-        url: row.url,
-        igUrl: row.igUrl,
-      }));
-    }),
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const rows = await prisma.portfolio.findMany({
+      where: { active: true },
+      orderBy: { position: "asc" },
+    });
+    const fallbackBlurb = locale === "id" ? "" : "";
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      sub: row.sub,
+      blurb: (locale === "id" ? row.blurbId : row.blurbEn) ?? fallbackBlurb,
+      image: row.image,
+      logoBg: row.logoBg,
+      tags: row.tags
+        ? row.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean)
+        : [],
+      url: row.url,
+      igUrl: row.igUrl,
+    }));
+  }),
 });
 
 // ponytail: Plan is per-locale (like FaqItem). Fetch plans WHERE locale; their features
 // come via planId. Fall back to "en" plans if the requested locale has none, so the
 // public site still shows content while admins roll out a new locale.
 const publicPlanRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      let plans = await prisma.plan.findMany({
-        where: { active: true, locale },
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    let plans = await prisma.plan.findMany({
+      where: { active: true, locale },
+      orderBy: { position: "asc" },
+    });
+    if (plans.length === 0 && locale !== "en") {
+      plans = await prisma.plan.findMany({
+        where: { active: true, locale: "en" },
         orderBy: { position: "asc" },
       });
-      if (plans.length === 0 && locale !== "en") {
-        plans = await prisma.plan.findMany({
-          where: { active: true, locale: "en" },
-          orderBy: { position: "asc" },
-        });
-      }
-      const planIds = plans.map((p) => p.id);
-      const features = await prisma.planFeature.findMany({
-        where: { planId: { in: planIds } },
-        orderBy: { position: "asc" },
-      });
-      const featuresByPlan = new Map<string, string[]>();
-      for (const f of features) {
-        if (!featuresByPlan.has(f.planId)) featuresByPlan.set(f.planId, []);
-        featuresByPlan.get(f.planId)!.push(f.text);
-      }
-      return plans.map((p) => ({
-        id: p.id,
-        name: p.name,
-        color: p.color,
-        price: p.price,
-        normalPrice: p.normalPrice,
-        best: p.best,
-        ctaUrl: p.ctaUrl,
-        features: featuresByPlan.get(p.id) ?? [],
-      }));
-    }),
+    }
+    const planIds = plans.map((p) => p.id);
+    const features = await prisma.planFeature.findMany({
+      where: { planId: { in: planIds } },
+      orderBy: { position: "asc" },
+    });
+    const featuresByPlan = new Map<string, string[]>();
+    for (const f of features) {
+      if (!featuresByPlan.has(f.planId)) featuresByPlan.set(f.planId, []);
+      featuresByPlan.get(f.planId)!.push(f.text);
+    }
+    return plans.map((p) => ({
+      id: p.id,
+      name: p.name,
+      color: p.color,
+      price: p.price,
+      normalPrice: p.normalPrice,
+      best: p.best,
+      ctaUrl: p.ctaUrl,
+      features: featuresByPlan.get(p.id) ?? [],
+    }));
+  }),
 });
 
 const publicFaqRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const rows = await prisma.faqItem.findMany({
-        where: { active: true, locale },
-        orderBy: { position: "asc" },
-        select: { id: true, question: true, answer: true },
-      });
-      return rows.map((row) => ({
-        id: row.id,
-        question: row.question,
-        answer: row.answer,
-      }));
-    }),
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const rows = await prisma.faqItem.findMany({
+      where: { active: true, locale },
+      orderBy: { position: "asc" },
+      select: { id: true, question: true, answer: true },
+    });
+    return rows.map((row) => ({
+      id: row.id,
+      question: row.question,
+      answer: row.answer,
+    }));
+  }),
 });
 
 const publicIndustryRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const rows = await prisma.industryItem.findMany({
-        where: { active: true, locale },
-        orderBy: { position: "asc" },
-        select: { id: true, name: true, tag: true },
-      });
-      return rows.map((row) => ({
-        id: row.id,
-        name: row.name,
-        tag: row.tag,
-      }));
-    }),
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const rows = await prisma.industryItem.findMany({
+      where: { active: true, locale },
+      orderBy: { position: "asc" },
+      select: { id: true, name: true, tag: true },
+    });
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      tag: row.tag,
+    }));
+  }),
 });
 
 const publicSectionCardRouter = router({
@@ -684,7 +687,14 @@ const publicSectionCardRouter = router({
           ...(section ? { section } : {}),
         },
         orderBy: { position: "asc" },
-        select: { id: true, section: true, color: true, heading: true, paragraph: true, icon: true },
+        select: {
+          id: true,
+          section: true,
+          color: true,
+          heading: true,
+          paragraph: true,
+          icon: true,
+        },
       });
       return rows.map((row) => ({
         id: row.id,
@@ -698,62 +708,56 @@ const publicSectionCardRouter = router({
 });
 
 const publicProcessPhaseRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const rows = await prisma.processPhase.findMany({
-        where: { active: true, locale },
-        orderBy: { position: "asc" },
-        select: { id: true, title: true, steps: true, description: true },
-      });
-      return rows.map((row) => ({
-        id: row.id,
-        title: row.title,
-        steps: row.steps
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean),
-        description: row.description,
-      }));
-    }),
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const rows = await prisma.processPhase.findMany({
+      where: { active: true, locale },
+      orderBy: { position: "asc" },
+      select: { id: true, title: true, steps: true, description: true },
+    });
+    return rows.map((row) => ({
+      id: row.id,
+      title: row.title,
+      steps: row.steps
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean),
+      description: row.description,
+    }));
+  }),
 });
 
 const publicServiceCategoryRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const rows = await prisma.serviceCategory.findMany({
-        where: { active: true, locale },
-        orderBy: { position: "asc" },
-        select: { id: true, name: true, items: true, tint: true, image: true },
-      });
-      return rows.map((row) => ({
-        id: row.id,
-        name: row.name,
-        tint: row.tint,
-        image: row.image,
-        items: row.items
-          .split("\n")
-          .map((line) => line.trim())
-          .filter(Boolean),
-      }));
-    }),
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const rows = await prisma.serviceCategory.findMany({
+      where: { active: true, locale },
+      orderBy: { position: "asc" },
+      select: { id: true, name: true, items: true, tint: true, image: true },
+    });
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      tint: row.tint,
+      image: row.image,
+      items: row.items
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean),
+    }));
+  }),
 });
 
 const publicPlanOfInterestRouter = router({
-  list: publicProcedure
-    .input(localeInput)
-    .query(async ({ input }) => {
-      const locale = input?.locale ?? "id";
-      const rows = await prisma.planOfInterest.findMany({
-        where: { active: true, locale },
-        orderBy: { position: "asc" },
-        select: { id: true, name: true },
-      });
-      return rows.map((row) => ({ id: row.id, name: row.name }));
-    }),
+  list: publicProcedure.input(localeInput).query(async ({ input }) => {
+    const locale = input?.locale ?? "id";
+    const rows = await prisma.planOfInterest.findMany({
+      where: { active: true, locale },
+      orderBy: { position: "asc" },
+      select: { id: true, name: true },
+    });
+    return rows.map((row) => ({ id: row.id, name: row.name }));
+  }),
 });
 
 export const appRouter = router({

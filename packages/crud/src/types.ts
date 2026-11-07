@@ -271,10 +271,22 @@ export interface CRUDFieldGallery extends CRUDFieldBase {
 }
 
 interface CRUDFieldOther extends CRUDFieldBase {
-  type: Exclude<FieldType, "select" | "range" | "multicheck" | "image" | "file" | "schedule" | "gallery" | "separator">;
+  type: Exclude<
+    FieldType,
+    "select" | "range" | "multicheck" | "image" | "file" | "schedule" | "gallery" | "separator"
+  >;
 }
 
-export type CRUDField = CRUDFieldSelect | CRUDFieldRange | CRUDFieldMulticheck | CRUDFieldImage | CRUDFieldFile | CRUDFieldSeparator | CRUDFieldSchedule | CRUDFieldGallery | CRUDFieldOther;
+export type CRUDField =
+  | CRUDFieldSelect
+  | CRUDFieldRange
+  | CRUDFieldMulticheck
+  | CRUDFieldImage
+  | CRUDFieldFile
+  | CRUDFieldSeparator
+  | CRUDFieldSchedule
+  | CRUDFieldGallery
+  | CRUDFieldOther;
 
 export interface QueryState {
   page: number;

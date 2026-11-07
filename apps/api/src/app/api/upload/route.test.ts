@@ -6,7 +6,10 @@ import { describe, it, expect } from "vitest";
 
 function sanitizePath(raw: string | null): string {
   if (!raw) return "uploads";
-  const clean = raw.replace(/[^a-zA-Z0-9/_-]/g, "").replace(/^\/+/, "").slice(0, 80);
+  const clean = raw
+    .replace(/[^a-zA-Z0-9/_-]/g, "")
+    .replace(/^\/+/, "")
+    .slice(0, 80);
   return clean || "uploads";
 }
 

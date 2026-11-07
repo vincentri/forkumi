@@ -131,7 +131,16 @@ function ModelMultiSelectInner({
         </div>
       )}
 
-      <Popover open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setSearch(""); setDebouncedSearch(""); } }}>
+      <Popover
+        open={open}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (!o) {
+            setSearch("");
+            setDebouncedSearch("");
+          }
+        }}
+      >
         <PopoverTrigger asChild>
           <Button
             type="button"
@@ -141,7 +150,9 @@ function ModelMultiSelectInner({
             className="w-full justify-between h-10 font-normal"
           >
             <span className="text-muted-foreground text-sm">
-              {value.length === 0 ? (field.placeholder ?? `Select ${field.label}…`) : `${value.length} selected`}
+              {value.length === 0
+                ? (field.placeholder ?? `Select ${field.label}…`)
+                : `${value.length} selected`}
             </span>
             <div className="flex shrink-0 items-center gap-1">
               {value.length > 0 && (
@@ -186,9 +197,7 @@ function ModelMultiSelectInner({
             onWheel={(event) => event.stopPropagation()}
             onTouchMove={(event) => event.stopPropagation()}
           >
-            {isLoading && (
-              <div className="px-3 py-2 text-sm text-muted-foreground">Loading…</div>
-            )}
+            {isLoading && <div className="px-3 py-2 text-sm text-muted-foreground">Loading…</div>}
             {!isLoading && options.length === 0 && (
               <div className="px-3 py-2 text-sm text-muted-foreground">No options found.</div>
             )}
@@ -205,7 +214,12 @@ function ModelMultiSelectInner({
                       selected && "bg-accent/50",
                     )}
                   >
-                    <span className={cn("flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border", selected && "bg-primary border-primary text-primary-foreground")}>
+                    <span
+                      className={cn(
+                        "flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border",
+                        selected && "bg-primary border-primary text-primary-foreground",
+                      )}
+                    >
                       {selected && <span className="text-xs leading-none">✓</span>}
                     </span>
                     <span className="truncate">{option.label}</span>

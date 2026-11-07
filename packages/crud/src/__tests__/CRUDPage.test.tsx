@@ -7,9 +7,7 @@ import type { CRUDConfig } from "../types";
 const config: CRUDConfig = {
   model: "product",
   label: "Products",
-  fields: [
-    { name: "title", type: "text", label: "Title", required: true },
-  ],
+  fields: [{ name: "title", type: "text", label: "Title", required: true }],
 };
 
 const listData = {
