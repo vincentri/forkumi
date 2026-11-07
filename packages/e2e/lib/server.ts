@@ -49,7 +49,13 @@ export async function startServer(env: ServerEnv): Promise<ChildProcess> {
     console.error("[e2e] Server spawn error:", err.message);
   });
 
-  await waitForHealth();
+  try {
+    await waitForHealth();
+  } catch (err) {
+    // Caller never receives `child` on failure, so stop it here or it orphans on :3001.
+    await stopServer(child);
+    throw err;
+  }
   console.log("[e2e] api server is healthy.");
   return child;
 }

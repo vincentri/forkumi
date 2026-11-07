@@ -180,6 +180,10 @@ describe("appRouter shape — admin namespace contract", () => {
     expect(typeof c.public?.getInvitation).toBe("function");
     expect(typeof c.public?.frontPageSettings?.get).toBe("function");
   });
+
+  it("exposes root health probe used by docker-compose and e2e", async () => {
+    await expect(caller().health()).resolves.toEqual({ ok: true });
+  });
 });
 
 // Type-level guard: AppRouter must carry an `admin` branch. This line fails

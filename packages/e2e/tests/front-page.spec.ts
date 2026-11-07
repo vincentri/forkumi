@@ -44,18 +44,19 @@ test.describe("Front Page Settings (keyValue)", () => {
 
   test("switch to SEO tab", async ({ page }) => {
     await switchTab(page, "SEO");
-    await expect(page.getByLabel("Meta Title")).toBeVisible();
-    await expect(page.getByLabel("Meta Description")).toBeVisible();
+    // exact: SEO tab also has "Meta Title Home Page" / "Meta Description Home Page".
+    await expect(page.getByLabel("Meta Title", { exact: true })).toBeVisible();
+    await expect(page.getByLabel("Meta Description", { exact: true })).toBeVisible();
   });
 
-  test("switch to Home Page tab", async ({ page }) => {
-    await switchTab(page, "Home Page");
-    await expect(page.getByLabel("Feedback Section Title")).toBeVisible();
+  test("switch to Home tab", async ({ page }) => {
+    await switchTab(page, "Home");
+    await expect(page.getByLabel("Stamp Text")).toBeVisible();
   });
 
-  test("switch to Social Media tab", async ({ page }) => {
-    await switchTab(page, "Social Media");
-    await expect(page.getByLabel("Instagram")).toBeVisible();
+  test("switch to Contact tab", async ({ page }) => {
+    await switchTab(page, "Contact");
+    await expect(page.getByLabel("Instagram URL", { exact: true })).toBeVisible();
   });
 
   test("switch to Scripts tab and edit", async ({ page }) => {

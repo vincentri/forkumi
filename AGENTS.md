@@ -123,11 +123,22 @@ cd ~/work/utils/test-project && pnpm --filter api build
 
 A clean build (`✓ Compiled successfully`) is the minimum bar. For broad changes in this repo, also run `pnpm build` (runs `next build`, including type-check, in both apps — same as Docker).
 
-After any QA session that starts a dev server, kill the app ports (`3000` = `apps/web`, `3001` = `apps/api`):
+### Teardown (mandatory)
+
+After any session that starts servers or containers (dev servers, `next start`, `pnpm e2e*`, `docker compose up`, `docker run`), tear down everything you started before reporting done — including after failed or interrupted runs:
 
 ```bash
+# App ports (3000 = apps/web, 3001 = apps/api)
 lsof -ti :3000-3001 | xargs kill -9 2>/dev/null || true
+# e2e Postgres containers (testcontainers) + their anonymous volumes
+docker ps -aq --filter label=org.testcontainers=true | xargs -r docker rm -f -v
+# Anything started via docker compose (no -v: keeps named data volumes)
+docker compose down --remove-orphans
 ```
+
+- Stopping a backgrounded `pnpm e2e*` does not stop its `next start` child — it keeps holding `:3001` and breaks the next run. Run e2e in the foreground, or kill the port afterwards.
+- Only remove containers you started (testcontainers label / this compose project). Never prune unrelated containers, images, or volumes on the user's machine.
+- Then verify: `lsof -ti :3000-3001` prints nothing and `docker ps --filter label=org.testcontainers=true` lists nothing.
 
 ## Agent guidance
 

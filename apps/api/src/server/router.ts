@@ -802,6 +802,8 @@ export const appRouter = router({
     serviceCategory: publicServiceCategoryRouter,
     whysub: publicWhysubRouter,
   }),
+  // Liveness probe for docker-compose healthcheck and the e2e server boot.
+  health: publicProcedure.query(() => ({ ok: true })),
 });
 
 export type AppRouter = typeof appRouter;
