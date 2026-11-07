@@ -21,6 +21,7 @@ const NAV: Array<{ path: string; page: string; label: Record<"id" | "en", string
 ];
 
 const TALK: Record<"id" | "en", string> = { id: "Ngobrol yuk", en: "Let's talk" };
+const CLOSE: Record<"id" | "en", string> = { id: "Tutup menu", en: "Close menu" };
 const WA_FALLBACK =
   "https://wa.me/6580892716?text=Halo%20Forkumi!%20Saya%20tertarik%20dengan%20layanan%20desain%20langganan.";
 
@@ -49,6 +50,15 @@ export function SiteNav({ locale, settings }: SiteNavProps): ReactElement {
     setOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent): void => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   function setLang(next: "id" | "en"): void {
     if (next === locale) return;
     localStorage.setItem("forkumi_lang", next);
@@ -66,7 +76,20 @@ export function SiteNav({ locale, settings }: SiteNavProps): ReactElement {
       <Link className="brand" href={localeHref(locale, "")}>
         <img src={logo} alt="Logo" />
       </Link>
+      {open ? (
+        <div className="nav-backdrop" aria-hidden="true" onClick={() => setOpen(false)} />
+      ) : null}
       <div className={`nav-links${open ? " open" : ""}`}>
+        <button
+          type="button"
+          className="nav-close"
+          aria-label={CLOSE[locale]}
+          onClick={() => setOpen(false)}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
         {NAV.map((item) => {
           const href = localeHref(locale, item.path);
           const active =

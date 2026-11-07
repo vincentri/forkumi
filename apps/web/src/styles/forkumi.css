@@ -288,6 +288,10 @@ nav .brand img {
   gap: 5px;
   padding: 8px;
 }
+.nav-close,
+.nav-backdrop {
+  display: none;
+}
 .burger span {
   width: 22px;
   height: 2px;
@@ -1869,6 +1873,38 @@ footer a:hover {
   }
   .nav-links.open {
     right: 0;
+  }
+  .nav-close {
+    display: flex;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--navy);
+  }
+  .nav-close svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  /* Explicit viewport size, not inset: 0. When scrolled, nav's backdrop-filter
+     makes it the containing block for fixed children. */
+  .nav-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(30, 42, 86, 0.35);
+    z-index: 598;
   }
   .nav-links a {
     font-size: 20px;
