@@ -1,7 +1,11 @@
 "use client";
 
 import { useMemo } from "react";
-import { flexRender, getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
+import { flexRender, tableFeatures, useTable, type ColumnDef } from "@tanstack/react-table";
+
+// Core row model only: sorting/paging/selection are server-side or handled in this component.
+const features = tableFeatures({});
+type Row = Record<string, unknown>;
 import {
   Table,
   TableBody,
@@ -369,7 +373,7 @@ export function CRUDTable({
   const allSelected = selectableIds.length > 0 && selectableIds.every((id) => selectedIds?.has(id));
   const someSelected = !allSelected && selectableIds.some((id) => selectedIds?.has(id));
 
-  const checkboxColumn: ColumnDef<Record<string, unknown>> = {
+  const checkboxColumn: ColumnDef<typeof features, Row> = {
     id: "select",
     header: () => (
       <Checkbox
@@ -393,7 +397,7 @@ export function CRUDTable({
     },
   };
 
-  const columns: ColumnDef<Record<string, unknown>>[] = [
+  const columns: ColumnDef<typeof features, Row>[] = [
     ...(showCheckboxes ? [checkboxColumn] : []),
     ...tableFields.map((field) => ({
       accessorKey: field.name,
@@ -535,11 +539,7 @@ export function CRUDTable({
       : []),
   ];
 
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+  const table = useTable({ features, data, columns });
 
   return (
     <div className="rounded-md border">
@@ -673,7 +673,7 @@ export function CRUDTable({
                   }
                   tabIndex={rowClickable ? 0 : undefined}
                 >
-                  {row.getVisibleCells().map((cell, cellIdx) => {
+                  {row.getAllCells().map((cell, cellIdx) => {
                     const dataColIdx = showCheckboxes ? cellIdx - 1 : cellIdx;
                     return (
                       <TableCell key={cell.id} className="align-top">
