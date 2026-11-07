@@ -19,7 +19,12 @@ export const UserCRUD = defineCRUD({
       name: "roleId",
       type: "select",
       label: "Role",
-      options: [],
+      optionsFrom: {
+        model: "role",
+        valueField: "id",
+        labelField: "name",
+        orderBy: { name: "asc" },
+      },
       showInTable: false,
     },
     { name: "roleName", type: "text", label: "Role", showInForm: false },

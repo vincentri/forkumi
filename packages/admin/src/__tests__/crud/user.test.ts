@@ -44,6 +44,14 @@ describe("UserCRUD", () => {
     expect(field!.showInTable).toBe(false);
   });
 
+  it("roleId field loads options from the role model", () => {
+    const field = UserCRUD.fields.find((f) => f.name === "roleId") as
+      | { optionsFrom?: { model: string; labelField: string } }
+      | undefined;
+    expect(field?.optionsFrom?.model).toBe("role");
+    expect(field?.optionsFrom?.labelField).toBe("name");
+  });
+
   it("roleName field is hidden from form", () => {
     const field = UserCRUD.fields.find((f) => f.name === "roleName");
     expect(field).toBeDefined();

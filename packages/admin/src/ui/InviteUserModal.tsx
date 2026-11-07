@@ -50,11 +50,11 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
     formState: { errors, isSubmitting },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
-  const rolesQuery = (api.admin as any).role.list.useQuery(
-    { page: 1, pageSize: 100 },
+  const rolesQuery = (api.admin as any).user.searchOptions.useQuery(
+    { field: "roleId" },
     { enabled: open },
   );
-  const roles: Array<{ id: string; name: string }> = rolesQuery.data?.items ?? [];
+  const roles: Array<{ value: string; label: string }> = rolesQuery.data ?? [];
   const emailSettingsQuery = (api.admin as any).emailSettings.get.useQuery(undefined, {
     enabled: open,
   });
@@ -165,8 +165,8 @@ export function InviteUserModal({ open, onClose, onSuccess }: InviteUserModalPro
                 </SelectTrigger>
                 <SelectContent>
                   {roles.map((r) => (
-                    <SelectItem key={r.id} value={r.id}>
-                      {r.name}
+                    <SelectItem key={r.value} value={r.value}>
+                      {r.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

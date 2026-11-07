@@ -204,11 +204,58 @@ export function createUserRouter(
       return await db.user.delete({ where: { id: input.id } });
     });
 
+  const userSearchOptionsInput = z.object({
+    field: z.string(),
+    search: z.string().optional(),
+    selected: z.string().optional(),
+    ids: z.array(z.string()).optional(),
+  });
+
+  type RoleOptionRow = { id: string; name: string };
+
+  const userSearchOptionsProcedure = trpc
+    .permissionProcedure("view", "user")
+    .input(userSearchOptionsInput)
+    .query(async ({ input }: { input: z.infer<typeof userSearchOptionsInput> }) => {
+      if (input.field !== "roleId") {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Unsupported options field "${input.field}".`,
+        });
+      }
+      const nameWhere = input.search
+        ? { name: { contains: input.search, mode: "insensitive" as const } }
+        : {};
+      const [selectedRows, searchRows]: [RoleOptionRow[], RoleOptionRow[]] = await Promise.all([
+        input.selected
+          ? db.role.findMany({
+              where: { id: input.selected },
+              select: { id: true, name: true },
+            })
+          : Promise.resolve([]),
+        db.role.findMany({
+          where: nameWhere,
+          orderBy: { name: "asc" },
+          take: input.search ? 50 : 10,
+          select: { id: true, name: true },
+        }),
+      ]);
+      const seen = new Set<string>();
+      return [...selectedRows, ...searchRows]
+        .filter((row) => {
+          if (seen.has(row.id)) return false;
+          seen.add(row.id);
+          return true;
+        })
+        .map((row) => ({ value: row.id, label: row.name }));
+    });
+
   return trpc.router({
     list: userListProcedure,
     getById: userGetByIdProcedure,
     create: userCreateProcedure,
     update: userUpdateProcedure,
     delete: userDeleteProcedure,
+    searchOptions: userSearchOptionsProcedure,
   });
 }

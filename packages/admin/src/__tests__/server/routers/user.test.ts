@@ -98,6 +98,54 @@ describe("createUserRouter", () => {
     });
   });
 
+  describe("searchOptions", () => {
+    it("returns role options for the roleId field", async () => {
+      const db = mockDb();
+      const trpc = mockTrpc();
+      const router = createUserRouter(db, trpc, mockPasswordHasher());
+      const ctx = { session: { user: {} } };
+      (db as any).role.findMany.mockResolvedValue([{ id: "r1", name: "viewer" }]);
+
+      const result = await (router as any).searchOptions({
+        ctx,
+        input: { field: "roleId" },
+      });
+
+      expect(result).toEqual([{ value: "r1", label: "viewer" }]);
+    });
+
+    it("keeps the selected role even when it is outside the search page", async () => {
+      const db = mockDb();
+      const trpc = mockTrpc();
+      const router = createUserRouter(db, trpc, mockPasswordHasher());
+      const ctx = { session: { user: {} } };
+      (db as any).role.findMany
+        .mockResolvedValueOnce([{ id: "r1", name: "super admin" }])
+        .mockResolvedValueOnce([{ id: "r2", name: "viewer" }]);
+
+      const result = await (router as any).searchOptions({
+        ctx,
+        input: { field: "roleId", selected: "r1" },
+      });
+
+      expect(result).toEqual([
+        { value: "r1", label: "super admin" },
+        { value: "r2", label: "viewer" },
+      ]);
+    });
+
+    it("rejects fields that are not roleId", async () => {
+      const db = mockDb();
+      const trpc = mockTrpc();
+      const router = createUserRouter(db, trpc, mockPasswordHasher());
+      const ctx = { session: { user: {} } };
+
+      await expect(
+        (router as any).searchOptions({ ctx, input: { field: "email" } }),
+      ).rejects.toThrow('Unsupported options field "email".');
+    });
+  });
+
   describe("create", () => {
     it("hashes password on create", async () => {
       const db = mockDb();
