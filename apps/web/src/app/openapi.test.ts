@@ -77,12 +77,18 @@ test("api catalog is an RFC 9727 linkset whose items and descriptions resolve", 
   assert.equal(API_CATALOG_PROFILE, "https://www.rfc-editor.org/info/rfc9727");
 });
 
-test("poppy manifest is a website-only 0.1 declaration bound to the bare domain", () => {
-  const expected = {
+test("poppy manifest: 0.1 at the well-known URL, naming the 0.4 document", () => {
+  const organization = { name: "Forkumi", domain: "forkumi.co" };
+  assert.deepEqual(buildPoppyManifest("https://forkumi.co", "Forkumi"), {
     protocol_version: "0.1",
-    organization: { name: "Forkumi", domain: "forkumi.co" },
+    organization,
+    supported_versions: { "0.4": "https://forkumi.co/.well-known/poppy/0.4.json" },
     web: {},
-  };
-  assert.deepEqual(buildPoppyManifest("https://forkumi.co", "Forkumi"), expected);
-  assert.deepEqual(buildPoppyManifest("https://www.forkumi.co", "Forkumi"), expected);
+  });
+  // Domain ignores a leading www; the alternate document lists no supported_versions.
+  assert.deepEqual(buildPoppyManifest("https://www.forkumi.co", "Forkumi", "0.4"), {
+    protocol_version: "0.4",
+    organization,
+    web: {},
+  });
 });

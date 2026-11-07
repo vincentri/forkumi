@@ -172,15 +172,27 @@ export function buildApiCatalog(webUrl: string, apiUrl: string): Record<string, 
   };
 }
 
+export const POPPY_VERSIONS = ["0.1", "0.4"] as const;
+export const POPPY_ALT_PATH = "/.well-known/poppy/0.4.json";
+
 /**
  * Personal Agent Protocol (Poppy) manifest, website-only: agents browse as signed-out
- * visitors, so no auth issuer. ponytail: protocol 0.1 is what isitagentready validates;
- * add a supported_versions entry when 0.4+ agents matter.
+ * visitors, so no auth issuer. /.well-known/poppy.json is 0.1 (what isitagentready validates)
+ * and names the 0.4 document in supported_versions; pre-1.0 versions aren't compatible
+ * across minors (spec 3.4), so agents pick whichever they implement.
  */
-export function buildPoppyManifest(webUrl: string, name: string): Record<string, unknown> {
+export function buildPoppyManifest(
+  webUrl: string,
+  name: string,
+  version: (typeof POPPY_VERSIONS)[number] = "0.1",
+): Record<string, unknown> {
   return {
-    protocol_version: "0.1",
+    protocol_version: version,
     organization: { name, domain: new URL(webUrl).hostname.replace(/^www\./, "") },
+    // Alternate documents carry no supported_versions (spec 3.4).
+    ...(version === "0.1"
+      ? { supported_versions: { "0.4": new URL(POPPY_ALT_PATH, webUrl).toString() } }
+      : {}),
     web: {},
   };
 }
