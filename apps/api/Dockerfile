@@ -59,8 +59,8 @@ RUN --mount=type=cache,id=npm-tools,target=/root/.npm \
     npm install --save-exact \
       prisma@7.10.1 \
       tsx@4.23.15 \
-      bcryptjs@2.4.3 \
-      dotenv@16.6.1 \
+      bcryptjs@3.0.3 \
+      dotenv@18.0.9 \
       "@prisma/client@7.10.1" \
       "@prisma/adapter-pg@7.10.1" \
       "pg@8.23.1"
