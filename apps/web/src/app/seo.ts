@@ -11,6 +11,7 @@ import {
   resolveAssetUrl,
   type FrontPageSettings,
 } from "./front-page-settings";
+import { parseKeywords } from "./keywords";
 import { parsePrice } from "./price";
 
 type Locale = "id" | "en";
@@ -199,6 +200,10 @@ export function buildOrganizationJsonLd(settings: FrontPageSettings): Record<str
     ),
   );
 
+  const productTerms = parseKeywords(
+    firstValue(settings.homePageSeoMetaKeywords, settings.meta_keywords),
+  );
+
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -206,6 +211,10 @@ export function buildOrganizationJsonLd(settings: FrontPageSettings): Record<str
     name: firstValue(settings.site_name) ?? DEFAULT_TITLE,
     url: baseUrl.toString(),
     description: firstValue(settings.meta_description) ?? DEFAULT_DESCRIPTION,
+    // Product terms for agents/search (e.g. "Forkumi design subscription"); same list as meta keywords.
+    ...(productTerms.length > 0
+      ? { keywords: productTerms.join(", "), knowsAbout: productTerms }
+      : {}),
     logo,
     sameAs,
     contactPoint: {
