@@ -22,13 +22,13 @@
   "dependencies": {
     "@repo/crud": "workspace:*",
     "@repo/ui": "workspace:*",
-    "zod": "^4.4.3"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@types/react": "^19.2.17",
+    "@types/react": "^19.3.0",
     "next": "^16.4.5",
-    "next-auth": "^4.24.14",
+    "next-auth": "^4.24.15",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0"
   },

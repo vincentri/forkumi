@@ -57,13 +57,13 @@ FROM node:22-alpine AS tools
 WORKDIR /tools
 RUN --mount=type=cache,id=npm-tools,target=/root/.npm \
     npm install --save-exact \
-      prisma@7.8.0 \
-      tsx@4.19.3 \
+      prisma@7.10.1 \
+      tsx@4.23.15 \
       bcryptjs@2.4.3 \
-      dotenv@16.4.7 \
-      "@prisma/client@7.8.0" \
-      "@prisma/adapter-pg@7.8.0" \
-      "pg@8.21.0"
+      dotenv@16.6.1 \
+      "@prisma/client@7.10.1" \
+      "@prisma/adapter-pg@7.10.1" \
+      "pg@8.23.1"
 COPY apps/api/prisma ./prisma
 RUN PRISMA_GENERATE_SKIP_AUTOINSTALL=true \
     node_modules/.bin/prisma generate --schema ./prisma/schema.prisma

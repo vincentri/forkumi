@@ -12,12 +12,12 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.1",
+    "@playwright/test": "^1.65.0",
     "@repo/tsconfig": "workspace:*",
-    "@testcontainers/postgresql": "^10.16.0",
-    "@types/node": "^25.9.3",
-    "testcontainers": "^10.16.0",
-    "tsx": "^4.22.4",
+    "@testcontainers/postgresql": "^10.28.0",
+    "@types/node": "^25.9.9",
+    "testcontainers": "^10.28.0",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^5.1.0"
   }
