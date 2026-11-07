@@ -21,7 +21,7 @@ import {
   Minus,
   Undo2,
   Redo2,
-  Youtube,
+  SquarePlay,
   Image as ImageIcon,
   AlignLeft,
   AlignCenter,
@@ -568,7 +568,7 @@ export function RichTextEditor({
           <Divider />
 
           <ToolbarButton onClick={() => setYoutubeOpen(true)} title="Embed YouTube video">
-            <Youtube className="h-3.5 w-3.5" />
+            <SquarePlay className="h-3.5 w-3.5" />
           </ToolbarButton>
 
           <Divider />
