@@ -29,7 +29,7 @@ const testEmailInput = z.object({
 type SettingValue = string | boolean;
 
 async function upsertEmailSetting(key: string, value: SettingValue) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const db = prisma as any;
   return db.settings.upsert({
     where: { key },

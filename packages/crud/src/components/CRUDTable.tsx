@@ -246,7 +246,7 @@ function useSelectLabelMap(
   const labelMap = new Map<string, Map<string, string>>();
   for (const field of targetFields) {
     const ids = idsByField.get(field.name);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // oxlint-disable-next-line react/rules-of-hooks
     const query = modelApi?.searchOptions?.useQuery(
       { field: field.name, ids: ids ? [...ids] : [] },
       { enabled: !!modelApi && !!ids && ids.size > 0 },
@@ -395,7 +395,7 @@ export function CRUDTable({
           const src = resolveAssetUrl(value);
           return (
             <span className="inline-block h-8 w-8 rounded border border-border overflow-hidden bg-muted">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              {/* oxlint-disable-next-line nextjs/no-img-element */}
               {src ? <img src={src} alt="" className="h-full w-full object-contain" /> : null}
             </span>
           );

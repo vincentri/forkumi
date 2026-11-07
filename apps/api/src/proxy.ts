@@ -40,13 +40,12 @@ export function clearLoginAttempts(): void {
 
 function setCorsHeaders(response: NextResponse, origin: string | null): void {
   if (!origin) return;
+  // Response varies by Origin whether allowed or not; CDNs must not mix cached CORS headers.
+  response.headers.set("Vary", "Origin");
   const allowed = allowedOrigins();
   if (allowed.includes(origin) || allowed.includes(origin.replace(/\/$/, ""))) {
     response.headers.set("Access-Control-Allow-Origin", origin);
     response.headers.set("Access-Control-Allow-Credentials", "true");
-    response.headers.set("Vary", "Origin");
-  } else {
-    response.headers.set("Access-Control-Allow-Origin", "*");
   }
 }
 

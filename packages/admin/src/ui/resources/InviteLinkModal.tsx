@@ -23,11 +23,11 @@ export function InviteLinkModal({ email, open, onClose }: Props) {
   const [generating, setGenerating] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const mutation = (api.admin as any).user.resendInvite.useMutation();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const sendInviteEmailMutation = (api.admin as any).user.sendInviteEmail.useMutation();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const emailSettingsQuery = (api.admin as any).emailSettings.get.useQuery(undefined, { enabled: open });
   const emailDeliveryEnabled = emailSettingsQuery?.data?.enabled === true;
 

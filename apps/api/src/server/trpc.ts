@@ -45,7 +45,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
  */
 export function permissionProcedure(action: StandardAction, model?: string) {
   return protectedProcedure.use(({ ctx, next }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     const user = ctx.session.user as any;
     if (user?.isProtectedRole) return next({ ctx }); // protected role = full bypass
     const perms: string[] = user?.permissions ?? [];

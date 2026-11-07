@@ -145,7 +145,7 @@ const ImageUpload = React.forwardRef<HTMLDivElement, ImageUploadProps>(
           {displayUrl ? (
             <div className="flex items-center gap-4">
               <div className="relative h-16 w-16 rounded-md border border-border overflow-hidden bg-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                {/* oxlint-disable-next-line nextjs/no-img-element */}
                 <img src={displayUrl} alt="" className="h-full w-full object-contain" onError={() => setBrokenUrl(displayUrl ?? null)} />
               </div>
               {!disabled && (

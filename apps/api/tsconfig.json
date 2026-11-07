@@ -1,12 +1,8 @@
 {
   "extends": "@repo/tsconfig/next.json",
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ]
+      "~/*": ["./src/*"]
     },
     "isolatedModules": true
   },
@@ -17,9 +13,5 @@
     ".next/types/**/*.ts",
     "../../packages/auth/src/types.d.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "vitest.config.ts",
-    "prisma/prisma.config.ts"
-  ]
+  "exclude": ["node_modules", "vitest.config.ts", "prisma/prisma.config.ts"]
 }

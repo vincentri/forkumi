@@ -17,7 +17,7 @@ const EMAIL_NAMESPACE = "email";
 type SettingsRow = { key: string; value: string | null };
 
 async function getEmailSettingsRows(): Promise<SettingsRow[]> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const db = prisma as any;
   return db.settings.findMany({
     where: { namespace: EMAIL_NAMESPACE },

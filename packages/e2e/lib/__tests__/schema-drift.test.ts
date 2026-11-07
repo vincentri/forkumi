@@ -50,6 +50,13 @@ const EXCLUDED_MODELS = new Set([
   "Portfolio",
   "Plan",
   "PlanFeature",
+  "FaqItem",
+  "IndustryItem",
+  "SectionCard",
+  "ProcessPhase",
+  "ContactSubmission",
+  "ServiceCategory",
+  "PlanOfInterest",
 ]);
 
 function loadSchema(path: string): string {

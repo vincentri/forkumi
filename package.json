@@ -6,7 +6,7 @@
     "dev:api": "turbo run dev --filter=api",
     "dev:web": "turbo run dev --filter=web",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
+    "lint": "oxlint",
     "type-check": "turbo run type-check",
     "test": "turbo run test",
     "db:seed": "pnpm --filter @repo/db db:seed && pnpm --filter api db:seed",
@@ -21,18 +21,21 @@
     "e2e": "pnpm --filter @repo/e2e test:e2e:full",
     "e2e:core": "pnpm --filter @repo/e2e test:e2e:core",
     "e2e:ui": "pnpm --filter @repo/e2e test:e2e:ui",
-    "e2e:core:ui": "pnpm --filter @repo/e2e test:e2e:core:ui"
+    "e2e:core:ui": "pnpm --filter @repo/e2e test:e2e:core:ui",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.8",
-    "eslint": "^9.39.4",
-    "eslint-config-next": "^16.2.9",
+    "@vitest/coverage-v8": "^5.1.0",
+    "oxfmt": "0.77.0",
+    "oxlint": "1.92.0",
     "tsx": "^4.22.4",
     "turbo": "^2.9.18",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   },
-  "packageManager": "pnpm@11.5.2+sha512.71c631e382066efc25625d5cf029075de07b61b37f6e27350fbd84b1bda5864c8c1967adc280776b45c30a715c0359a3be08fef42d5bb09e2b99029979692916",
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "pnpm@12.18.0"
 }

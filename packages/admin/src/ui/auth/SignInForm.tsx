@@ -39,7 +39,7 @@ export function SignInForm({ logoLightUrl, logoDarkUrl, appName, heroTitle, hero
       url.searchParams.delete("invited");
       window.history.replaceState({}, "", url.toString());
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // oxlint-disable-line react/exhaustive-deps
 
   const [serverError, setServerError] = useState("");
   const [isRedirecting, setIsRedirecting] = useState(false);

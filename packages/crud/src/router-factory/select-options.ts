@@ -1,7 +1,7 @@
 import type { CRUDFieldSelect, SelectOption } from "../types";
 import { prismaModelKey } from "./relations";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 export async function resolveSelectOptions(db: any, ctx: any, field: CRUDFieldSelect): Promise<SelectOption[]> {
   if (field.optionsQuery) {
     return field.optionsQuery({ db, ctx });
@@ -34,7 +34,7 @@ export async function resolveSelectOptions(db: any, ctx: any, field: CRUDFieldSe
  * rows for any specific IDs (e.g. resolving labels for rows in the current list),
  * and a search-limited page. Merges them deduped.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 export async function resolveSelectOptionsForSearch(
   db: any,
   ctx: any,

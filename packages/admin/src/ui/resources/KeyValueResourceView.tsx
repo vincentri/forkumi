@@ -29,13 +29,13 @@ export function KeyValueResourceView({ config, m, permissions, isProtectedRole }
 
   const [locale, setLocale] = useState(defaultLocale);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const queryInput = isLocalized ? { locale } : undefined;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const { data, isLoading, refetch } = (m as any).get.useQuery(queryInput, {
     enabled: true,
   });
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const updateMutation = (m as any).update.useMutation();
   const canUpdate = isProtectedRole || permissions.includes(`${config.model}:update`) || permissions.includes("*:update");
 

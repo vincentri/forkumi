@@ -215,7 +215,7 @@ export function CRUDForm({
       // ponytail: zodResolver's infered generic is tied to the schema's output shape,
       // which doesn't line up with our `Record<string, unknown>` form shape. Cast through
       // `never` to keep the resolver while bypassing TS' generic mismatch.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // oxlint-disable-next-line typescript/no-explicit-any
       return (zodResolver as any)(schema)(values, context, options) as never;
     },
     defaultValues: resolvedDefaultValues,
@@ -262,9 +262,9 @@ export function CRUDForm({
   // Auto-generate slug fields from their source field.
   // lastAutoRef tracks the last value we wrote — if the slug still matches it (or is empty), keep auto-filling.
   const slugFields = formFields.filter((f) => f.slugFrom);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // oxlint-disable-next-line react/rules-of-hooks
   const lastAutoRef = useRef<Record<string, string>>({});
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // oxlint-disable-next-line react/rules-of-hooks
   const lastSourceRef = useRef<Record<string, string>>({});
   for (const slugField of slugFields) {
     const source = resolvedDefaultValues[slugField.slugFrom!];
@@ -276,9 +276,9 @@ export function CRUDForm({
     }
   }
   slugFields.forEach((slugField) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // oxlint-disable-next-line react/rules-of-hooks
     const sourceValue = watch(slugField.slugFrom!);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // oxlint-disable-next-line react/rules-of-hooks
     useEffect(() => {
       if (typeof sourceValue !== "string" || !sourceValue) return;
       if (lastSourceRef.current[slugField.name] === sourceValue) return;
@@ -290,7 +290,7 @@ export function CRUDForm({
       const derived = toSlug(sourceValue);
       lastAutoRef.current[slugField.name] = derived;
       setValue(slugField.name, derived, { shouldValidate: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react/exhaustive-deps
     }, [sourceValue]);
   });
 

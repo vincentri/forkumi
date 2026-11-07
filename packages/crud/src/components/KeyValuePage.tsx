@@ -81,7 +81,7 @@ export function KeyValuePage({ config, data, onSave, saving, extraTabContent, mo
   const watchedValues = watch();
   useEffect(() => {
     reset(watchedValues, { keepValues: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react/exhaustive-deps
   }, [activeTab]);
 
   function onSubmit(values: Record<string, unknown>) {

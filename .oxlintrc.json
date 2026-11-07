@@ -1,0 +1,60 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "nextjs", "jsx-a11y", "import"],
+  "env": { "builtin": true, "browser": true, "node": true },
+  "settings": {
+    "next": { "rootDir": ["apps/api/", "apps/web/"] }
+  },
+  "ignorePatterns": [
+    "**/.next/**",
+    "**/out/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/dist/**",
+    "**/next-env.d.ts",
+    "graphify-out/**",
+    "temp/**",
+    ".agents/**",
+    ".claude/**"
+  ],
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-unused-expressions": "warn",
+
+    "typescript/no-explicit-any": "warn",
+    "typescript/ban-ts-comment": "error",
+    "typescript/no-empty-object-type": "error",
+    "typescript/no-require-imports": "error",
+    "typescript/no-namespace": "error",
+    "typescript/no-unsafe-function-type": "error",
+    "typescript/no-wrapper-object-types": "error",
+    "typescript/triple-slash-reference": "error",
+
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/jsx-key": "error",
+    "react/jsx-no-undef": "error",
+    "react/no-unescaped-entities": "error",
+    "react/display-name": "error",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-no-target-blank": "off",
+
+    "nextjs/no-img-element": "warn",
+    "nextjs/no-html-link-for-pages": "off",
+    "nextjs/no-sync-scripts": "error",
+    "nextjs/inline-script-id": "error",
+
+    "import/no-anonymous-default-export": "warn",
+
+    "jsx-a11y/alt-text": "warn",
+    "jsx-a11y/aria-props": "warn",
+    "jsx-a11y/aria-proptypes": "warn",
+    "jsx-a11y/role-has-required-aria-props": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.{ts,tsx}", "**/__tests__/**", "packages/e2e/**"],
+      "rules": { "typescript/no-explicit-any": "off" }
+    }
+  ]
+}

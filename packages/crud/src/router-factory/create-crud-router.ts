@@ -12,7 +12,7 @@ import { assetFields, cleanupReplacedAssets, galleryAssetFields } from "./assets
 import { handlePrismaError } from "./errors";
 import { normalizeProcedures, type AnyProcedureBuilder, type AnyRouterBuilder, type ProcedureMap } from "./procedures";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 async function checkUnique(db: any, model: string, fields: CRUDField[], data: Record<string, unknown>, excludeId?: string): Promise<void> {
   const uniqueFields = fields.filter((f) => f.unique && data[f.name] !== undefined);
   for (const field of uniqueFields) {

@@ -44,7 +44,7 @@ export function CrudResourceView({ config, m, permissions, isProtectedRole, curr
   const bulkDeleteMutation = m.bulkDelete?.useMutation({ onSuccess: () => refetch() });
   const exportCsvMutation = m.exportCsv?.useMutation();
   const revokeInviteMutation = config.model === "user"
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     ? (api.admin as any).user.revokeInvite.useMutation({ onSuccess: () => refetch() })
     : null;
 

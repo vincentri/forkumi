@@ -64,7 +64,7 @@ export type PrismaLikeClient = Record<string, PrismaModelDelegate>;
 
 interface CRUDQueryContext {
   db: PrismaLikeClient;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   ctx?: any;
   /** Passed to server-side option queries when the user searches or a value is already selected. */
   search?: string;

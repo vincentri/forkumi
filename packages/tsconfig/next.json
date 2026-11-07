@@ -7,8 +7,10 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "allowJs": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
     "incremental": true,
     "plugins": [{ "name": "next" }]
   }

@@ -38,9 +38,9 @@
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
     "@types/react": "^19.2.17",
-    "next": "^16.2.9",
+    "next": "^16.4.5",
     "next-auth": "^4.24.14",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.8"
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
   }
 }

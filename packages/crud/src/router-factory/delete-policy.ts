@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import type { CRUDConfig, CRUDDeletePolicy } from "../types";
 import { prismaModelKey } from "./relations";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 export async function applyDeletePolicies(db: any, config: CRUDConfig, ids: string[]): Promise<void> {
   const policies = config.deletePolicy ?? [];
   if (policies.length === 0) return;
@@ -28,7 +28,7 @@ export async function applyDeletePolicies(db: any, config: CRUDConfig, ids: stri
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 async function applyReferencingUpdate(db: any, config: CRUDConfig, policy: CRUDDeletePolicy, ids: string[]): Promise<void> {
   if (policy.onDelete === "restrict" || policy.onDelete === "ignore") return;
   if (policy.onDelete === "setValue" && policy.value === undefined) {

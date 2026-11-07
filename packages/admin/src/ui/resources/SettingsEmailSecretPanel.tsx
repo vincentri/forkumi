@@ -16,11 +16,11 @@ interface Props {
  */
 export function SettingsEmailSecretPanel({ canUpdate, enabled }: Props) {
   const api = useAdminApi();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const { data, refetch } = (api.admin as any).emailSettings.get.useQuery();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const updateResendApiKey = (api.admin as any).emailSettings.updateResendApiKey.useMutation();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   const sendTest = (api.admin as any).emailSettings.sendTest.useMutation();
   const [resendApiKey, setResendApiKey] = useState("");
   const [testRecipient, setTestRecipient] = useState("");

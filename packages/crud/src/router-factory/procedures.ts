@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 export type AnyProcedureBuilder = any;
 
 export type ProcedureMap = {
@@ -14,7 +14,7 @@ export type ProcedureMap = {
 export type RequiredProcedureMap = Required<ProcedureMap>;
 
 export type AnyRouterBuilder = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-explicit-any
   (procedures: Record<string, any>): any;
 };
 

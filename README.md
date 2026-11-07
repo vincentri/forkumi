@@ -237,7 +237,8 @@ S3 uploads do not set object ACLs. Make `uploads/*` and `defaults/*` publicly re
 | `pnpm dev:api`       | Start `apps/api` only (admin panel, port 3001) |
 | `pnpm dev:web`       | Start `apps/web` only (frontend, port 3000)     |
 | `pnpm build`         | Build all packages and apps                     |
-| `pnpm lint`          | Run ESLint CLI through Turbo                    |
+| `pnpm lint`          | Run oxlint across the repo                      |
+| `pnpm format`        | Format with oxfmt (`format:check` for CI)       |
 | `pnpm db:migrate`    | Generate and apply a local Prisma migration file         |
 | `pnpm db:seed`       | Create seed data (admin@example.com / password)          |
 | `pnpm db:studio`     | Open Prisma Studio                                       |

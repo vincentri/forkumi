@@ -11,7 +11,7 @@ function csvEscape(value: unknown): string {
   return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line typescript/no-explicit-any
 export async function buildCsv(db: any, ctx: unknown, config: CRUDConfig, rows: Record<string, unknown>[]): Promise<string> {
   const exportFields = config.fields.filter((field) => field.showInTable !== false && field.type !== "password");
   const selectOptionMaps = Object.fromEntries(

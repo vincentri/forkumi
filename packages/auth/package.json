@@ -16,9 +16,9 @@
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "next": "^16.2.9",
-    "typescript": "^6.0.3",
-    "vitest": "^4.1.8"
+    "next": "^16.4.5",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
   },
   "peerDependencies": {
     "next": ">=14"

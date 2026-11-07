@@ -33,8 +33,8 @@ function realRouter(procedures: Record<string, unknown>) {
 
 const realProcedure: any = {
   input: () => realProcedure,
-  query: (fn: Function) => ({ _queryFn: fn }),
-  mutation: (fn: Function) => ({ _mutationFn: fn }),
+  query: (fn: (...args: any[]) => unknown) => ({ _queryFn: fn }),
+  mutation: (fn: (...args: any[]) => unknown) => ({ _mutationFn: fn }),
   use: () => realProcedure,
 };
 

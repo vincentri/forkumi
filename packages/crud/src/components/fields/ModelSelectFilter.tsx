@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { CRUDFieldSelect } from "../../types";
 import {
   Button,
@@ -56,7 +56,9 @@ export function ModelSelectFilter({
       >
         <option value={allValue}>{allLabel}</option>
         {staticOptions.map((o) => (
-          <option key={o.value} value={o.value}>{o.label}</option>
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
         ))}
       </select>
     );
@@ -69,20 +71,14 @@ export function ModelSelectFilter({
 
   const options = data ?? [];
 
-  const selectedLabel = useMemo(() => {
-    if (!value) return allLabel;
-    return options.find((o) => o.value === value)?.label ?? value;
-  }, [options, value, allLabel]);
+  const selectedLabel = value ? (options.find((o) => o.value === value)?.label ?? value) : allLabel;
 
-  const filteredOptions = useMemo(() => {
-    if (!debouncedSearch) return options;
-    const term = debouncedSearch.toLowerCase();
-    return options.filter(
-      (o) =>
-        o.label.toLowerCase().includes(term) ||
-        o.value.toLowerCase().includes(term),
-    );
-  }, [options, debouncedSearch]);
+  const term = debouncedSearch.toLowerCase();
+  const filteredOptions = term
+    ? options.filter(
+        (o) => o.label.toLowerCase().includes(term) || o.value.toLowerCase().includes(term),
+      )
+    : options;
 
   function handleSelect(optionValue: string | null) {
     onChange(optionValue);
@@ -115,9 +111,7 @@ export function ModelSelectFilter({
           />
         </div>
         <ScrollArea className="h-60">
-          {isLoading && (
-            <div className="px-3 py-2 text-sm text-muted-foreground">Loading…</div>
-          )}
+          {isLoading && <div className="px-3 py-2 text-sm text-muted-foreground">Loading…</div>}
           {!isLoading && filteredOptions.length === 0 && (
             <div className="px-3 py-2 text-sm text-muted-foreground">No options found.</div>
           )}

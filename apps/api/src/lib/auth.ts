@@ -4,7 +4,7 @@ import { cache } from "react";
 
 export const authOptions = createAuthOptions({
   async findUserByCredentials(email, password) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     const user = await (prisma.user.findUnique as any)({
       where: { email },
       include: { role: true },
@@ -16,7 +16,7 @@ export const authOptions = createAuthOptions({
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) return null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     const role = user.role as any;
     return {
       id: user.id,
