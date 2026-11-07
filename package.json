@@ -2,13 +2,13 @@
   "name": "Quantyx",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev:api": "turbo run dev --filter=api",
-    "dev:web": "turbo run dev --filter=web",
-    "dev": "turbo run dev",
+    "build": "pnpm -r build",
+    "dev:api": "pnpm --filter api dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev": "pnpm -r --parallel dev",
     "lint": "oxlint",
-    "type-check": "turbo run type-check",
-    "test": "turbo run test",
+    "type-check": "pnpm -r type-check",
+    "test": "pnpm -r test",
     "db:seed": "pnpm --filter @repo/db db:seed && pnpm --filter api db:seed",
     "db:studio": "pnpm --filter @repo/db db:studio",
     "db:migrate": "pnpm --filter @repo/db db:migrate && pnpm --filter @repo/db db:generate",
@@ -31,7 +31,6 @@
     "oxfmt": "0.77.0",
     "oxlint": "1.92.0",
     "tsx": "^4.22.4",
-    "turbo": "^2.9.18",
     "typescript": "^7.0.2"
   },
   "engines": {

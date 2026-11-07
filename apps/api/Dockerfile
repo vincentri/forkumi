@@ -39,7 +39,7 @@ COPY packages/db ./packages/db
 COPY packages/email ./packages/email
 COPY packages/ui ./packages/ui
 COPY packages/tsconfig ./packages/tsconfig
-COPY package.json pnpm-workspace.yaml turbo.json ./
+COPY package.json pnpm-workspace.yaml ./
 RUN PRISMA_GENERATE_SKIP_AUTOINSTALL=true packages/db/node_modules/.bin/prisma generate \
     --schema apps/api/prisma/schema.prisma
 RUN pnpm --filter api build

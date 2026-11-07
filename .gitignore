@@ -5,7 +5,6 @@ node_modules/
 # builds
 .next/
 dist/
-.turbo/
 
 # env
 .env

@@ -4,7 +4,7 @@ Use this file as the cross-agent starting point. `CLAUDE.md` contains extra Clau
 
 ## Repo Shape
 
-Turborepo + pnpm workspace:
+pnpm workspace:
 
 - `apps/api` — Next.js full-stack admin/API app on port `3001`
 - `apps/web` — Next.js public frontend on port `3000`
@@ -40,7 +40,7 @@ Turborepo + pnpm workspace:
 - Shared UI components live in `packages/ui/src/components/` and are re-exported from `packages/ui/src/index.ts`.
 - Prisma schema is `apps/api/prisma/schema.prisma`. Raw SQL table/column names are snake_case even when Prisma fields are camelCase.
 - Public web UI should show human-readable validation messages, not raw Zod/tRPC issue arrays or stack traces.
-- Every exported function/component in `apps/web/src/` that returns JSX must have an explicit return type annotation (`: ReactElement`, `: ReactElement | null`, `: Promise<ReactElement>`, etc.). TypeScript declaration portability errors (`cannot be named without a reference to 'Element'`) only surface during Docker/clean builds, never in turbo-cached local builds. This applies to all `.tsx` files — components, pages, providers, and helpers.
+- Every exported function/component in `apps/web/src/` that returns JSX must have an explicit return type annotation (`: ReactElement`, `: ReactElement | null`, `: Promise<ReactElement>`, etc.). TypeScript declaration portability errors (`cannot be named without a reference to 'Element'`) only surface during Docker/clean builds, never in incremental local dev (`next dev` compiles lazily). This applies to all `.tsx` files — components, pages, providers, and helpers.
 - Prisma 7 dropped `url` from `schema.prisma` datasource blocks — connection URLs go in `prisma.config.ts` instead. Never add `url = env("DATABASE_URL")` to the schema. Dockerfile tools stage must use matching Prisma version (`7.x`).
 - When adding a new workspace package (e.g. `@repo/email`), update both the `deps` stage (`COPY packages/X/package.json`) and `builder` stage (`COPY --from=deps .../node_modules` + `COPY packages/X`) in `apps/api/Dockerfile`.
 - Any `select` field with `optionsFrom` or `optionsQuery` in a CRUD config requires the matching admin tRPC router to expose `searchOptions` (and `options`). If you build the router via `createCRUDRouter` / `createKeyValueRouter` / `buildCRUDRouters` this is automatic — these wire up `options` + `searchOptions` internally. If you hand-roll the router (e.g. `frontPageSettingsRouter` in `apps/api/src/server/router.ts` for locale fallback + non-localized fan-out), you must add both procs yourself. Reference impl: `createKeyValueRouter` in `packages/crud/src/router-factory/create-key-value-router.ts`. Without these procs, admin autocomplete on the field 404s (`admin.<model>.searchOptions` missing).
@@ -58,7 +58,7 @@ Turborepo + pnpm workspace:
 
 For CRUD/package changes, run `pnpm test`.
 
-For broad changes, run `pnpm build --force` when local dependencies and environment are available. The `--force` flag bypasses turbo cache and runs type-check from scratch — same as Docker. Cached builds silently skip type-check and mask errors.
+For broad changes, run `pnpm build` when local dependencies and environment are available. It runs `next build` (including type-check) in both apps — same as Docker.
 
 When following the template acceptance path, use the rsync smoke-test flow in `README.md` / `CLAUDE.md` and verify `apps/api` builds in the copied test project.
 

@@ -234,7 +234,7 @@ S3 uploads do not set object ACLs. Make `uploads/*` and `defaults/*` publicly re
 
 | Command                                    | Description                                                          |
 | ------------------------------------------ | -------------------------------------------------------------------- |
-| `pnpm dev`                                 | Start both apps via Turbo                                            |
+| `pnpm dev`                                 | Start both apps in parallel (pnpm -r)                                |
 | `pnpm dev:api`                             | Start `apps/api` only (admin panel, port 3001)                       |
 | `pnpm dev:web`                             | Start `apps/web` only (frontend, port 3000)                          |
 | `pnpm build`                               | Build all packages and apps                                          |

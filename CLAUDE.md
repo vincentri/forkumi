@@ -1,6 +1,6 @@
 ## Architecture
 
-Turborepo monorepo. Two apps, six packages:
+pnpm workspace monorepo. Two apps, six packages:
 
 ```
 apps/
