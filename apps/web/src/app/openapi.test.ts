@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { API_CATALOG_PROFILE, buildApiCatalog, buildOpenApi } from "./openapi.ts";
+import {
+  API_CATALOG_PROFILE,
+  buildApiCatalog,
+  buildOpenApi,
+  buildPoppyManifest,
+} from "./openapi.ts";
 
 type Spec = {
   openapi: string;
@@ -70,4 +75,14 @@ test("api catalog is an RFC 9727 linkset whose items and descriptions resolve", 
   ]);
   assert.equal(contact.anchor, "https://api.forkumi.co/api/contact");
   assert.equal(API_CATALOG_PROFILE, "https://www.rfc-editor.org/info/rfc9727");
+});
+
+test("poppy manifest is a website-only 0.1 declaration bound to the bare domain", () => {
+  const expected = {
+    protocol_version: "0.1",
+    organization: { name: "Forkumi", domain: "forkumi.co" },
+    web: {},
+  };
+  assert.deepEqual(buildPoppyManifest("https://forkumi.co", "Forkumi"), expected);
+  assert.deepEqual(buildPoppyManifest("https://www.forkumi.co", "Forkumi"), expected);
 });

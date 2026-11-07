@@ -171,3 +171,16 @@ export function buildApiCatalog(webUrl: string, apiUrl: string): Record<string, 
     ],
   };
 }
+
+/**
+ * Personal Agent Protocol (Poppy) manifest, website-only: agents browse as signed-out
+ * visitors, so no auth issuer. ponytail: protocol 0.1 is what isitagentready validates;
+ * add a supported_versions entry when 0.4+ agents matter.
+ */
+export function buildPoppyManifest(webUrl: string, name: string): Record<string, unknown> {
+  return {
+    protocol_version: "0.1",
+    organization: { name, domain: new URL(webUrl).hostname.replace(/^www\./, "") },
+    web: {},
+  };
+}
