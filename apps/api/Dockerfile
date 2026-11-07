@@ -1,8 +1,7 @@
 FROM node:26-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-# Node 25+ no longer bundles corepack; install it so packageManager pins pnpm.
-RUN npm install -g corepack@latest && corepack enable
+RUN npm install -g pnpm@12.18.0
 
 # ---- deps ----
 FROM base AS deps
