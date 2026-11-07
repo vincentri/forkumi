@@ -1,7 +1,6 @@
 FROM node:26-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-# Keep in sync with "packageManager" in package.json (Node 25+ has no corepack).
 RUN npm install -g pnpm@12.18.0
 
 # ---- deps ----
