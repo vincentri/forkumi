@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import { markdownRewritePath } from "./negotiate";
+import { AGENT_LINK_HEADER, markdownRewritePath } from "./negotiate";
 
 export function proxy(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
@@ -14,6 +14,7 @@ export function proxy(request: NextRequest): NextResponse {
     url.pathname = markdownPath;
     const response = NextResponse.rewrite(url);
     response.headers.set("Vary", "Accept");
+    response.headers.set("Link", AGENT_LINK_HEADER);
     return response;
   }
 
@@ -22,7 +23,9 @@ export function proxy(request: NextRequest): NextResponse {
 
   // ponytail: no Vary: Accept here; pages are dynamic (no-store) and Next overwrites Vary.
   // Add it via next.config headers() if HTML ever becomes CDN-cacheable.
-  return NextResponse.next({ request: { headers: requestHeaders } });
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  response.headers.set("Link", AGENT_LINK_HEADER);
+  return response;
 }
 
 export const config = {

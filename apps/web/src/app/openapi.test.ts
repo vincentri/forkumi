@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { buildOpenApi } from "./openapi.ts";
+import { API_CATALOG_PROFILE, buildApiCatalog, buildOpenApi } from "./openapi.ts";
 
 type Spec = {
   openapi: string;
@@ -53,4 +53,21 @@ test("all $refs resolve and pages enum excludes the home page", () => {
   assert.deepEqual((spec.paths["/api/contact"] as { servers: unknown }).servers, [
     { url: "https://api.forkumi.co" },
   ]);
+});
+
+test("api catalog is an RFC 9727 linkset whose items and descriptions resolve", () => {
+  const catalog = buildApiCatalog("https://forkumi.co", "https://api.forkumi.co") as {
+    linkset: Array<Record<string, unknown> & { anchor: string }>;
+  };
+  const [self, home, contact] = catalog.linkset;
+  assert.equal(self.anchor, "https://forkumi.co/.well-known/api-catalog");
+  assert.deepEqual(self.item, [
+    { href: "https://forkumi.co/" },
+    { href: "https://api.forkumi.co/api/contact" },
+  ]);
+  assert.deepEqual(home["service-desc"], [
+    { href: "https://forkumi.co/openapi.json", type: "application/json" },
+  ]);
+  assert.equal(contact.anchor, "https://api.forkumi.co/api/contact");
+  assert.equal(API_CATALOG_PROFILE, "https://www.rfc-editor.org/info/rfc9727");
 });

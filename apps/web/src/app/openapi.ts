@@ -147,3 +147,27 @@ export function buildOpenApi(
     },
   };
 }
+
+export const API_CATALOG_PROFILE = "https://www.rfc-editor.org/info/rfc9727";
+
+/** RFC 9727 API catalog (RFC 9264 linkset) for /.well-known/api-catalog. */
+export function buildApiCatalog(webUrl: string, apiUrl: string): Record<string, unknown> {
+  const web = (path: string) => new URL(path, webUrl).toString();
+  return {
+    linkset: [
+      {
+        anchor: web("/.well-known/api-catalog"),
+        item: [{ href: web("/") }, { href: new URL("/api/contact", apiUrl).toString() }],
+      },
+      {
+        anchor: web("/"),
+        "service-desc": [{ href: web("/openapi.json"), type: "application/json" }],
+        "service-doc": [{ href: web("/llms.txt"), type: "text/plain" }],
+      },
+      {
+        anchor: new URL("/api/contact", apiUrl).toString(),
+        "service-desc": [{ href: web("/openapi.json"), type: "application/json" }],
+      },
+    ],
+  };
+}
