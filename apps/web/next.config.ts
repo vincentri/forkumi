@@ -38,16 +38,47 @@ const apiProtocol = (() => {
   }
 })();
 
+function origin(url: string | undefined): string {
+  try {
+    return url ? new URL(url).origin : "";
+  } catch {
+    return "";
+  }
+}
+
+// ponytail: script-src keeps 'unsafe-inline' because Next's inline bootstrap scripts need a
+// per-request nonce otherwise, and nonces would force every page back to dynamic rendering.
+// If a CMS header/footer script (ExternalHtmlScripts) loads a new origin, add it here.
+const apiOrigin = origin(process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001");
+const storageOrigin = origin(process.env.NEXT_PUBLIC_STORAGE_BASE_URL);
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+  "style-src 'self' 'unsafe-inline'",
+  `img-src 'self' data: blob: ${apiOrigin} ${storageOrigin}`.trim(),
+  `media-src 'self' ${apiOrigin} ${storageOrigin}`.trim(),
+  "font-src 'self'",
+  `connect-src 'self' ${apiOrigin} https://cloudflareinsights.com`,
+  "frame-ancestors 'self'",
+  "base-uri 'self'",
+  "form-action 'self' " + apiOrigin,
+  "object-src 'none'",
+  ...(apiOrigin.startsWith("https:") ? ["upgrade-insecure-requests"] : []),
+].join("; ");
+
 const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@repo/auth"],
   trailingSlash: true,
-  // Markdown versions for agents: /id.md, /en/about.md
-  // ponytail: no CSP yet; ExternalHtmlScripts injects CMS-supplied scripts, so a CSP needs their origins first.
   headers: async () => [
     {
       source: "/:path*",
       headers: [
+        // Dev needs eval + HMR websockets; enforce CSP on production builds only.
+        ...(process.env.NODE_ENV === "production"
+          ? [{ key: "Content-Security-Policy", value: contentSecurityPolicy }]
+          : []),
+        { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
         { key: "X-Content-Type-Options", value: "nosniff" },
         { key: "X-Frame-Options", value: "SAMEORIGIN" },
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -55,6 +86,17 @@ const nextConfig: NextConfig = {
       ],
     },
   ],
+  // Locale-less paths go to the Indonesian default for good (308). Kept here, not as
+  // pages, so no page needs a root layout outside [locale].
+  redirects: async () => [
+    { source: "/", destination: "/id/", permanent: true },
+    {
+      source: "/:page(about|contact|packages|portfolio|services)",
+      destination: "/id/:page/",
+      permanent: true,
+    },
+  ],
+  // Markdown versions for agents: /id.md, /en/about.md
   rewrites: async () => [
     { source: "/:locale(id|en).md", destination: "/md/:locale" },
     { source: "/:locale(id|en)/:page.md", destination: "/md/:locale/:page" },

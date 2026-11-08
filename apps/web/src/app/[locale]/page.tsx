@@ -10,7 +10,12 @@ import {
   safeHref,
 } from "../front-page-settings";
 import { getMarqueeItems } from "../marquee";
-import { buildFaqJsonLd, buildSeoMetadata } from "../seo";
+import {
+  buildFaqJsonLd,
+  buildOrganizationJsonLd,
+  buildSeoMetadata,
+  buildWebsiteJsonLd,
+} from "../seo";
 import { JsonLd } from "./_components/JsonLd";
 import { WhySubscribeSection } from "./_components/WhySubscribeSection";
 import { PlansSection } from "./_components/PlansSection";
@@ -399,6 +404,7 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
 
   return (
     <>
+      <JsonLd data={[buildOrganizationJsonLd(settings), buildWebsiteJsonLd(settings)]} />
       <header className="hero" id="top">
         <img
           className="sparkle"

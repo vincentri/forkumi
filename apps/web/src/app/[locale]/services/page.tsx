@@ -1,5 +1,7 @@
 import type { ReactElement } from "react";
 
+import { pageMetadata } from "../../seo";
+
 import {
   firstValue,
   getFrontPageSettings,
@@ -13,6 +15,8 @@ import { getServiceCategories } from "../../serviceCategory";
 import { Breadcrumb } from "../_components/Breadcrumb";
 import { CtaBand } from "../_components/CtaBand";
 import { Fab } from "../_components/Fab";
+
+export const generateMetadata = pageMetadata("services");
 
 type ServicesPageProps = {
   params: Promise<{ locale: string }>;
@@ -133,7 +137,7 @@ export default async function ServicesPage({ params }: ServicesPageProps): Promi
           alt=""
         />
         <div className="wrap">
-          <Breadcrumb locale={locale} current={PAGE_LABEL[locale]} />
+          <Breadcrumb locale={locale} page="services" current={PAGE_LABEL[locale]} />
           <h1>
             <span className={h1Hl === 0 ? "hl" : undefined}>{h1L1}</span>
             <br />

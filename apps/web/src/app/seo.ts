@@ -7,6 +7,8 @@ import {
   INSTAGRAM_FALLBACK,
   PHONE_FALLBACK,
   firstValue,
+  getFrontPageSettings,
+  normalizeLocale,
   resolveAssetUrl,
   type FrontPageSettings,
 } from "./front-page-settings";
@@ -172,6 +174,16 @@ export function buildSeoMetadata({
   };
 }
 
+/** generateMetadata for a fixed page path, so pages render statically (no request headers). */
+export function pageMetadata(
+  pagePath: string,
+): (props: { params: Promise<{ locale: string }> }) => Promise<Metadata> {
+  return async ({ params }) => {
+    const locale = normalizeLocale((await params).locale);
+    return buildSeoMetadata({ locale, pagePath, settings: await getFrontPageSettings(locale) });
+  };
+}
+
 export function buildOrganizationJsonLd(settings: FrontPageSettings): Record<string, unknown> {
   const baseUrl = new URL(process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000");
   const resolvedLogo = resolveAssetUrl(settings.logo);
@@ -297,7 +309,11 @@ export function buildPlansJsonLd(
   };
 }
 
-export function buildBreadcrumbJsonLd(locale: Locale, current: string): Record<string, unknown> {
+export function buildBreadcrumbJsonLd(
+  locale: Locale,
+  page: string,
+  current: string,
+): Record<string, unknown> {
   const baseUrl = new URL(process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000");
   return {
     "@context": "https://schema.org",
@@ -309,8 +325,12 @@ export function buildBreadcrumbJsonLd(locale: Locale, current: string): Record<s
         name: locale === "id" ? "Beranda" : "Home",
         item: new URL(`/${locale}/`, baseUrl).toString(),
       },
-      // Last crumb is the current page; schema.org lets it omit `item`.
-      { "@type": "ListItem", position: 2, name: current },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: current,
+        item: new URL(`/${locale}/${page}/`, baseUrl).toString(),
+      },
     ],
   };
 }

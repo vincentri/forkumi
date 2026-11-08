@@ -4,6 +4,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { writeFile, mkdir } from "fs/promises";
 import { join, extname } from "path";
 import { randomBytes } from "crypto";
+import { optimizeImage } from "~/lib/optimize-image";
 import { resolvePublicDir } from "~/lib/public-files";
 
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB for images
@@ -105,7 +106,15 @@ export async function POST(req: NextRequest) {
     }
     buffer = sanitized as Buffer;
   }
-  const filename = `${randomBytes(16).toString("hex")}${ext}`;
+  let contentType = file.type;
+  let storedExt = ext;
+  const optimized = isVideo ? null : await optimizeImage(buffer, file.type);
+  if (optimized) {
+    buffer = optimized.buffer;
+    contentType = optimized.mime;
+    storedExt = optimized.ext;
+  }
+  const filename = `${randomBytes(16).toString("hex")}${storedExt}`;
 
   const rawPath = req.nextUrl.searchParams.get("path");
   const subPath = sanitizePath(rawPath);
@@ -154,7 +163,7 @@ export async function POST(req: NextRequest) {
           Bucket: bucket,
           Key: key,
           Body: buffer,
-          ContentType: file.type,
+          ContentType: contentType,
           // Filenames are random per upload, so the object never changes: cache forever.
           CacheControl: "public, max-age=31536000, immutable",
         }),

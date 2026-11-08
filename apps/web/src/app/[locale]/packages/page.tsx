@@ -1,5 +1,7 @@
 import type { ReactElement } from "react";
 
+import { pageMetadata } from "../../seo";
+
 import {
   firstValue,
   getFrontPageSettings,
@@ -14,6 +16,8 @@ import { PlansSection } from "../_components/PlansSection";
 import { Breadcrumb } from "../_components/Breadcrumb";
 import { CtaBand } from "../_components/CtaBand";
 import { Fab } from "../_components/Fab";
+
+export const generateMetadata = pageMetadata("packages");
 
 type PackagesPageProps = {
   params: Promise<{ locale: string }>;
@@ -162,7 +166,7 @@ export default async function PackagesPage({ params }: PackagesPageProps): Promi
           alt=""
         />
         <div className="wrap">
-          <Breadcrumb locale={locale} current={PAGE_LABEL[locale]} />
+          <Breadcrumb locale={locale} page="packages" current={PAGE_LABEL[locale]} />
           <h1>
             <span className={h1Hl === 0 ? "hl" : undefined}>{h1L1}</span>
             <br />

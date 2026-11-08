@@ -1,5 +1,7 @@
 import type { ReactElement } from "react";
 
+import { pageMetadata } from "../../seo";
+
 import {
   EMAIL_FALLBACK,
   INSTAGRAM_FALLBACK,
@@ -14,6 +16,8 @@ import { getPlanOfInterestOptions } from "../../planOfInterest";
 import { ContactForm } from "../_components/ContactForm";
 import { Breadcrumb } from "../_components/Breadcrumb";
 import { Fab } from "../_components/Fab";
+
+export const generateMetadata = pageMetadata("contact");
 
 type ContactPageProps = {
   params: Promise<{ locale: string }>;
@@ -118,7 +122,7 @@ export default async function ContactPage({ params }: ContactPageProps): Promise
           alt=""
         />
         <div className="wrap">
-          <Breadcrumb locale={locale} current={PAGE_LABEL[locale]} />
+          <Breadcrumb locale={locale} page="contact" current={PAGE_LABEL[locale]} />
           <h1>
             <span className={hl === 0 ? "hl" : undefined}>{h1Line1}</span>
             <br />
