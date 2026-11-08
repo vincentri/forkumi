@@ -74,7 +74,7 @@ export function SiteNav({ locale, settings }: SiteNavProps): ReactElement {
   return (
     <nav className={scrolled ? "scrolled" : undefined} id="nav-mount">
       <Link className="brand" href={localeHref(locale, "")}>
-        <img src={logo} alt="Logo" />
+        <img src={logo} alt={settings.site_name?.trim() || "Forkumi"} />
       </Link>
       {open ? (
         <div className="nav-backdrop" aria-hidden="true" onClick={() => setOpen(false)} />

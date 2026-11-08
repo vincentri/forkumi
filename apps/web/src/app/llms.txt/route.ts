@@ -20,10 +20,11 @@ const WHEN_TO_USE = [
 ];
 
 export async function GET(): Promise<Response> {
-  const [home, settings, plans] = await Promise.all([
+  const [home, settings, plans, idPlans] = await Promise.all([
     pageMeta("en", ""),
     getFrontPageSettings("en"),
     getPlans("en"),
+    getPlans("id"),
   ]);
   const sections = await Promise.all(
     LOCALES.map(async (locale) => {
@@ -41,13 +42,18 @@ export async function GET(): Promise<Response> {
 
   // Facts agents most often need, so they can answer without reading every page.
   const facts = [
-    "- Service: unlimited graphic design subscription (branding, social media, websites), flat monthly price, no long-term contract.",
+    "- Service: graphic design subscription (branding, social media, websites), flat monthly price, no long-term contract. Unlimited requests go into a queue; 2, 3 or 4 are worked on at a time depending on the plan. Unlimited revisions.",
     "- Languages: Indonesian, English. Serves clients in Indonesia and worldwide.",
+    "- Pricing: English pages list USD prices; Indonesian pages list Rupiah (IDR) prices, shown below as (Indonesia).",
     ...plans.map(
       (plan) =>
         `- Plan ${plan.name}: ${plan.price}/month (normally ${plan.normalPrice}/month)${
           plan.features.length > 0 ? `. Includes: ${plan.features.join("; ")}` : ""
         }`,
+    ),
+    ...idPlans.map(
+      (plan) =>
+        `- Plan ${plan.name} (Indonesia): ${plan.price}/month (normally ${plan.normalPrice}/month)`,
     ),
     `- WhatsApp: ${safeHref(settings.contactWhatsappUrl, WHATSAPP_FALLBACK)}`,
     `- Email: ${safeHref(settings.contactEmailUrl, EMAIL_FALLBACK).replace(/^mailto:/, "")}`,

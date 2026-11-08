@@ -427,7 +427,12 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
             <h1>
               {titleLines.map((line, i) => (
                 <Fragment key={i}>
-                  {i > 0 ? <br /> : null}
+                  {i > 0 ? (
+                    <>
+                      {" "}
+                      <br />
+                    </>
+                  ) : null}
                   <span className={i === highlightIndex ? "hl" : undefined}>{line}</span>
                 </Fragment>
               ))}
@@ -443,7 +448,12 @@ export default async function HomePage({ params }: HomePageProps): Promise<React
             </div>
           </div>
           <div className="hero-right">
-            <img className="mascot" src={mascotSrc} alt="Forkumi mascot" />
+            <img
+              className="mascot"
+              src={mascotSrc}
+              alt={locale === "id" ? "Maskot Forkumi" : "Forkumi mascot"}
+              fetchPriority="high"
+            />
           </div>
         </div>
         <a className="scrolldown" href="#stats">

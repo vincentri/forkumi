@@ -67,7 +67,7 @@ export function SiteFooter({ locale, settings }: SiteFooterProps): ReactElement 
         <div className="fcols">
           <div>
             <div className="fbrand">
-              <img src={logoFooter} alt="Logo" />
+              <img src={logoFooter} alt={settings.site_name?.trim() || "Forkumi"} />
             </div>
             <p className="ftag">{pick(settings, "footerTagline", LABELS.tag[locale])}</p>
           </div>

@@ -43,6 +43,18 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@repo/auth"],
   trailingSlash: true,
   // Markdown versions for agents: /id.md, /en/about.md
+  // ponytail: no CSP yet; ExternalHtmlScripts injects CMS-supplied scripts, so a CSP needs their origins first.
+  headers: async () => [
+    {
+      source: "/:path*",
+      headers: [
+        { key: "X-Content-Type-Options", value: "nosniff" },
+        { key: "X-Frame-Options", value: "SAMEORIGIN" },
+        { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+      ],
+    },
+  ],
   rewrites: async () => [
     { source: "/:locale(id|en).md", destination: "/md/:locale" },
     { source: "/:locale(id|en)/:page.md", destination: "/md/:locale/:page" },

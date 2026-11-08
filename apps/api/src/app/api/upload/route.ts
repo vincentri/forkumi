@@ -155,6 +155,8 @@ export async function POST(req: NextRequest) {
           Key: key,
           Body: buffer,
           ContentType: file.type,
+          // Filenames are random per upload, so the object never changes: cache forever.
+          CacheControl: "public, max-age=31536000, immutable",
         }),
       );
       return NextResponse.json({ url: assetPath });

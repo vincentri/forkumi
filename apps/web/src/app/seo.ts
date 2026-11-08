@@ -6,7 +6,6 @@ import {
   EMAIL_FALLBACK,
   INSTAGRAM_FALLBACK,
   PHONE_FALLBACK,
-  WHATSAPP_FALLBACK,
   firstValue,
   resolveAssetUrl,
   type FrontPageSettings,
@@ -125,9 +124,10 @@ export function buildSeoMetadata({
   const description =
     firstValue(
       providedDescription,
-      pageSeo ? settings[pageSeo.descriptionSetting] : undefined,
       home ? settings.homePageSeoMetaDescription : undefined,
+      // ponytail: CMS leads are short on-page intros ("A few brands we've helped grow."); fallback only.
       pageCopy?.description,
+      pageSeo ? settings[pageSeo.descriptionSetting] : undefined,
       settings.meta_description,
     ) ?? DEFAULT_DESCRIPTION;
   const keywords = firstValue(
@@ -191,14 +191,10 @@ export function buildOrganizationJsonLd(settings: FrontPageSettings): Record<str
       settings.contactPhoneUrl?.replace(/^tel:/, ""),
       PHONE_FALLBACK.replace(/^tel:/, ""),
     ) ?? undefined;
-  const sameAs = Array.from(
-    new Set(
-      [
-        firstValue(settings.socialInstagramUrl, settings.contactInstagramUrl, INSTAGRAM_FALLBACK),
-        firstValue(settings.socialWhatsappUrl, settings.contactWhatsappUrl, WHATSAPP_FALLBACK),
-      ].filter((value): value is string => typeof value === "string" && /^https?:\/\//.test(value)),
-    ),
-  );
+  // Entity profiles only; wa.me is a chat link, not a profile (phone lives in contactPoint).
+  const sameAs = [
+    firstValue(settings.socialInstagramUrl, settings.contactInstagramUrl, INSTAGRAM_FALLBACK),
+  ].filter((value): value is string => typeof value === "string" && /^https?:\/\//.test(value));
 
   const productTerms = parseKeywords(
     firstValue(settings.homePageSeoMetaKeywords, settings.meta_keywords),
@@ -263,33 +259,41 @@ export function buildPlansJsonLd(
   plans: Array<{ name: string; price: string; features: string[] }>,
 ): Record<string, unknown> {
   const baseUrl = new URL(process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000");
+  const url = new URL(`/${locale}/packages/`, baseUrl).toString();
   return {
     "@context": "https://schema.org",
     "@type": "Service",
+    "@id": `${url}#service`,
     name: locale === "id" ? "Langganan desain grafis" : "Graphic design subscription",
     serviceType: "Design subscription",
+    description: PAGE_SEO.packages[locale].description,
+    url,
     provider: { "@id": new URL("#organization", baseUrl).toString() },
-    areaServed: "Worldwide",
-    offers: plans.map((plan) => {
-      const parsed = parsePrice(plan.price);
-      return {
-        "@type": "Offer",
-        name: plan.name,
-        description: plan.features.join(", "),
-        url: new URL(`/${locale}/packages/`, baseUrl).toString(),
-        ...(parsed
-          ? {
-              priceSpecification: {
-                "@type": "UnitPriceSpecification",
-                price: parsed.price,
-                priceCurrency: parsed.currency,
-                unitCode: "MON",
-                referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" },
-              },
-            }
-          : {}),
-      };
-    }),
+    areaServed: { "@type": "Place", name: "Worldwide" },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: locale === "id" ? "Paket langganan Forkumi" : "Forkumi subscription plans",
+      itemListElement: plans.map((plan) => {
+        const parsed = parsePrice(plan.price);
+        return {
+          "@type": "Offer",
+          name: plan.name,
+          description: plan.features.join(", "),
+          url,
+          ...(parsed
+            ? {
+                priceSpecification: {
+                  "@type": "UnitPriceSpecification",
+                  price: parsed.price,
+                  priceCurrency: parsed.currency,
+                  unitCode: "MON",
+                  referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode: "MON" },
+                },
+              }
+            : {}),
+        };
+      }),
+    },
   };
 }
 
